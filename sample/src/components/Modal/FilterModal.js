@@ -9,9 +9,13 @@ import { BaseStyle } from '../../constants/Style';
 import { ALL, APPLY, AVAILABILITY, BRAND, CLEAR, FILTER, INSTOCK, OUT_OF_STOCK, PRICE } from '../../constants/Constants';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { useSelector } from 'react-redux';
+import { useThemes } from '../../context/ThemeContext';
+import { lightColors, darkColors } from '../../constants/Color';
 const { alignItemsCenter, resizeModeContain, textAlign, alignJustifyCenter, flex, borderRadius10, overflowHidden, borderWidth1, flexDirectionRow, justifyContentSpaceBetween, alignSelfCenter, positionAbsolute } = BaseStyle;
 
 const FilterModal = ({ applyFilters, onClose, visible, allProducts, vendor, onSelectVendor }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -156,39 +160,39 @@ const FilterModal = ({ applyFilters, onClose, visible, allProducts, vendor, onSe
       onRequestClose={onClose}
     >
       <View style={{ backgroundColor: blackOpacity5, flex: 1 }}>
-        <View style={[positionAbsolute, { backgroundColor: whiteColor, bottom: 0, height: hp(60), borderTopLeftRadius: 10, borderTopRightRadius: 10 }]}>
+        <View style={[positionAbsolute, { backgroundColor: colors.whiteColor, bottom: 0, height: hp(60), borderTopLeftRadius: 10, borderTopRightRadius: 10 }]}>
 
           <View style={[styles.modalHeader, flexDirectionRow, alignJustifyCenter]}>
             <View style={[{ width: "80%" }]}>
-              <Text style={[styles.headertext]}>Apply Filter</Text>
+              <Text style={[styles.headertext, { color: colors.blackColor }]}>Apply Filter</Text>
             </View>
             <TouchableOpacity style={styles.backIconBox} onPress={onClose}>
-              <Ionicons name={"close"} size={30} color={blackColor} />
+              <Ionicons name={"close"} size={30} color={colors.blackColor} />
             </TouchableOpacity>
           </View>
           <ScrollView>
             <TouchableOpacity style={[styles.Box, flexDirectionRow, justifyContentSpaceBetween]} onPress={toggleBrand}>
-              <Text style={styles.text}>{BRAND}</Text>
+              <Text style={[styles.text, { color: colors.blackColor }]}>{BRAND}</Text>
               <View style={[styles.backIconBox]} >
-                <Text style={[styles.graytext]}>{ALL}</Text>
+                <Text style={[styles.graytext, { color: colors.blackColor }]}>{ALL}</Text>
               </View>
             </TouchableOpacity>
             {showBrand && <View>
               {vendor.map(vendor => (
                 <TouchableOpacity
                   key={vendor}
-                  style={[styles.vendorButton, flexDirectionRow]}
+                  style={[styles.vendorButton, flexDirectionRow, { backgroundColor: isDarkMode ? grayColor : whiteColor }]}
                   onPress={() => { setSelectedVendor(vendor), onSelectVendor(vendor), onClose(), setShowBrand(false), logEvent(`Vendor_Selected ${vendor}`); }}
                 >
-                  <Text style={[styles.graytext]}>{vendor}</Text>
-                  {selectedVendor === vendor && <Ionicons name="checkmark" size={20} color={blackColor} style={{ marginLeft: "auto", marginRight: spacings.xxxxLarge }} />}
+                  <Text style={[styles.graytext, { color: colors.blackColor }]}>{vendor}</Text>
+                  {selectedVendor === vendor && <Ionicons name="checkmark" size={20} color={colors.blackColor} style={{ marginLeft: "auto", marginRight: spacings.xxxxLarge }} />}
                 </TouchableOpacity>
               ))}
             </View>}
             <TouchableOpacity style={[styles.Box, flexDirectionRow, justifyContentSpaceBetween]} onPress={togglePriceRange}>
-              <Text style={styles.text}>{PRICE}</Text>
+              <Text style={[styles.text, { color: colors.blackColor }]}>{PRICE}</Text>
               <View style={[styles.backIconBox]} >
-                <Text style={[styles.graytext]}>{ALL}</Text>
+                <Text style={[styles.graytext, { color: colors.blackColor }]}>{ALL}</Text>
               </View>
             </TouchableOpacity>
             {showPriceRange && (
@@ -196,24 +200,24 @@ const FilterModal = ({ applyFilters, onClose, visible, allProducts, vendor, onSe
                 <View style={[flexDirectionRow, alignItemsCenter]}>
                   <TextInput
                     placeholder="Min Price"
-                    placeholderTextColor={grayColor}
+                    placeholderTextColor={colors.grayColor}
                     value={minPrice}
                     onChangeText={handleMinPriceChange}
                     keyboardType="numeric"
-                    style={[styles.input, borderRadius10, borderWidth1]}
+                    style={[styles.input, borderRadius10, borderWidth1,{ color: colors.blackColor }]}
                   />
                   <TextInput
                     placeholder="Max Price"
-                    placeholderTextColor={grayColor}
+                    placeholderTextColor={colors.grayColor}
                     value={maxPrice}
                     onChangeText={handleMaxPriceChange}
                     keyboardType="numeric"
-                    style={[styles.input, borderRadius10, borderWidth1]}
+                    style={[styles.input, borderRadius10, borderWidth1,{ color: colors.blackColor }]}
                   />
                 </View>
                 <View style={styles.releaseBox}>
-                  <Text style={styles.graytext}>Min Price:{startPrice}</Text>
-                  <Text style={styles.graytext}>Max Price:{endPrice}</Text>
+                  <Text style={[styles.graytext, { color: colors.blackColor }]}>Min Price:{startPrice}</Text>
+                  <Text style={[styles.graytext, { color: colors.blackColor }]}>Max Price:{endPrice}</Text>
                 </View>
                 <View style={styles.mainRangeSection}>
                   <View style={[styles.slider, { left: startPricePosition }]} {...startPricePanResponder.panHandlers} />

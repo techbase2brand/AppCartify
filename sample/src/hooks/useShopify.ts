@@ -227,7 +227,7 @@ function useShopify() {
     includeCountry,
   );
   const cartLinesUpdate = useMutation(CART_LINES_UPDATE, includeCountry);
-    // console.log("cartline::",cartLinesUpdate)
+
   return {
     queries: {
       cart,

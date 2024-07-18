@@ -1,16 +1,19 @@
 import React from 'react';
 import { Modal, View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '.././../utils';
-import { blackColor, grayColor, redColor, whiteColor,blackOpacity5 } from '../../constants/Color';
+import { blackColor, grayColor, redColor, whiteColor, blackOpacity5 } from '../../constants/Color';
 import { spacings, style } from '../../constants/Fonts';
 import { BaseStyle } from '../../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { SUCCESS_IMAGE } from '../../assests/images'
-
+import { useThemes } from '../../context/ThemeContext';
+import { lightColors, darkColors } from '../../constants/Color';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, positionAbsolute } = BaseStyle;
 
 const SuccessModal = ({ visible, onClose, onPressContinue, headingText, text }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const navigation = useNavigation();
   const handleContinue = () => {
     onPressContinue();
@@ -19,13 +22,13 @@ const SuccessModal = ({ visible, onClose, onPressContinue, headingText, text }) 
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
       <View style={[styles.modalContainer, flex, alignJustifyCenter]}>
-        <View style={[styles.modalContent, borderRadius10, alignJustifyCenter]}>
+        <View style={[styles.modalContent, borderRadius10, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
           {/* <TouchableOpacity onPress={onClose} style={[styles.closeButton, positionAbsolute]}>
             <Ionicons name="close" size={28} color={blackColor} />
           </TouchableOpacity> */}
           <Image source={SUCCESS_IMAGE} style={styles.image} resizeMode="contain" />
-          <Text style={[styles.message, textAlign]}>{headingText ? headingText : "Successfully"}</Text>
-          <Text style={[styles.text, textAlign]}>{text ? text : "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}</Text>
+          <Text style={[styles.message, textAlign, { color: colors.blackColor }]}>{headingText ? headingText : "Successfully"}</Text>
+          <Text style={[styles.text, textAlign, { color: colors.grayColor }]}>{text ? text : "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}</Text>
           <TouchableOpacity onPress={handleContinue} style={[styles.continueButton, alignJustifyCenter, borderRadius10]}>
             <Text style={[styles.buttonText, textAlign]}>Continue</Text>
           </TouchableOpacity>

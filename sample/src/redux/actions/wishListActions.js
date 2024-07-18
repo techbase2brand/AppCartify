@@ -1,5 +1,5 @@
 
-import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST } from './types';
+import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST,CLEAR_WISHLIST } from './types';
 
 export const addToWishlist = (productId) => ({
   type: ADD_TO_WISHLIST,
@@ -12,3 +12,8 @@ export const removeFromWishlist = (productId) => ({
 });
 
 
+export const clearWishlist = () => {
+  return {
+    type: CLEAR_WISHLIST,
+  };
+};

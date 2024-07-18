@@ -1825,7 +1825,7 @@
     color "^4.2.3"
     warn-once "^0.1.0"
 
-"@shopify/checkout-sheet-kit@^2.0.1", "@shopify/checkout-sheet-kit@file:C:\\projects\\Shopify mobile app\\Test\\Loot-Burger-App-UI-kit-latest\\modules\\@shopify\\checkout-sheet-kit":
+"@shopify/checkout-sheet-kit@^2.0.1", "@shopify/checkout-sheet-kit@file:C:\\projects\\Shopify mobile app\\Test\\Test\\AppCartify\\modules\\@shopify\\checkout-sheet-kit":
   version "2.0.1"
   resolved "file:modules/@shopify/checkout-sheet-kit"
 
@@ -4959,7 +4959,7 @@ safe-buffer@~5.2.0:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz"
   integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
 
-"sample@file:C:\\projects\\Shopify mobile app\\Test\\Loot-Burger-App-UI-kit-latest\\sample":
+"sample@file:C:\\projects\\Shopify mobile app\\Test\\Test\\AppCartify\\sample":
   version "0.6.0"
   resolved "file:sample"
   dependencies:

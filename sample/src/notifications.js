@@ -3,7 +3,7 @@ import PushNotification from 'react-native-push-notification';
 export const configureNotifications = () => {
   PushNotification.configure({
     onNotification: function(notification) {
-      console.log('Notification received:', notification);
+      // console.log('Notification received:', notification);
     },
     permissions: {
       alert: true,

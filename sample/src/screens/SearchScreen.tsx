@@ -6,7 +6,7 @@ import {
   POPULAR, BEST_DEALS_OF_THE_WEEK, POPULAR_LIQUOR, BEER, CAN, NON_LOW_ALCOHOL, SEARCH_FOR_DRINK, getAdminAccessToken, getStoreDomain, getBestDealOfWeek
   , STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, POPULAR_PRODUCT_COLLECTION_ID,
   DRINK_POPULAR_PRODUCT_COLLECTION_ID, CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, CLOTHING_POPULAR_PRODUCT_COLLECTION_ID, BEAUTY_POPULAR_PRODUCT_COLLECTION_ID,
-  BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, AUTOMOTIVE_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID
+  BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, ELECTRONIC_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, ELECTRONIC_POPULAR_PRODUCT_COLLECTION_ID
 } from '../constants/Constants'
 import type { ShopifyProduct } from '../../@types';
 import { BaseStyle } from '../constants/Style';
@@ -17,10 +17,14 @@ import Feather from 'react-native-vector-icons/dist/Feather';
 import Header from '../components/Header'
 import { BACKGROUND_IMAGE } from '../assests/images';
 import { useSelector } from 'react-redux';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, flex, positionRelative, positionAbsolute, resizeModeContain, borderRadius5, justifyContentSpaceBetween } = BaseStyle;
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   // const BEST_DEALS_OF_THE_WEEK_COLLECTION_ID = getBestDealOfWeek(selectedItem)
@@ -43,7 +47,6 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   const handleSearch = async () => {
-    console.log(searchQuery)
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
@@ -57,6 +60,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                 title
                 title
                 tags
+                status
                 options(first:20){
                   id
                   name
@@ -101,7 +105,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, requestOptions);
       const result = await response.json();
       // console.log("result.data.products.edges",result.data.products.edges)
-      const suggestions = result?.data?.products?.edges?.map(({ node }) => {
+      const activeProducts = result?.data?.products?.edges?.filter(({ node }) => node.status === 'ACTIVE');
+      const suggestions = activeProducts?.map(({ node }) => {
         return {
           title: node?.title,
           imageSrc: node?.images?.edges[0]?.node?.src || null,
@@ -109,20 +114,20 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
         };
       });
       setSearchSuggestions(suggestions);
-      setSearchResults(result?.data?.products?.edges);
-      const inventoryQuantities = result?.data?.products?.edges.map((productEdge) => {
+      setSearchResults(activeProducts);
+      const inventoryQuantities = activeProducts.map((productEdge) => {
         const variantEdges = productEdge?.node?.variants?.edges;
         const inventoryQuantitiesForProduct = variantEdges.map((edge) => edge?.node?.inventoryQuantity);
         return inventoryQuantitiesForProduct;
       });
       setInventoryQuantities(inventoryQuantities);
-      const tags = result?.data?.products?.edges.map((productEdge) => productEdge?.node?.tags);
+      const tags = activeProducts.map((productEdge) => productEdge?.node?.tags);
       setTags(tags);
 
-      const options = result?.data?.products?.edges.map((productEdge) => productEdge?.node?.options);
+      const options = activeProducts?.map((productEdge) => productEdge?.node?.options);
       setOptions(options);
 
-      const productVariantData = result?.data?.products?.edges.map((productEdge) =>
+      const productVariantData = activeProducts?.map((productEdge) =>
         productEdge?.node?.variants?.edges.map((variant) => ({
           id: variant?.node?.id,
           title: variant?.node?.title,
@@ -131,7 +136,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           price: variant?.node?.price
         }))
       );
-      console.log(productVariantData)
+      // console.log(productVariantData)
       setProductVariantsIDS(productVariantData)
     } catch (error) {
       console.log(error);
@@ -159,17 +164,18 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
       style={[flex, { height: hp(100) }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ImageBackground style={[styles.Container, flex]} source={BACKGROUND_IMAGE}>
+      {/* <ImageBackground style={[styles.Container, flex]} source={BACKGROUND_IMAGE}> */}
+      <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         <Header backIcon={true} text={"Search"} navigation={navigation} />
         <View style={{ paddingHorizontal: spacings.large }}>
           <View style={[positionRelative]}>
-            <View style={[styles.input, flexDirectionRow, alignItemsCenter]}>
-              <Ionicons name="search" size={25} color={grayColor} />
+            <View style={[styles.input, flexDirectionRow, alignItemsCenter, { backgroundColor: isDarkMode ? colors.grayColor : whiteColor, shadowColor: colors.grayColor }]}>
+              <Ionicons name="search" size={25} color={isDarkMode ? whiteColor : colors.grayColor} />
               <View style={[flex]}>
                 <TextInput
                   placeholder={SEARCH_FOR_DRINK}
-                  placeholderTextColor={grayColor}
-                  style={{ color: blackColor }}
+                  placeholderTextColor={isDarkMode ? whiteColor : grayColor}
+                  style={{ color: colors.blackColor }}
                   value={searchQuery}
                   onChangeText={async (text) => {
                     setSearchQuery(text);
@@ -192,7 +198,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
               </View>
             </View>
             {showSuggestions && (
-              <View style={[positionAbsolute, styles.suggestionBox]}>
+              <View style={[positionAbsolute, styles.suggestionBox, { backgroundColor: colors.whiteColor }]}>
                 {searchSuggestions.length != 0 ? (<FlatList
                   data={searchSuggestions}
                   renderItem={({ item, index }) => {
@@ -221,11 +227,11 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                       >
                         <Image source={{ uri: item?.imageSrc }} style={[{ width: wp(13), height: hp(10), marginRight: spacings.large }, resizeModeContain]} />
                         <View style={{ width: wp(55) }}>
-                          <Text style={{ color: blackColor }}>{item?.title}</Text>
-                          <Text style={{ color: mediumGray }}>{item?.price}</Text>
+                          <Text style={{ color: colors.blackColor }}>{item?.title}</Text>
+                          <Text style={{ color: colors.mediumGray }}>{item?.price}</Text>
                         </View>
                         <View style={[{ width: "25%" }, alignJustifyCenter]}>
-                          <Feather name="arrow-up-right" size={25} color={blackColor} />
+                          <Feather name="arrow-up-right" size={25} color={colors.blackColor} />
                         </View>
                       </TouchableOpacity>
                     );
@@ -234,25 +240,25 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                 />) : (
                   <View style={[alignJustifyCenter, { width: wp(80), height: hp(79), alignSelf: "center" }]}>
                     <View>
-                      <Ionicons name="search" size={50} color={grayColor} />
+                      <Ionicons name="search" size={50} color={colors.grayColor} />
                     </View>
-                    <Text style={{ color: blackColor, fontSize: style.fontSizeLarge.fontSize }}>No Results Found!</Text>
-                    <Text style={{ color: mediumGray, textAlign: "center" }}>Try a similar word or something more general.</Text>
+                    <Text style={{ color: colors.blackColor, fontSize: style.fontSizeLarge.fontSize }}>No Results Found!</Text>
+                    <Text style={{ color: colors.mediumGray, textAlign: "center" }}>Try a similar word or something more general.</Text>
                   </View>
                 )}
               </View>
             )}
           </View>
-          <Text style={[styles.text, { padding: 10 }]}>{POPULAR}</Text>
-          <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
-            onPress={() => { fillTextInputWithHint(POPULAR_LIQUOR, selectedItem === "Food" ? POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Automotive" ? AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID : POPULAR_PRODUCT_COLLECTION_ID) }}>
-            <Text style={[styles.hintText, borderRadius5]} >{POPULAR_LIQUOR}</Text>
-            <Ionicons name="add" size={25} color={grayColor} />
+          <Text style={[styles.text, { padding: 10, color: colors.blackColor }]}>{POPULAR}</Text>
+          <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: colors.lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
+            onPress={() => { fillTextInputWithHint(POPULAR_LIQUOR, selectedItem === "Food" ? POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_POPULAR_PRODUCT_COLLECTION_ID : POPULAR_PRODUCT_COLLECTION_ID) }}>
+            <Text style={[styles.hintText, borderRadius5, { color: isDarkMode ? whiteColor : grayColor }]} >{POPULAR_LIQUOR}</Text>
+            <Ionicons name="add" size={25} color={isDarkMode ? whiteColor : grayColor} />
           </Pressable>
-          <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
-            onPress={() => { fillTextInputWithHint(BEST_DEALS_OF_THE_WEEK, selectedItem === "Food" ? BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Automotive" ? AUTOMOTIVE_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : BEST_DEALS_OF_THE_WEEK_COLLECTION_ID) }}>
-            <Text style={[styles.hintText, borderRadius5]} >{BEST_DEALS_OF_THE_WEEK}</Text>
-            <Ionicons name="add" size={25} color={grayColor} />
+          <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: colors.lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
+            onPress={() => { fillTextInputWithHint(BEST_DEALS_OF_THE_WEEK, selectedItem === "Food" ? BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : BEST_DEALS_OF_THE_WEEK_COLLECTION_ID) }}>
+            <Text style={[styles.hintText, borderRadius5, { color: isDarkMode ? whiteColor : grayColor }]} >{BEST_DEALS_OF_THE_WEEK}</Text>
+            <Ionicons name="add" size={25} color={isDarkMode ? whiteColor : grayColor} />
           </Pressable>
         </View>
       </ImageBackground>
@@ -281,12 +287,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: hp(6),
     borderColor: 'transparent',
-    backgroundColor: whiteColor,
+    // backgroundColor: whiteColor,
     borderWidth: .1,
     borderRadius: 10,
     paddingHorizontal: spacings.large,
     marginTop: spacings.large,
-    shadowColor: grayColor,
+    // shadowColor: grayColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -299,22 +305,13 @@ const styles = StyleSheet.create({
     top: hp(7.5),
     left: 0,
     right: 0,
-    backgroundColor: whiteColor,
+    // backgroundColor: whiteColor,
     zIndex: 1,
     width: wp(95),
     height: hp(83),
     borderRadius: 2
   },
-  itembox: {
-    width: wp(100),
-    height: hp(14),
-    top: hp(8),
-    left: 0,
-    right: 0,
-    backgroundColor: whiteColor,
-    zIndex: 1,
-    padding: spacings.large,
-  },
+
   suggestionItem: {
     padding: spacings.large,
     width: wp(100),

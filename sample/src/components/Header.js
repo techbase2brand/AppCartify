@@ -6,15 +6,19 @@ import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { LOVE_DRINK_HEADER_LOGO, SHOPPINGCART_ICON, MENU_ICON, SHOPPINGBUCKET_ICON, SEARCH_ICON, APP_CARTIFY_HEADER_LOGO } from '../assests/images'
+import { LOVE_DRINK_HEADER_LOGO, SHOPPINGCART_ICON, MENU_ICON, SHOPPINGBUCKET_ICON, SEARCH_ICON, DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW, WHITE_MENU_ICON, WHITE_SHOPPINGBUCKET_ICON, WHITE_SEARCH_ICON, APP_CARTIFY_HEADER_LOGO_NEW } from '../assests/images'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { logEvent } from '@amplitude/analytics-react-native';
 import MenuModal from '../components/Modal/MenuModal';
 import { useCart } from '../context/Cart';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, flex, positionRelative, positionAbsolute, justifyContentSpaceBetween } = BaseStyle;
 const Header = ({ navigation, backIcon, text, onPress, textinput, notification, image, closeIcon, menuImage, onClosePress, shoppingCart, onPressShopByCatagory }: { navigation: any, backIcon?: boolean, text?: string, textinput?: boolean, notification?: boolean }) => {
   const { totalQuantity } = useCart();
   const [modalVisible, setModalVisible] = useState(false)
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const OnClickBackIcon = () => {
     logEvent('Back Button Clicked');
     navigation.goBack()
@@ -42,26 +46,25 @@ const Header = ({ navigation, backIcon, text, onPress, textinput, notification, 
       <View style={[flexDirectionRow, alignJustifyCenter, justifyContentSpaceBetween, { height: hp(6), width: "99%" }]}>
         <View style={[flexDirectionRow, alignItemsCenter]}>
           {backIcon && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickBackIcon}>
-            <Ionicons name={"arrow-back"} size={30} color={blackColor} />
+            <Ionicons name={"arrow-back"} size={30} color={colors.blackColor} />
           </TouchableOpacity>}
           {closeIcon && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickClose}>
-            <Ionicons name={"close"} size={35} color={blackColor} />
+            <Ionicons name={"close"} size={35} color={colors.blackColor} />
           </TouchableOpacity>}
           {menuImage && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={() => setModalVisible(true)}>
-            <Image source={MENU_ICON} style={{ width: wp(8), height: hp(5), resizeMode: "contain", marginLeft: spacings.large }} />
+            <Image source={isDarkMode ? WHITE_MENU_ICON : MENU_ICON} style={{ width: wp(8), height: hp(5), resizeMode: "contain", marginLeft: spacings.large }} />
           </TouchableOpacity>}
-          {text && <Text style={styles.text}>{trimcateText(text)}</Text>}
+          {text && <Text style={[styles.text, { color: colors.blackColor }]}>{trimcateText(text)}</Text>}
         </View>
-
-        {image && <Image source={APP_CARTIFY_HEADER_LOGO} style={{ width: wp(34), height: hp(3.5), resizeMode: "cover", marginLeft: spacings.Large2x }} />}
+        {image && <Image source={isDarkMode ? DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW : APP_CARTIFY_HEADER_LOGO_NEW} style={{ width: wp(34), height: hp(4.5), resizeMode: "contain", marginLeft: spacings.Large2x }} />}
         <View style={[flexDirectionRow, { width: "auto" }, justifyContentSpaceBetween, alignItemsCenter]}>
           {textinput && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickSearchBar}>
             {/* <Ionicons name={"search"} size={27} color={blackColor} /> */}
-            <Image source={SEARCH_ICON} style={{ width: wp(8), height: hp(3.5), resizeMode: "contain", marginLeft: spacings.large }} />
+            <Image source={isDarkMode ? WHITE_SEARCH_ICON : SEARCH_ICON} style={{ width: wp(8), height: hp(3.5), resizeMode: "contain", marginLeft: spacings.large }} />
           </TouchableOpacity>}
           {shoppingCart && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickCartIcon}>
             {/* <Feather name={"shopping-cart"} size={27} color={blackColor} /> */}
-            <Image source={SHOPPINGBUCKET_ICON} style={{ width: wp(8), height: hp(3.3), resizeMode: "contain", marginLeft: spacings.large }} />
+            <Image source={isDarkMode ? WHITE_SHOPPINGBUCKET_ICON : SHOPPINGBUCKET_ICON} style={{ width: wp(8), height: hp(3.3), resizeMode: "contain", marginLeft: spacings.large }} />
             {totalQuantity > 0 && ( // Replace cartItemCount with your actual state or prop representing the item count
               <View style={styles.badgeContainer}>
                 <Text style={styles.badgeText}>{totalQuantity}</Text>

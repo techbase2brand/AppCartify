@@ -298,10 +298,13 @@ import OTPTextInput from 'react-native-otp-textinput';
 import MaterialCommunityIcons from 'react-native-vector-icons/dist/MaterialCommunityIcons';
 import SuccessModal from '../components/Modal/SuccessModal';
 import { BACKGROUND_IMAGE } from '../assests/images';
-
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
 
 const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isOtpComplete, setIsOtpComplete] = useState(false);
@@ -355,8 +358,8 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
     }
 
     try {
-      console.log("clicked")
-      const response = await fetch('https://0a18-122-161-196-251.ngrok-free.app/api/forgotPassword', {
+      // console.log("clicked")
+      const response = await fetch('http://admin.appcartify.com/api/forgotPassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -367,7 +370,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       //   console.error('Error sending email:::::');
       //   // throw new Error(errorData.message || 'Error sending email');
       // }
-      console.log('Email sent successfully:', response);
+      // console.log('Email sent successfully:', response);
       setCurrentStep('otp');
     } catch (error) {
       console.error('Error sending email:', error);
@@ -380,7 +383,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       console.log('Please enter a valid OTP');
       return;
     }
-    console.log('OTP verified successfully');
+    // console.log('OTP verified successfully');
     setCurrentStep('password'); // Move to password reset section
     // setOtp('');
   };
@@ -414,16 +417,16 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       setConfirmPasswordError('Passwords do not match');
       return;
     }
-    console.log("resetPassword")
+    // console.log("resetPassword")
     try {
       console.log({ email, otp, password, confirmPassword })
       // Call backend API to reset password
-      const response = await fetch('https://0a18-122-161-196-251.ngrok-free.app/api/resetPassword', {
+      const response = await fetch('http://admin.appcartify.com/api/resetPassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, otp, password, confirmPassword }),
+        body: JSON.stringify({ email, "resetCode": otp, "newPassword": password, "newPasswordConfirmation": confirmPassword }),
       });
 
       // if (!response.ok) {
@@ -432,7 +435,10 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       // }
       console.log("resetPassword", response)
       // Show success modal
-      setSuccessModalVisible(true);
+      if (response.ok) {
+        setSuccessModalVisible(true);
+      }
+
     } catch (error) {
       console.error('Error resetting password:', error);
       // Handle error scenario
@@ -443,23 +449,24 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       style={[flex]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ImageBackground style={[styles.container]} source={BACKGROUND_IMAGE}>
+      {/* <ImageBackground style={[styles.container]} source={BACKGROUND_IMAGE}> */}
+      <ImageBackground style={[styles.container, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
 
         <View style={[{ width: "100%", height: hp(5) }, flexDirectionRow, alignItemsCenter]}>
           <TouchableOpacity style={[styles.backIcon, alignItemsCenter]} onPress={() => { logEvent(`Back Button Pressed from ForgetPasswordScreen`), navigation.goBack() }}>
-            <Ionicons name={"arrow-back"} size={33} color={blackColor} />
+            <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
           </TouchableOpacity>
         </View>
         {currentStep === 'email' && (
           <View style={{ width: "100%", height: hp(90), padding: spacings.large }}>
-            <Text style={[styles.text]}>Forgot password</Text>
-            <Text style={[{ color: mediumGray, paddingVertical: spacings.small }]}>Enter your email for the verification process.We will send 6 digits code to your email.</Text>
-            <Text style={[styles.textInputHeading, { marginTop: spacings.large }]}>{EMAIL}</Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>Forgot password</Text>
+            <Text style={[{ color: isDarkMode ? whiteColor : mediumGray, paddingVertical: spacings.small }]}>Enter your email for the verification process.We will send 6 digits code to your email.</Text>
+            <Text style={[styles.textInputHeading, { marginTop: spacings.large, color: colors.blackColor }]}>{EMAIL}</Text>
             <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder={EMAIL}
-                  placeholderTextColor={grayColor}
+                  placeholderTextColor={colors.grayColor}
                   onChangeText={(text) => {
                     setEmail(text);
                     if (emailError) {
@@ -469,7 +476,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
                   value={email}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  style={{ color: blackColor }}
+                  style={{ color: colors.blackColor }}
                 />
               </View>
 
@@ -481,17 +488,17 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
           </View>)}
         {currentStep === 'otp' && (
           <View style={{ width: "100%", height: hp(90), padding: spacings.large }}>
-            <Text style={[styles.text]}>Enter 6 Digit Code</Text>
-            <Text style={{ color: mediumGray, paddingVertical: spacings.small }}>Enter 6 digit code that you received on your email
-              <Text style={{ color: blackColor }}> ({email}).</Text></Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>Enter 6 Digit Code</Text>
+            <Text style={{ color: isDarkMode ? whiteColor : mediumGray, paddingVertical: spacings.small }}>Enter 6 digit code that you received on your email
+              <Text style={{ color: colors.blackColor }}> ({email}).</Text></Text>
             <View style={[{ width: "100%", height: hp(18) }, alignJustifyCenter]}>
               <OTPTextInput
                 handleTextChange={handleOTPChange}
                 inputCount={6}
-                tintColor={blackColor}
-                offTintColor={mediumGray}
+                tintColor={colors.blackColor}
+                offTintColor={colors.mediumGray}
                 containerStyle={styles.otpContainer}
-                textInputStyle={styles.otpInput}
+                textInputStyle={[styles.otpInput, { color: colors.blackColor }]}
               />
               {/* <TouchableOpacity disabled={resendButtonDisabled} onPress={hadleResendOtp}>
                 <Text style={{ color: blackColor, marginHorizontal: spacings.small }}>
@@ -508,10 +515,10 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
             </TouchableOpacity>
           </View>)}
         {currentStep === 'password' && (<View style={{ width: "100%", height: hp(90), padding: spacings.large }}>
-          <Text style={[styles.text]}>Reset password</Text>
-          <Text style={[{ color: mediumGray, paddingVertical: spacings.small }]}>Set the new password for your account so you can login and access all the features.</Text>
+          <Text style={[styles.text, { color: colors.blackColor }]}>Reset password</Text>
+          <Text style={[{ color: isDarkMode ? whiteColor : mediumGray, paddingVertical: spacings.small }]}>Set the new password for your account so you can login and access all the features.</Text>
           <View style={[{ width: "100%", height: hp(18), marginTop: spacings.Large1x }]}>
-            <Text style={styles.textInputHeading}>{PASSWORD}</Text>
+            <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{PASSWORD}</Text>
             <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
               <View style={{ flex: 1 }}>
                 <TextInput
@@ -520,7 +527,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
                   onChangeText={setPassword}
                   value={password}
                   secureTextEntry={!showPassword}
-                  style={{ color: blackColor }}
+                  style={{ color: colors.blackColor }}
                 />
               </View>
               <TouchableOpacity onPress={toggleShowPassword}>
@@ -528,7 +535,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
             </View>
             {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-            <Text style={styles.textInputHeading}>{CONFIRM_PASSWORD}</Text>
+            <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{CONFIRM_PASSWORD}</Text>
             <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
               <View style={{ flex: 1 }}>
                 <TextInput
@@ -542,7 +549,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
                   }}
                   value={confirmPassword}
                   secureTextEntry={!showConfirmPassword}
-                  style={{ color: blackColor }}
+                  style={{ color: colors.blackColor }}
                 />
               </View>
               <TouchableOpacity onPress={toggleShowConfirmPassword}>

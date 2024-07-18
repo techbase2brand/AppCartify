@@ -14,16 +14,20 @@ import type { ShopifyProduct } from '../../@types';
 import Toast from 'react-native-simple-toast';
 import Header from '../components/Header'
 import FilterModal from '../components/Modal/FilterModal'
-import { FILTER_ICON } from '../assests/images';
+import { FILTER_ICON, WHITE_FILTER_ICON } from '../assests/images';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { BACKGROUND_IMAGE } from '../assests/images';
 import { useSelector } from 'react-redux';
 import LoaderKit from 'react-native-loader-kit'
 import LoadingModal from '../components/Modal/LoadingModal';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignItemsCenter, resizeModeContain, textAlign, alignJustifyCenter, flex, borderRadius10, overflowHidden, borderWidth1, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const CollectionCategory = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const { addToCart, addingToCart } = useCart();
@@ -181,20 +185,20 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   }
 
   return (
-    <ImageBackground style={[styles.container]} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header backIcon={true} text={headingText} navigation={navigation} onPress={() => { logEvent('Back Button Clicked'), navigation.goBack() }} />
       <View style={{ paddingHorizontal: spacings.large }}>
         <View style={[flexDirectionRow]}>
-          <TouchableOpacity style={[styles.textinputBox, flexDirectionRow, alignItemsCenter]}
+          <TouchableOpacity style={[styles.textinputBox, flexDirectionRow, alignItemsCenter, { backgroundColor: isDarkMode ? grayColor : whiteColor }]}
             onPress={onPressSeacrchBar}
           >
-            <Ionicons name="search" size={25} color={grayColor} />
+            <Ionicons name="search" size={25} color={isDarkMode ? whiteColor : grayColor} />
             <View style={[flex]}>
-              <Text style={{ color: blackColor }}> Search</Text>
+              <Text style={{ color: isDarkMode ? whiteColor : blackColor }}> Search</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={showFilterModal} style={[alignJustifyCenter, { width: "15%", height: hp(6), marginTop: spacings.large }]}>
-            <Image source={FILTER_ICON} style={[{ width: 25, height: 23 }, resizeModeContain]} />
+            <Image source={isDarkMode ? WHITE_FILTER_ICON : FILTER_ICON} style={[{ width: 25, height: 25 }, resizeModeContain]} />
           </TouchableOpacity>
         </View>
         {route?.params?.from ?

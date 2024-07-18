@@ -13,10 +13,13 @@ import { addToWishlist, removeFromWishlist } from '../redux/actions/wishListActi
 import { logEvent } from '@amplitude/analytics-react-native';
 import { addProductToCart, removeProductFromCart } from '../redux/actions/cartActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignItemsCenter, resizeModeCover, flexDirectionRow, alignJustifyCenter, borderWidth1, textAlign, resizeModeContain, positionAbsolute } = BaseStyle;
 
 const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onPress, option, ids, width }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const imageSource = product?.images?.edges ? product?.images?.edges[0]?.node?.url : product?.images?.nodes[0]?.url;
   const price = product?.variants?.edges ? product?.variants?.edges[0]?.node?.price : product?.variants?.nodes[0];
   const priceAmount = price?.price ? price?.price : price?.amount;
@@ -100,7 +103,10 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
   };
 
   return (
-    <Pressable style={[styles.productContainer, alignJustifyCenter, { width: width ? width : wp(41) }]} onPress={onPress}>
+    <Pressable style={[styles.productContainer, alignJustifyCenter, {
+      width: width ? width : wp(41), backgroundColor: isDarkMode ? grayColor : whiteColor,
+      margin: isDarkMode ? spacings.xxsmall : 0, borderRadius: 5
+    }]} onPress={onPress}>
       <View style={{ width: "80%", marginBottom: spacings.small, borderRadius: 10 }}>
         <TouchableOpacity style={[positionAbsolute, alignJustifyCenter, styles.eyeButton]} onPress={showQuickViewModal}>
           <Ionicons
@@ -116,13 +122,13 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
       </View>
       <View style={[styles.contentBox]}>
         <View style={[{ width: "100%", height: hp(7.8) }]}>
-          <Text style={[styles.productName, { paddingRight: spacings.small }]}>{trimcateText(product?.title)}</Text>
+          <Text style={[styles.productName, { paddingRight: spacings.small, color: colors.blackColor }]}>{trimcateText(product?.title)}</Text>
           {priceAmount && (
-            <Text style={[styles.productPrice]}>
+            <Text style={[styles.productPrice, { color: colors.blackColor }]}>
               {priceAmount} {currencyCode ? currencyCode : shopCurrency}
             </Text>)}
         </View>
-        <View style={[{ width: "100%", paddingVertical: spacings.small, justifyContent: "space-between" }, flexDirectionRow, alignItemsCenter]}>
+        <View style={[{ width: "99.5%", paddingVertical: spacings.small, justifyContent: "space-between" }, flexDirectionRow, alignItemsCenter]}>
           {loading ? (
             <View style={styles.addToCartButton}>
               <ActivityIndicator size="small" color={redColor} />
@@ -147,7 +153,7 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
             )
           ))}
           {outOfStock && (
-            <View style={[styles.addToCartButton, { width: wp(22) }]}>
+            <View style={[styles.addToCartButton, { width: isDarkMode ? wp(21) : wp(22) }]}>
               <Text style={styles.addToCartButtonText}>{OUT_OF_STOCK}</Text>
             </View>
           )}
@@ -165,64 +171,10 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
           product={product}
           options={option}
           ids={ids}
+          shopCurrency={shopCurrency}
         />
       </View>
-      {/* <View style={[styles.contentBox]}>
-        <View style={[{ width: "100%", height: hp(12) }, alignJustifyCenter]}>
-          <Text style={[styles.productName, textAlign, { paddingHorizontal: spacings.large }]}>{product?.title}</Text>
-          <View style={[flexDirectionRow, alignJustifyCenter, { width: wp(70) }]}>
-            <Ionicons name="star" size={12} color={lightGrayColor} />
-            <Ionicons name="star" size={12} color={lightGrayColor} />
-            <Ionicons name="star" size={12} color={lightGrayColor} />
-            <Ionicons name="star" size={12} color={lightGrayColor} />
-            <Ionicons name="star" size={12} color={lightGrayColor} />
-          </View>
-          {priceAmount && currencyCode && (
-            <Text style={[styles.productPrice, textAlign]}>
-              {currencyCode} {priceAmount}
-            </Text>)}
-          {!outOfStock &&
-            <Text style={[styles.text, textAlign]}>&bull; {INSTOCK}</Text>
-          }
-        </View>
-        <View style={[{ width: "100%", paddingVertical: spacings.small }, alignJustifyCenter]}>
-          <View style={[styles.quantityContainer, borderWidth1, { marginVertical: spacings.large }]}>
-            <TouchableOpacity onPress={decrementQuantity}>
-              <Text style={styles.quantityButton}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.quantity}>{quantity}</Text>
-            <TouchableOpacity onPress={incrementQuantity}>
-              <Text style={styles.quantityButton}>+</Text>
-            </TouchableOpacity>
-          </View>
-          {!outOfStock ? (
-            loading ? (
-              <View style={styles.addToCartLoading}>
-                <ActivityIndicator size="small" />
-              </View>
-            ) : (
-              <Pressable
-                style={styles.addToCartButton}
-                onPress={() => onAddToCart((product?.variants?.edges) ? (product?.variants.edges[0]?.node.id) : product.variants.nodes[0].id, quantity)}>
-                <Text style={styles.addToCartButtonText}>{ADD_TO_CART}</Text>
-              </Pressable>
-            )
-          )
-            : (
-              <View style={styles.addToCartButton}>
-                <Text style={styles.addToCartButtonText}>{OUT_OF_STOCK}</Text>
-              </View>
-            )
-          }
-        </View>
-        <QuickViewModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          product={product}
-          options={option}
-          ids={ids}
-        />
-      </View> */}
+
     </Pressable>
   );
 };
@@ -245,7 +197,8 @@ const styles = StyleSheet.create({
     // fontWeight: style.fontWeightMedium1x.fontWeight,
     // color: blackColor,
     // fontFamily: 'GeneralSans-Variable'
-    color: blackColor, fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
+    // color: blackColor,
+    fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
   },
   text: {
     color: "#006400",
@@ -256,12 +209,12 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeSmall1x.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
     // fontWeight: style.fontWeightMedium1x.fontWeight,
-    color: blackColor,
+    // color: blackColor,
     fontFamily: 'GeneralSans-Variable'
   },
   contentBox: {
-    width: "98.5%",
-    paddingLeft: spacings.medium,
+    width: "100%",
+    paddingHorizontal: spacings.small,
     // height: hp(12),
   },
   quantityContainer: {

@@ -1,4 +1,4 @@
-import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST } from '../actions/types';
+import { ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST, CLEAR_WISHLIST } from '../actions/types';
 
 const initialState = {
   wishlist: [],
@@ -16,7 +16,11 @@ const wishlistReducer = (state = initialState, action) => {
         ...state,
         wishlist: state.wishlist.filter(id => id !== action.payload.productId),
       };
-
+    case CLEAR_WISHLIST: // New case for clearing the wishlist
+      return {
+        ...state,
+        wishlist: [],
+      };
     default:
       return state;
   }

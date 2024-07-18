@@ -9,9 +9,12 @@ import { useCart } from '../../context/Cart';
 import Toast from 'react-native-simple-toast';
 import Carousal from '../Carousal';
 import { logEvent } from '@amplitude/analytics-react-native';
-
+import { useThemes } from '../../context/ThemeContext';
+import { lightColors, darkColors } from '../../constants/Color';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, positionAbsolute, positionRelative, flexDirectionRow, resizeModeContain, borderRadius5, resizeModeCover } = BaseStyle;
-const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, options, ids }) => {
+const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, options, ids, shopCurrency }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const { addToCart, addingToCart } = useCart();
   const imageSource = product?.images?.edges ? product?.images?.edges[0]?.node?.url : product?.images?.nodes[0]?.url;
   const price = product?.variants?.edges ? product?.variants?.edges[0]?.node?.price : product?.variants?.nodes[0];
@@ -21,6 +24,8 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
   const [showButtons, setShowButtons] = useState(false);
   const variantImages = ids?.map(variant => variant?.image?.originalSrc)
   const [expanded, setExpanded] = useState(false);
+  const currency = shopCurrency
+
 
   const handleSelectOption = (optionName, value) => {
     logEvent(`Selected Product Variant Name:${optionName} Value:${value}`);
@@ -75,7 +80,7 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
       }}
     >
       <Pressable onPress={() => { logEvent(`QuickViewModal closed`), setModalVisible(!modalVisible) }} style={[styles.modalOverlay, flex]}>
-        <View style={[styles.modalView, positionRelative, alignJustifyCenter]}>
+        <View style={[styles.modalView, positionRelative, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
           {/* <TouchableOpacity onPress={() => { logEvent(`QuickViewModal closed`), setModalVisible(!modalVisible) }} style={[styles.closeButton, positionAbsolute]}>
             <Ionicons name="close" size={35} color={blackColor} />
           </TouchableOpacity>     */}
@@ -96,7 +101,7 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
             <Text style={styles.modalText}>{trimcateText(product?.title)}</Text>
 
             {product.description && <Pressable onPress={toggleExpanded} style={{ marginVertical: spacings.large }}>
-              <Text style={[styles.modalDescription]} numberOfLines={expanded ? null : 2}
+              <Text style={[styles.modalDescription, { color: colors.mediumGray, }]} numberOfLines={expanded ? null : 2}
                 ellipsizeMode="tail">{product.description}</Text>
             </Pressable>}
           </View>
@@ -124,7 +129,7 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
                 }
 
                 return (
-                  <View key={index} style={[styles.optionContainer,{paddingHorizontal:spacings.xxLarge,width:wp(100)}]}>
+                  <View key={index} style={[styles.optionContainer, { paddingHorizontal: spacings.xxLarge, width: wp(100) }]}>
                     <Text style={{ paddingVertical: spacings.small, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>{option.name}</Text>
                     <View style={[flexDirectionRow, { marginTop: spacings.large }]}>
                       <ScrollView horizontal>
@@ -157,7 +162,7 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
           <View style={{ width: "100%" }}>
             <Text style={{ paddingVertical: spacings.small, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>{"PRICE"}:</Text>
             {priceAmount && (
-              <Text style={styles.modalPrice}>{priceAmount} {currencyCode}</Text>
+              <Text style={[styles.modalPrice, { color: colors.blackColor }]}>{priceAmount} {currencyCode ? currencyCode : currency}</Text>
             )}
           </View>
           {/* <View style={{ height: hp(5), marginTop: spacings.xxxxLarge }}>
@@ -241,7 +246,6 @@ const styles = StyleSheet.create({
   modalView: {
     width: wp(100),
     maxHeight: 'auto',
-
     backgroundColor: whiteColor,
     paddingHorizontal: spacings.xxLarge,
     paddingBottom: spacings.xxLarge,
@@ -261,7 +265,7 @@ const styles = StyleSheet.create({
   },
   modalDescription: {
     fontSize: 12,
-    color: mediumGray,
+
     marginTop: spacings.small,
   },
   modalPrice: {

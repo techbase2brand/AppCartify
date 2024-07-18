@@ -354,7 +354,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
     handleInitialLink();
     const unsubscribe = dynamicLinks().onLink(handleDynamicLinks);
     return () => {
-      console.log("Unsubscribing from dynamic links");
+      // console.log("Unsubscribing from dynamic links");
       unsubscribe();
     };
   }, []);
@@ -455,7 +455,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    console.log("handleMenuPress::::item", item);
+    // console.log("handleMenuPress::::item", item);
     dispatch(selectMenuItem(item));
   };
 
@@ -493,26 +493,26 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
         item?.title?.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        console.log(`Items for ${item?.title}:`);
-        console.log(item?.items);
+        // console.log(`Items for ${item?.title}:`);
+        // console.log(item?.items);
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          console.log("selectedItem title", selectedItem?.title);
-          console.log("Collection", collectionData?.collections?.edges);
+          // console.log("selectedItem title", selectedItem?.title);
+          // console.log("Collection", collectionData?.collections?.edges);
 
           if (collectionData && collectionData?.collections && collectionData?.collections?.edges) {
             let matchedCollection = collectionData?.collections?.edges?.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            console.log("matchedCollection::::", matchedCollection);
+            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
         });
 
-        console.log("matchedmenu:::::", matchedCollectionsArray);
+        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -524,11 +524,11 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const handleDynamicLinks = async (link) => {
     try {
       if (link && link.url) {
-        console.log('Foreground link handling:', link);
+        // console.log('Foreground link handling:', link);
         let productId = link?.url?.split('=').pop();
-        console.log('productId:', productId);
+        // console.log('productId:', productId);
         const productData = await fetchProductDetails(productId);
-        console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
+        // console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
         navigation.navigate('ProductDetails', {
           product: productData?.product,
           variant: productData?.variants,
@@ -538,7 +538,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
           ids: productData?.ids
         });
       } else {
-        console.log('No link or URL found');
+        // console.log('No link or URL found');
       }
     } catch (error) {
       console.error('Error handling dynamic link:', error);
@@ -549,7 +549,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const fetchProductDetails = async (productId) => {
     const parts = productId.split('/');
     const lastValue = parts[parts.length - 1];
-    console.log(lastValue);
+    // console.log(lastValue);
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/products/${lastValue}.json`, {
         headers: {
@@ -602,7 +602,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
-    console.log(id)
+    // console.log(id)
     logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
@@ -935,7 +935,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
             <FlatList
               data={drinksGIF}
               renderItem={({ item }) => (
-                <Pressable style={[styles.drinkBannerBox, borderRadius10, positionRelative, alignJustifyCenter, { overflow: "hidden" }]} onPress={() => console.log('clicked')}>
+                <Pressable style={[styles.drinkBannerBox, borderRadius10, positionRelative, alignJustifyCenter, { overflow: "hidden" }]} >
                   <FastImage
                     source={{ uri: item.gif }}
                     style={[

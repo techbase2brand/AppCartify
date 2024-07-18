@@ -7,20 +7,26 @@ import type { CartItem, CartLineItem } from '../../@types';
 import { Colors, useTheme } from '../context/Theme';
 import { useCart } from '../context/Cart';
 import Toast from 'react-native-simple-toast';
-import { blackColor, redColor, whiteColor, lightShadeBlue, mediumGray } from '../constants/Color'
+import { blackColor, redColor, whiteColor, lightShadeBlue, mediumGray, grayColor } from '../constants/Color'
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
-import { SUBTOTAL, YOUR_CART_IS_EMPTY, AN_ERROR_OCCURED, LOADING_CART, TOTAL, TAXES, QUNATITY, CHECKOUT } from '../constants/Constants';
+import { SUBTOTAL, YOUR_CART_IS_EMPTY, AN_ERROR_OCCURED, LOADING_CART, TOTAL, TAXES, QUNATITY, CHECKOUT, STOREFRONT_DOMAIN } from '../constants/Constants';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeProductFromCart, removeProductInCart } from '../redux/actions/cartActions';
 import { BACKGROUND_IMAGE } from '../assests/images'
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
-import Header from '../components/Header'
+import Header from '../components/Header';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
+
+import axios from 'axios';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, borderWidth1, borderRadius5, textAlign, alignItemsFlexEnd } = BaseStyle;
 
 function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
+  const { isDarkMode } = useThemes();
+  const themecolors = isDarkMode ? darkColors : lightColors;
   const ShopifyCheckout = useShopifyCheckoutSheet();
   const [refreshing, setRefreshing] = React.useState(false);
   const { cartId, checkoutURL, totalQuantity, removeFromCart, addingToCart, addToCart, removeOneFromCart } = useCart();
@@ -38,9 +44,9 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
           cartId,
         },
       });
-      console.log("inside if Cart ID:", cartId);
+      // console.log("inside if Cart ID:", cartId);
     }
-    console.log("Cart ID:", cartId);
+    // console.log("Cart ID:", cartId);
   }, [fetchCart, cartId]);
 
   useEffect(() => {
@@ -93,11 +99,11 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   if (error) {
     console.error("Error fetching cart:", error);
     return (
-      <ImageBackground source={BACKGROUND_IMAGE} style={[styles.loading, alignJustifyCenter, flex]}>
-        <Text style={styles.loadingText}>
+      <ImageBackground source={isDarkMode ? BACKGROUND_IMAGE : ""} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
+        <Text style={[styles.loadingText, { color: themecolors.blackColor }]}>
           {AN_ERROR_OCCURED}
         </Text>
-        <Text style={styles.loadingText}>
+        <Text style={[styles.loadingText, { color: themecolors.blackColor }]}>
           {error?.name} {error?.message}
         </Text>
       </ImageBackground>
@@ -106,7 +112,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
   if (loading) {
     return (
-      <ImageBackground source={BACKGROUND_IMAGE} style={[styles.loading, alignJustifyCenter, flex]}>
+      <ImageBackground source={isDarkMode ? BACKGROUND_IMAGE : ""} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
         <Header
           backIcon={true}
           navigation={navigation}
@@ -121,14 +127,14 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
   if (!data || !data.cart || data?.cart?.lines?.edges?.length === 0 || !cartId) {
     return (
-      <ImageBackground source={BACKGROUND_IMAGE} style={[styles.loading, alignJustifyCenter, flex]}>
+      <ImageBackground source={isDarkMode ? BACKGROUND_IMAGE : ""} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
         <Header
           backIcon={true}
           navigation={navigation}
           text={"Cart"} />
         <View style={[flex, alignJustifyCenter]}>
-          <Icon name="shopping-bag" size={60} color={lightShadeBlue} />
-          <Text style={styles.loadingText}>{YOUR_CART_IS_EMPTY}</Text>
+          <Icon name="shopping-bag" size={60} color={themecolors.lightShadeBlue} />
+          <Text style={[styles.loadingText, { color: themecolors.blackColor }]}>{YOUR_CART_IS_EMPTY}</Text>
           <TouchableOpacity style={[styles.addToCartButton, borderRadius10]} onPress={onPressContinueShopping}>
             <Text style={[styles.costBlockTextStrong, textAlign, { color: whiteColor }]}>
               Go to Shopping
@@ -146,20 +152,44 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     Toast.show('Item removed from cart')
     logEvent(`Item removed from cart variantId:${variantId} `);
   };
-  const handleadddToCart = async (id: string, quantity: number) => {
+  // const handleadddToCart = async (id: string, quantity: number) => {
 
-    await addToCart(id, quantity);
-    Toast.show('Item added to cart')
-  };
+  //   await addToCart(id, quantity);
+  //   Toast.show('Item added to cart')
+  // };
 
-  const handleRemoveOneFromCart = async (variantId: string, quantity: number) => {
-    console.log(variantId,quantity)
-    await removeOneFromCart(variantId,quantity);
-    dispatch(removeProductFromCart(variantId, quantity));
-    // dispatch(removeProductInCart(variantId));
-    Toast.show('Item removed from cart')
+  // const handleRemoveOneFromCart = async (variantId: string, quantity: number) => {
+  //   console.log(variantId)
+  //   // const locale = 'en';
+  //   console.log(variantId, quantity)
+  //   await removeOneFromCart(variantId, quantity);
+  //   dispatch(removeProductFromCart(variantId, quantity));
+  //   // dispatch(removeProductInCart(variantId));
+  //   Toast.show('Item removed from cart')
+  //   // const url = `https://${STOREFRONT_DOMAIN}/${locale}/cart/change.js`;
 
-  };
+  //   // const payload = {
+  //   //   id: variantId,
+  //   //   quantity: quantity
+  //   // };
+
+  //   // try {
+  //   //   const response = await axios.post(url, payload, {
+  //   //     headers: {
+  //   //       'Content-Type': 'application/json'
+  //   //     }
+  //   //   });
+
+  //   //   // Handle the response
+  //   //   // console.log('Cart updated successfully:', response.data);
+  //   //   return response.data;
+  //   // } catch (error) {
+  //   //   // Handle the error
+  //   //   console.error('Error updating cart:', error);
+  //   //   throw error;
+  //   // }
+
+  // };
 
   const getTotalAmount = () => {
     let totalAmount = 0;
@@ -187,7 +217,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const taxAmount = data?.cart?.cost?.totalTaxAmount ? parseFloat(price(data?.cart?.cost?.totalTaxAmount)) : 0;
   const sum = addValues(totalAmount, taxAmount);
   return (
-    <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+    <ImageBackground source={isDarkMode ? BACKGROUND_IMAGE : ""} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
       <SafeAreaView>
         <Header
           backIcon={true}
@@ -208,8 +238,8 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                   quantity={node?.quantity}
                   loading={addingToCart?.has(node?.id)}
                   onRemove={(variantId) => handleRemoveToCart(variantId)}
-                  onAddCartItem={(variantId, qty) => handleadddToCart(variantId, qty)}
-                  onHandleRemoveOneFromCart={(variantId, qty) => handleRemoveOneFromCart(variantId, qty)}
+                // onAddCartItem={(variantId, qty) => handleadddToCart(variantId, qty)}
+                // onHandleRemoveOneFromCart={(variantId, qty) => handleRemoveOneFromCart(variantId, qty)}
                 />
               ))}
               {/*
@@ -229,7 +259,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
             <View style={styles.costContainer}>
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow]}>
                 <Text style={styles.costBlockText}>{SUBTOTAL}</Text>
-                <Text style={[styles.costBlockText, { color: blackColor }]}>
+                <Text style={[styles.costBlockText, { color: themecolors.blackColor }]}>
                   {/* {price(data.cart.cost.subtotalAmount)} */}
                   {getTotalAmount().totalAmount} {getTotalAmount().currencyCode}
                 </Text>
@@ -237,14 +267,14 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow]}>
                 <Text style={styles.costBlockText}>{TAXES}</Text>
-                <Text style={[styles.costBlockText, { color: blackColor }]}>
+                <Text style={[styles.costBlockText, { color: themecolors.blackColor }]}>
                   {price(data?.cart?.cost?.totalTaxAmount)}
                 </Text>
               </View>
 
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacings.large }]}>
-                <Text style={styles.costBlockTextStrong}>{TOTAL}</Text>
-                <Text style={styles.costBlockTextStrong}>
+                <Text style={[styles.costBlockTextStrong, { color: themecolors.blackColor }]}>{TOTAL}</Text>
+                <Text style={[styles.costBlockTextStrong, { color: themecolors.blackColor }]}>
                   {/* {price(data.cart.cost.totalAmount)} */}
                   {sum.toFixed(2)} {getTotalAmount().currencyCode}
                 </Text>
@@ -254,7 +284,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                 marginVertical: spacings.Large2x,
                 fontWeight: style.fontWeightThin1x.fontWeight,
                 lineHeight: 20,
-                color: blackColor,
+                color: themecolors.blackColor,
               }}>Note : Shipping will be calculated at checkout.</Text>
 
             </View>
@@ -292,45 +322,48 @@ function CartItem({
   quantity,
   onRemove,
   loading,
-  onAddCartItem,
-  onHandleRemoveOneFromCart
+  // onAddCartItem,
+  // onHandleRemoveOneFromCart
 }: {
   item: CartLineItem;
   quantity: number;
   loading?: boolean;
   onRemove: (variantId: string, quantityToRemove: number) => void;
-  onAddCartItem: (variantId: string, qty: number) => void;
-  onHandleRemoveOneFromCart: (variantId: string, quantityToRemove: number) => void;
+  // onAddCartItem: (variantId: string, qty: number) => void;
+  // onHandleRemoveOneFromCart: (variantId: string, quantityToRemove: number) => void;
 }) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
+  const { isDarkMode } = useThemes();
+  const themecolors = isDarkMode ? darkColors : lightColors;
   const [productquantity, setProductQuantity] = useState(quantity);
   const handleRemoveItem = () => {
     onRemove(item.id);
   };
-  const incrementQuantity = () => {
-    logEvent('Increase Product Quantity');
-    setProductQuantity(productquantity + 1);
-    onAddCartItem(item.merchandise.id, 1);
-  };
+  // const incrementQuantity = () => {
+  //   logEvent('Increase Product Quantity');
+  //   setProductQuantity(productquantity + 1);
+  //   onAddCartItem(item.merchandise.id, 1);
+  // };
 
-  const decrementQuantity = () => {
-    logEvent('Decrease Product Quantity');
-    if (productquantity > 1) {
-      setProductQuantity(productquantity - 1);
-      onHandleRemoveOneFromCart(item.merchandise.id, productquantity - 1);
-    } else {
-      handleRemoveItem();
-    }
-  };
-  // console.log(item)
+  // const decrementQuantity = () => {
+  //   logEvent('Decrease Product Quantity');
+  //   if (productquantity > 1) {
+  //     setProductQuantity(productquantity - 1);
+  //     const variantId = `${item.merchandise.id}`;
+  //     console.log('Attempting to remove from cartin decrementQuantity:', variantId);
+  //     onHandleRemoveOneFromCart(variantId, productquantity - 1);
+  //   } else {
+  //     handleRemoveItem();
+  //   }
+  // };
   return (
     <View
       key={item?.id}
       style={{
         ...styles.productItem,
         ...(loading ? styles.productItemLoading : {}),
-        borderWidth: 1, borderColor: mediumGray,
+        borderWidth: 1, borderColor: themecolors.mediumGray, backgroundColor: isDarkMode ? grayColor : whiteColor
       }}>
       <Image
         resizeMethod="resize"
@@ -340,10 +373,10 @@ function CartItem({
       />
       <View style={[styles.productText, flex, alignJustifyCenter, flexDirectionRow]}>
         <View style={[flex]}>
-          <Text style={styles.productTitle}>
+          <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>
             {item?.merchandise?.product?.title}
           </Text>
-          <Text style={[styles.productPrice]}>
+          <Text style={[styles.productPrice, { color: themecolors.blackColor }]}>
             {/* {price(item.cost?.totalAmount)} */}
             {price(item?.merchandise?.price)}
             {/* {itemPrice} */}
@@ -363,19 +396,19 @@ function CartItem({
               />
             )}
           </Pressable>
-          <Text style={styles.productDescription}>{QUNATITY}: {quantity}</Text>
-          <View style={[styles.quantityContainer, borderWidth1]}>
+          <Text style={[styles.productDescription, { color: themecolors.blackColor }]}>{QUNATITY}: {quantity}</Text>
+          {/* <View style={[styles.quantityContainer, borderWidth1, { backgroundColor: isDarkMode ? blackColor : whiteColor, borderColor: themecolors.blackColor }]}>
             <TouchableOpacity onPress={decrementQuantity}>
-              <Text style={styles.quantityButton}>-</Text>
+              <Text style={[styles.quantityButton, { color: themecolors.blackColor }]}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.quantity}>{productquantity}</Text>
+            <Text style={[styles.quantity, { color: themecolors.blackColor }]}>{productquantity}</Text>
             <TouchableOpacity onPress={incrementQuantity}>
-              <Text style={styles.quantityButton}>+</Text>
+              <Text style={[styles.quantityButton, { color: themecolors.blackColor }]}>+</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
-    </View>
+    </View >
   );
 }
 
@@ -495,12 +528,12 @@ function createStyles(colors: Colors) {
     quantityContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      width: wp(20),
+      width: wp(22),
       backgroundColor: whiteColor,
       paddingHorizontal: 9,
       paddingVertical: 2,
       justifyContent: "center",
-      borderRadius: 10,
+      borderRadius: 5,
       borderColor: redColor,
     },
     quantityButton: {

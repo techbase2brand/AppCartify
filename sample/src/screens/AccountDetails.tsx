@@ -10,10 +10,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { logEvent } from '@amplitude/analytics-react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ADMINAPI_ACCESS_TOKEN, STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN, API_KEY, API_SECRET_PASSWORD ,getStoreDomain,getAdminAccessToken} from '../constants/Constants';
+import { ADMINAPI_ACCESS_TOKEN, STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN, API_KEY, API_SECRET_PASSWORD, getStoreDomain, getAdminAccessToken } from '../constants/Constants';
 import { PROFILE_IMAGE, BACKGROUND_IMAGE } from '../assests/images';
-import Header from '../components/Header'
+import Header from '../components/Header';
 import { useSelector } from 'react-redux';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 
 const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
 
@@ -27,6 +29,9 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [customerId, setCustomerId] = useState(null);
   const today = new Date();
+
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
@@ -44,7 +49,7 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
         const userDetailsObject = JSON.parse(userDetails);
 
         const userId = userDetailsObject.customer ? userDetailsObject.customer.id : userDetailsObject.id;
-        console.log("userDetailsObject", userId)
+        // console.log("userDetailsObject", userId)
         setCustomerId(userId)
       }
     };
@@ -61,7 +66,7 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
             'Content-Type': 'application/json',
           },
         });
-        console.log('Response data:', response.data);
+        // console.log('Response data:', response.data);
         const customer = response.data.customer;
         setFullName(`${customer.first_name} ${customer.last_name}`);
         setEmail(customer.email);
@@ -73,9 +78,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
           setGender(customer.gender);
         }
 
-        // if (customer.phone) {
-        //   setPhoneNumber(customer.phone);
-        // }
         if (customer.phone) {
           // Remove the '+91' country code
           const phoneWithoutCountryCode = customer.phone.replace(/^\+91\s*/, '');
@@ -129,7 +131,8 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
 
   //onUpdate Profile
   const handleSubmit = async (id) => {
-    console.log("customerId", id);
+    // console.log("customerId", id);
+
     try {
       const [firstName, lastName] = fullName.split(' ');
       const data = {
@@ -162,14 +165,14 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
         await AsyncStorage.setItem(metafieldStatusKey, 'true');
       }
 
-      console.log(data);
+      // console.log(data);
       const response = await axios.put(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/customers/${id}.json`, data, {
         headers: {
           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
           'Content-Type': 'application/json',
         },
       });
-      console.log('Customer updated successfully:', response.data);
+      // console.log('Customer updated successfully:', response.data);
       navigation.goBack();
     } catch (error) {
       console.error('Error updating customer profile:', error);
@@ -177,37 +180,31 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <ImageBackground style={[styles.container, flex]} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
         backIcon={true}
         text={"AccountDetails"}
         navigation={navigation} />
-      {/* <View style={[{ width: "100%", height: hp(7) }, flexDirectionRow, alignItemsCenter]}>
-        <TouchableOpacity style={[styles.backIcon, alignItemsCenter]} onPress={() => { logEvent(`Back Button Pressed from Account Details`), navigation.goBack() }}>
-          <Ionicons name={"arrow-back"} size={33} color={blackColor} />
-        </TouchableOpacity>
-        <Text style={styles.text}>{"AccountDetails"}</Text>S
-      </View> */}
       <View style={{ width: "100%", padding: spacings.large, height: hp(87.5) }}>
-        <Text style={[styles.textInputHeading]}>{"Full Name"}</Text>
-        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+        <Text style={[styles.textInputHeading, { color: colors.blackColor, }]}>{"Full Name"}</Text>
+        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
           <View style={{ flex: 1 }}>
             <TextInput
               placeholder={"Full Name"}
-              placeholderTextColor={grayColor}
+              placeholderTextColor={colors.grayColor}
               onChangeText={(text) => {
                 setFullName(text);
               }}
               value={fullName}
-              style={{ color: blackColor }}
+              style={{ color: colors.blackColor }}
             />
           </View>
         </View>
-        <Text style={styles.textInputHeading}>Email Address</Text>
-        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+        <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>Email Address</Text>
+        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
           <View style={{ flex: 1 }}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: colors.blackColor }]}
               value={email}
               onChangeText={setEmail}
               placeholder="Email Address"
@@ -217,10 +214,10 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
           </View>
         </View>
 
-        <Text style={styles.textInputHeading}>Date of Birth</Text>
+        <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>Date of Birth</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.dateInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween]}>
-          <Text style={{ color: blackColor }}>{dateOfBirth.toLocaleDateString()}</Text>
-          <Ionicons name="calendar" size={20} />
+          <Text style={{ color: colors.blackColor }}>{dateOfBirth.toLocaleDateString()}</Text>
+          <Ionicons name="calendar" size={20} color={colors.blackColor} />
         </TouchableOpacity>
         {showDatePicker && (
           <DateTimePicker
@@ -231,12 +228,12 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
             maximumDate={today}
           />
         )}
-        <Text style={styles.textInputHeading}>Gender</Text>
+        <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>Gender</Text>
         <View style={[styles.pickerContainer, borderRadius5, borderWidth1]}>
           <Picker
             selectedValue={gender}
             onValueChange={(itemValue) => setGender(itemValue)}
-            style={styles.picker}
+            style={[styles.picker, { color: colors.blackColor }]}
           >
             <Picker.Item label="Select Gender" value="" />
             <Picker.Item label="Male" value="male" />
@@ -244,16 +241,17 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
             <Picker.Item label="Other" value="other" />
           </Picker>
         </View>
-        <Text style={styles.textInputHeading}>Phone Number</Text>
-        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+        <Text style={[styles.textInputHeading, { color: colors.blackColor, }]}>Phone Number</Text>
+        <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
           <View style={{ flex: 1 }}>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: colors.blackColor }]}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
               placeholder="Phone Number"
               keyboardType="number-pad"
               maxLength={10}
+              placeholderTextColor={colors.grayColor}
             />
           </View>
         </View>

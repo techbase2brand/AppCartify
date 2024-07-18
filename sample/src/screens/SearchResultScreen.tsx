@@ -18,11 +18,14 @@ import { BACKGROUND_IMAGE } from '../assests/images';
 import { useSelector } from 'react-redux';
 import LoaderKit from 'react-native-loader-kit'
 import LoadingModal from '../components/Modal/LoadingModal';
-
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignJustifyCenter, flexDirectionRow, flex, borderRadius10, overflowHidden, textAlign, borderWidth1, resizeModeContain } = BaseStyle;
 
 const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const route = useRoute();
@@ -230,7 +233,8 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   }
 
   return (
-    <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+    // <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header backIcon={true} text={route?.params?.title} navigation={navigation} />
       <View style={[styles.container, flex]}>
         {(title === BEST_DEALS_OF_THE_WEEK || title === POPULAR_LIQUOR) &&
@@ -289,6 +293,8 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
 };
 
 const ProductItem = ({ item, addToCartProduct, BestDealInventoryQuantities, BestDealsids, onPress }) => {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const outOfStock = BestDealsids && BestDealsids[0].inventoryQty;
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -312,16 +318,16 @@ const ProductItem = ({ item, addToCartProduct, BestDealInventoryQuantities, Best
 
 
   return (
-    <Pressable style={[styles.itemContainer, alignJustifyCenter, borderRadius10, overflowHidden]} onPress={onPress}>
+    <Pressable style={[styles.itemContainer, alignJustifyCenter, borderRadius10, overflowHidden, { backgroundColor: isDarkMode ? colors.grayColor : whiteColor }]} onPress={onPress}>
       <Image source={{ uri: imageSrc }} style={[styles.image, resizeModeContain]} />
-      <Text style={[styles.categoryName, textAlign, { fontWeight: style.fontWeightThin1x.fontWeight }]}>{productTitle}</Text>
-      <View style={[styles.quantityContainer, borderWidth1, flexDirectionRow, alignJustifyCenter]}>
+      <Text style={[styles.categoryName, textAlign, { fontWeight: style.fontWeightThin1x.fontWeight, color: colors.blackColor }]}>{productTitle}</Text>
+      <View style={[styles.quantityContainer, borderWidth1, flexDirectionRow, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
         <TouchableOpacity onPress={decrementQuantity}>
-          <Text style={styles.quantityButton}>-</Text>
+          <Text style={[styles.quantityButton, { color: colors.blackColor }]}>-</Text>
         </TouchableOpacity>
-        <Text style={styles.quantity}>{quantity}</Text>
+        <Text style={[styles.quantity, { color: colors.blackColor }]}>{quantity}</Text>
         <TouchableOpacity onPress={incrementQuantity}>
-          <Text style={styles.quantityButton}>+</Text>
+          <Text style={[styles.quantityButton, { color: colors.blackColor }]}>+</Text>
         </TouchableOpacity>
       </View>
       {outOfStock ? (
@@ -353,7 +359,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     margin: spacings.small,
     width: "48%",
-    backgroundColor: whiteColor,
+    // backgroundColor: whiteColor,
     padding: spacings.large,
     borderColor: 'transparent',
     borderWidth: .1,

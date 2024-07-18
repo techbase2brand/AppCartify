@@ -18,18 +18,42 @@ export const blackOpacity7='rgba(0,0,0,0.7)';
 
 
 
-// export const darkThemeBackground = "#121212";
-// export const darkThemeText = "#ffffff";
-// export const darkThemeButtonBackground = "#333333";
-// export const darkThemeButtonText = "#ffffff";
-// export const darkThemePrimary = "#1e88e5";
-// export const darkThemeSecondary = "#ffb300";
-// export const darkThemeError = "#cf6679";
-// export const darkThemeOverlay = 'rgba(0,0,0,0.7)';
-// export const darkThemeGray = "#808080";
-// export const darkThemeLightGray = "#404040";
-// export const darkThemeDarkGray = "#252837";
-// export const darkThemeBrightTurquoise = "#00bfa5";
-// export const darkThemeLightShadeBlue = "#3c4a6b";
-// export const darkThemeMediumGray = "#626262";
-// export const darkThemeLightPink = "#ffc1c1";
+export const lightColors = {
+  darkgrayColor: "#252837",
+  whiteColor: "#fff",
+  blackColor: "#252837",
+  grayColor: "#646E77",
+  redColor: "#c82031",
+  goldColor: "#FFA928",
+  lightGrayColor: "#D1D4D6",
+  lightBlueColor: "#42A5F5",
+  lightGreenColor: "#42f5a4",
+  lightGrayOpacityColor: "#e8e8e0",
+  brightTurquoiseColor: "#34ebc0",
+  blackOpacity5: 'rgba(0,0,0,0.5)',
+  lightShadeBlue: "#bbc1d6",
+  verylightGrayColor: "#E6E6E6",
+  mediumGray: "#808080",
+  lightPink: "#FFEBEB",
+  blackOpacity7: 'rgba(0,0,0,0.7)'
+};
+
+export const darkColors = {
+  darkgrayColor: "#1B1D26",
+  whiteColor: "#1B1D26",
+  blackColor: "#fff",
+  grayColor: "#474A54",
+  redColor: "#c82031",
+  goldColor: "#FFA928",
+  lightGrayColor: "#30333D",
+  lightBlueColor: "#376995",
+  lightGreenColor: "#376F6B",
+  lightGrayOpacityColor: "#2C2F38",
+  brightTurquoiseColor: "#2CA78C",
+  blackOpacity5: 'rgba(255,255,255,0.5)',
+  lightShadeBlue: "#2B313E",
+  verylightGrayColor: "#3A3C44",
+  mediumGray: "#505360",
+  lightPink: "#A96B6B",
+  blackOpacity7: 'rgba(255,255,255,0.7)'
+};

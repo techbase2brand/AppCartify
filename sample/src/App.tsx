@@ -24,7 +24,6 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreenFood from './screens/HomeScreenFood';
 import CollectionCategory from './screens/CollectionCategory';
-import AllCollectionScreen from './screens/AllCollectionScreen';
 import SearchResultScreen from './screens/SearchResultScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import UserDashboardScreen from './screens/UserDashboardScreen';
@@ -35,9 +34,6 @@ import { store, persistor } from '../src/redux/store';
 import messaging from '@react-native-firebase/messaging';
 import { useSelector } from 'react-redux';
 import { init, logEvent } from '@amplitude/analytics-react-native';
-import ContactUsScreen from './screens/ContactUsScreen';
-import AllReviewScreen from './screens/AllReviewScreen';
-import AboutUsScreen from './screens/AboutUsScreen';
 import Feather from 'react-native-vector-icons/dist/Feather';
 import AccountDetails from './screens/AccountDetails';
 import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
@@ -48,8 +44,9 @@ import WebviewScreen from './screens/WebviewScreen';
 import HomeScreenElectronic from './screens/HomeScreenElectronic';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HomeScreenAutomotive from './screens/HomeScreenAutomotive';
-
+import { ThemeProviders } from './context/ThemeContext';
+import { useThemes } from '../src/context/ThemeContext';
+import { lightColors, darkColors } from '../src/constants/Color';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -96,16 +93,16 @@ function AppWithContext({ children }: PropsWithChildren) {
   const storeFrontAccessToken = STOREFRONT_ACCESS_TOKEN
   useEffect(() => {
     const close = shopify.addEventListener('close', () => {
-      console.log('[CheckoutClose]');
+      // console.log('[CheckoutClose]');
     });
 
     const pixel = shopify.addEventListener('pixel', event => {
-      console.log('[CheckoutPixelEvent]', event.name, event);
+      // console.log('[CheckoutPixelEvent]', event.name, event);
     });
 
     const completed = shopify.addEventListener('completed', event => {
-      console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
-      console.log('[CheckoutCompletedEvent]', event);
+      // console.log('[CheckoutCompletedEvent]', event.orderDetails.id);
+      // console.log('[CheckoutCompletedEvent]', event);
     });
 
     const error = shopify.addEventListener(
@@ -159,7 +156,7 @@ function AuthStack() {
 }
 function HomeStack() {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
-  console.log(selectedItem)
+  // console.log(selectedItem)
   return (
     <Stack.Navigator
       screenOptions={{
@@ -169,20 +166,12 @@ function HomeStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Automotive" ? HomeScreenAutomotive : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Collections"
         component={CollectionCategory}
-        options={() => ({
-          headerShown: false,
-          headerBackVisible: false,
-        })}
-      />
-      <Stack.Screen
-        name="AllCollectionScreen"
-        component={AllCollectionScreen}
         options={() => ({
           headerShown: false,
           headerBackVisible: false,
@@ -246,27 +235,9 @@ function HomeStack() {
           headerShown: false,
         })}
       />
-      <Stack.Screen
-        name="ContactUs"
-        component={ContactUsScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
-      <Stack.Screen
-        name="AboutUs"
-        component={AboutUsScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
-      <Stack.Screen
-        name="AllReviewScreen"
-        component={AllReviewScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
+
+
+
     </Stack.Navigator>
   );
 }
@@ -282,20 +253,12 @@ function HomeWithAuthStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Automotive" ? HomeScreenAutomotive : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Collections"
         component={CollectionCategory}
-        options={() => ({
-          headerShown: false,
-          headerBackVisible: false,
-        })}
-      />
-      <Stack.Screen
-        name="AllCollectionScreen"
-        component={AllCollectionScreen}
         options={() => ({
           headerShown: false,
           headerBackVisible: false,
@@ -355,27 +318,6 @@ function HomeWithAuthStack() {
       <Stack.Screen
         name="CatalogStack"
         component={CatalogStack}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
-      <Stack.Screen
-        name="ContactUs"
-        component={ContactUsScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
-      <Stack.Screen
-        name="AboutUs"
-        component={AboutUsScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
-      <Stack.Screen
-        name="AllReviewScreen"
-        component={AllReviewScreen}
         options={() => ({
           headerShown: false,
         })}
@@ -459,15 +401,6 @@ function CatalogStack() {
           headerBackVisible: false,
         })}
       />
-      <Stack.Screen
-        name="AllCollectionScreen"
-        component={AllCollectionScreen}
-        options={() => ({
-          headerShown: false,
-          headerBackVisible: false,
-        })}
-      />
-
       <Stack.Screen
         name="ProductDetails"
         component={ProductDetailsScreen}
@@ -553,13 +486,7 @@ function ProfileStack() {
         component={AppWithNavigation}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Contact_Us"
-        component={ContactUsScreen}
-        options={() => ({
-          headerShown: false,
-        })}
-      />
+
       <Stack.Screen
         name="AccountDetails"
         component={AccountDetails}
@@ -579,14 +506,16 @@ function CartIcon() {
   );
 }
 function AppWithNavigation({ route }: { route: any }) {
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   const { isLoggedIn } = useContext(AuthContext)
   const userLoggedIn = useSelector(state => state.auth.isAuthenticated);
-  console.log("userLoggedInFromRedux::::::::::::::::::", userLoggedIn)
+  // console.log("userLoggedInFromRedux::::::::::::::::::", userLoggedIn)
   return (
     <Tab.Navigator
       tabBarOptions={{
         style: styles.footerContainer,
-        labelStyle: styles.tabLabel,
+        labelStyle: [styles.tabLabel],
         tabStyle: styles.tabStyle,
         activeTintColor: redColor,
         inactiveTintColor: grayColor,
@@ -598,10 +527,10 @@ function AppWithNavigation({ route }: { route: any }) {
         component={isLoggedIn || userLoggedIn ? HomeStack : HomeWithAuthStack}
         options={({ route }) => {
           const routeName = getFocusedRouteNameFromRoute(route);
-          console.log(routeName)
+          // console.log(routeName)
           return {
             headerShown: false,
-            tabBarStyle: { display: routeName === 'Search' || routeName === "AuthStack" ? 'none' : 'flex' },
+            tabBarStyle: { display: routeName === 'Search' || routeName === "AuthStack" ? 'none' : 'flex', backgroundColor: colors.whiteColor },
             tabBarIcon: ({ focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <View style={{ height: 10, width: 50, alignItems: "center", justifyContent: "center" }}>
@@ -614,7 +543,7 @@ function AppWithNavigation({ route }: { route: any }) {
                 </View>
                 <Image
                   source={HOME_ICON}
-                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : grayColor }}
+                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : isDarkMode ? whiteColor : grayColor }}
                 />
               </View>
             ),
@@ -627,7 +556,7 @@ function AppWithNavigation({ route }: { route: any }) {
         options={({ route }) => {
           const routeName = getFocusedRouteNameFromRoute(route);
           return {
-            tabBarStyle: { display: routeName == 'Search' ? 'none' : 'flex' },
+            tabBarStyle: { display: routeName == 'Search' ? 'none' : 'flex', backgroundColor: colors.whiteColor },
             headerShown: false,
             tabBarIcon: ({ focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -641,7 +570,7 @@ function AppWithNavigation({ route }: { route: any }) {
                 </View>
                 <Image
                   source={HEART_ICON}
-                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : grayColor }}
+                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : isDarkMode ? whiteColor : grayColor }}
                 />
               </View>
             ),
@@ -654,7 +583,7 @@ function AppWithNavigation({ route }: { route: any }) {
         options={({ route }) => {
           const routeName = getFocusedRouteNameFromRoute(route);
           return {
-            tabBarStyle: { display: routeName == 'Search' ? 'none' : 'flex' },
+            tabBarStyle: { display: routeName == 'Search' ? 'none' : 'flex', backgroundColor: colors.whiteColor },
             headerShown: false,
             tabBarIcon: ({ focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -668,7 +597,7 @@ function AppWithNavigation({ route }: { route: any }) {
                 </View>
                 <Image
                   source={SHOPPINGCART_ICON}
-                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : grayColor }}
+                  style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : isDarkMode ? whiteColor : grayColor }}
                 />
               </View>
             ),
@@ -679,7 +608,7 @@ function AppWithNavigation({ route }: { route: any }) {
         name="Profile"
         component={isLoggedIn || userLoggedIn ? ProfileStack : AuthStack}
         options={{
-          tabBarStyle: { display: isLoggedIn || userLoggedIn ? 'flex' : 'none' },
+          tabBarStyle: { display: isLoggedIn || userLoggedIn ? 'flex' : 'none', backgroundColor: colors.whiteColor },
           headerShown: false,
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -693,7 +622,7 @@ function AppWithNavigation({ route }: { route: any }) {
               </View>
               <Image
                 source={PROFILE_ICON}
-                style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : grayColor }}
+                style={{ width: 24, height: 24, resizeMode: "contain", tintColor: focused ? redColor : isDarkMode ? whiteColor : grayColor }}
               />
             </View>
           ),
@@ -712,7 +641,7 @@ function App({ navigation }: { navigation: any }) {
 
       // Get the FCM token
       const fcmToken = await messaging().getToken();
-      console.log('FCM Token:', fcmToken);
+      // console.log('FCM Token:', fcmToken);
 
       // Send this token to your server for later use
       // YourServer.sendTokenToServer(fcmToken);
@@ -746,6 +675,7 @@ function App({ navigation }: { navigation: any }) {
 
       if (response.data.data && response.data.data.shop) {
         const currencyCode = response.data.data.shop.currencyCode;
+        // console.log(currencyCode)
         await AsyncStorage.setItem('shopCurrency', currencyCode);
         return currencyCode;
       } else {
@@ -773,13 +703,15 @@ function App({ navigation }: { navigation: any }) {
           <NavigationContainer>
             <Provider store={store}>
               <AppWithContext>
-                {/* {showSplash ? <CustomSplashScreen /> : isLoggedIn ? <AppWithNavigation /> : <AuthStack navigation={navigation} />} */}
-                <AuthProvider>
-                  <PersistGate loading={null} persistor={persistor}>
-                    {/* {showSplash ? <CustomSplashScreen /> : <AppWithNavigation />} */}
-                    <AppWithNavigation />
-                  </PersistGate>
-                </AuthProvider>
+                <ThemeProviders>
+                  {/* {showSplash ? <CustomSplashScreen /> : isLoggedIn ? <AppWithNavigation /> : <AuthStack navigation={navigation} />} */}
+                  <AuthProvider>
+                    <PersistGate loading={null} persistor={persistor}>
+                      {/* {showSplash ? <CustomSplashScreen /> : <AppWithNavigation />} */}
+                      <AppWithNavigation />
+                    </PersistGate>
+                  </AuthProvider>
+                </ThemeProviders>
               </AppWithContext>
             </Provider>
           </NavigationContainer>
@@ -796,7 +728,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     height: hp(10),
-    backgroundColor: whiteColor,
+    backgroundColor: "red",
   },
   tabLabel: {
     fontSize: 12,

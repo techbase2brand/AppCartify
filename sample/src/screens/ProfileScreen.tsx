@@ -1,14 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Switch } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { whiteColor, blackColor, grayColor, redColor ,mediumGray} from '../constants/Color';
+import { whiteColor, blackColor, grayColor, redColor, mediumGray } from '../constants/Color';
 import ConfirmationModal from '../components/Modal/ConfirmationModal'
-import { getAdminAccessToken, getStoreDomain, SIGN_OUT, DELETE, SHIPPING_ADDRESS, MY_WISHLIST, ORDERS, ARE_YOU_SURE_DELETE_ACCOUNT, ARE_YOU_SURE_SIGNOUT,STOREFRONT_DOMAIN,ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
+import { getAdminAccessToken, getStoreDomain, SIGN_OUT, DELETE, SHIPPING_ADDRESS, MY_WISHLIST, ORDERS, ARE_YOU_SURE_DELETE_ACCOUNT, ARE_YOU_SURE_SIGNOUT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
 import { PROFILE_IMAGE, BACKGROUND_IMAGE } from '../assests/images';
 import SimpleLineIcons from 'react-native-vector-icons/dist/SimpleLineIcons';
 import Feather from 'react-native-vector-icons/dist/Feather';
+import FontAwesome from 'react-native-vector-icons/dist/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header'
 import axios from 'axios';
@@ -20,9 +21,10 @@ import { logout } from '../redux/actions/authActions';
 import { logEvent } from '@amplitude/analytics-react-native';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import LoadingModal from '../components/Modal/LoadingModal';
-import { CONTACT_US_IMAGE, MYADDRESS_IMAGE, MYORDER_IMAGE, MYACCOUNT_IMAGE, LOGOUT_IMAGE, DELETE_IMAGE } from '../assests/images'
-
-const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
+import { MYADDRESS_IMAGE, MYORDER_IMAGE, MYACCOUNT_IMAGE, LOGOUT_IMAGE, DELETE_IMAGE, WHITE_MYACCOUNT_IMAGE, WHITE_MYORDER_IMAGE, WHITE_MYADDRESS_IMAGE, DARK_MODE_IMAGE } from '../assests/images'
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
+const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, justifyContentSpaceBetween, resizeModeCover } = BaseStyle;
 
 const ProfileScreen = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch();
@@ -39,6 +41,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
   const [userName, setUserName] = useState("");
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(false)
+
+  const { isDarkMode, toggleTheme } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
+
 
   useEffect(() => {
     fetchUserDetails()
@@ -71,16 +77,16 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     const userDetails = await AsyncStorage.getItem('userDetails')
     if (userDetails) {
       const userDetailsObject = JSON.parse(userDetails);
-      console.log(userDetailsObject)
+      // console.log(userDetailsObject)
       const userId = userDetailsObject?.customer ? userDetailsObject?.customer.id : userDetailsObject?.id;
-      console.log("userDetailsObject", userId)
+      // console.log("userDetailsObject", userId)
       setCustomerId(userId)
     }
   };
 
   //for get customer Profile
   const fetchUserProfile = async (id) => {
-    console.log("fetchUserProfile", id)
+    // console.log("fetchUserProfile", id)
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/customers/${id}.json`, {
         headers: {
@@ -88,7 +94,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Response fetchUserProfileDatar:', response.data);
+      // console.log('Response fetchUserProfileDatar:', response.data);
       const customer = response?.data?.customer;
       setUserName(`${customer.first_name} ${customer.last_name}`);
     } catch (error) {
@@ -105,7 +111,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
   //for get customer orders
   const fetchOrders = async (id) => {
     try {
-      console.log
+      // console.log
       const response = await axios.get(
         `https://${STOREFRONT_DOMAIN}/admin/api/2024-04/orders.json?customer_id=${id}`,
         {
@@ -115,7 +121,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           },
         }
       );
-      console.log("response.data.orders", response?.data?.orders);
+      // console.log("response.data.orders", response?.data?.orders);
       setOrders(response?.data?.orders)
     } catch (error) {
       console.log('Error fetching orders:', error);
@@ -158,7 +164,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     dispatch(logout());
     const signout = await AsyncStorage.removeItem('isUserLoggedIn');
     await AsyncStorage.removeItem('userImage')
-    console.log("removed url", signout);
+    // console.log("removed url", signout);
     setShowModal(false);
     setIsLoggedIn(false)
     navigation.navigate('AuthStack');
@@ -197,7 +203,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
         }
       );
       setLoading(true)
-      console.log(`Customer  deleted successfully.`);
+      // console.log(`Customer  deleted successfully.`);
       await AsyncStorage.removeItem('isUserLoggedIn');
       await AsyncStorage.removeItem('userImage')
       await AsyncStorage.removeItem('userDetails')
@@ -221,88 +227,20 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <ImageBackground style={[styles.container, flex]} source={BACKGROUND_IMAGE}>
+    // <ImageBackground style={[styles.container, flex]} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       {/* <Header backIcon={true} text={"Account"} navigation={navigation} /> */}
       <View style={[{ width: "100%", height: hp(7) }, flexDirectionRow, alignItemsCenter]}>
         <TouchableOpacity style={[styles.backIcon, alignItemsCenter]} onPress={() => { logEvent(`Back Button Pressed from Profile`), navigation.goBack() }}>
-          <Ionicons name={"arrow-back"} size={33} color={blackColor} />
+          <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
         </TouchableOpacity>
-        <Text style={styles.text}>{"Account"}</Text>
+        <Text style={[styles.text, { color: colors.blackColor }]}>{"Account"}</Text>
       </View>
       <View style={[styles.header, alignItemsCenter]}>
-        {image ? <Image source={{ uri: image }} style={[styles.profileImage, resizeModeContain]} /> :
+        {image ? <Image source={{ uri: image }} style={[styles.profileImage, resizeModeContain, { borderColor: colors.grayColor }]} /> :
           <Image source={PROFILE_IMAGE} style={[styles.profileImage, resizeModeContain]} />}
-        <Text style={styles.username}>{capitalizeFirstLetter(userName)}</Text>
+        <Text style={[styles.username, { color: colors.blackColor }]}>{capitalizeFirstLetter(userName)}</Text>
       </View>
-      {/* <View style={styles.section}>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={() => {
-            logEvent(`Orders Clicked userId: ${customerId}`);
-            navigation.navigate("UserDashboardScreen", {
-              from: ORDERS,
-              orderList: orders
-            })
-          }}
-        >
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <SimpleLineIcons name={"social-dropbox"} size={18} color={grayColor} />
-            <Text style={styles.optionText}>{ORDERS}</Text>
-          </View>
-          <SimpleLineIcons name={"arrow-right"} size={16} color={grayColor} />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={() => {
-            logEvent(`My WishList Clicked userId: ${customerId}`);
-            navigation.navigate("UserDashboardScreen", {
-              from: MY_WISHLIST,
-            })
-          }}
-        >
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <SimpleLineIcons name={"heart"} size={18} color={grayColor} />
-            <Text style={styles.optionText}>{MY_WISHLIST}</Text>
-          </View>
-          <SimpleLineIcons name={"arrow-right"} size={16} color={grayColor} />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={() => {
-            logEvent(`Shipping Address Clicked userId: ${customerId}`);
-            navigation.navigate("UserDashboardScreen", {
-              from: SHIPPING_ADDRESS,
-              address: customerAddresses
-            })
-          }}
-        >
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <SimpleLineIcons name={"home"} size={18} color={grayColor} />
-            <Text style={styles.optionText}>{SHIPPING_ADDRESS}</Text>
-          </View>
-          <SimpleLineIcons name={"arrow-right"} size={16} color={grayColor} />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={() => toggleModal(ARE_YOU_SURE_DELETE_ACCOUNT, handleDelete)}>
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <AntDesign name={"delete"} size={18} color={grayColor} />
-            <Text style={styles.optionText}>{DELETE}</Text>
-          </View>
-          <SimpleLineIcons name={"arrow-right"} size={16} color={grayColor} />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={() => toggleModal(ARE_YOU_SURE_SIGNOUT, handleSignOut)}>
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <SimpleLineIcons name={"logout"} size={18} color={grayColor} />
-            <Text style={styles.optionText}>{SIGN_OUT}</Text>
-          </View>
-          <SimpleLineIcons name={"arrow-right"} size={16} color={grayColor} />
-        </TouchableOpacity>
-
-        {showModal && <ConfirmationModal
-          visible={showModal}
-          onConfirm={confirmAction}
-          onCancel={() => setShowModal(false)}
-          message={modalMessage}
-        />}
-      </View> */}
       <View style={styles.section}>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { paddingRight: spacings.large }]}
           onPress={() => {
@@ -310,12 +248,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
             navigation.navigate("AccountDetails")
           }}>
           <View style={[flexDirectionRow, alignItemsCenter]}>
-            <Image source={MYACCOUNT_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
-            <Text style={[styles.optionText, { color: blackColor }]}>{"My Details"}</Text>
+            <Image source={isDarkMode ? WHITE_MYACCOUNT_IMAGE : MYACCOUNT_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
+            <Text style={[styles.optionText, { color: colors.blackColor }]}>{"My Details"}</Text>
           </View>
-          <Feather name={"chevron-right"} size={30} color={blackColor} />
+          <Feather name={"chevron-right"} size={30} color={colors.blackColor} />
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: mediumGray }}></View>
+        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { paddingRight: spacings.large }]}
           onPress={() => {
             logEvent(`Orders Clicked userId: ${customerId}`);
@@ -326,12 +264,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           }}
         >
           <View style={[flexDirectionRow, alignItemsCenter]}>
-            <Image source={MYORDER_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
-            <Text style={[styles.optionText, { color: blackColor }]}>{"My Orders"}</Text>
+            <Image source={isDarkMode ? WHITE_MYORDER_IMAGE : MYORDER_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
+            <Text style={[styles.optionText, { color: colors.blackColor }]}>{"My Orders"}</Text>
           </View>
-          <Feather name={"chevron-right"} size={30} color={blackColor} />
+          <Feather name={"chevron-right"} size={30} color={colors.blackColor} />
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: mediumGray }}></View>
+        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { paddingRight: spacings.large }]}
           onPress={() => {
             logEvent(`Shipping Address Clicked userId: ${customerId}`);
@@ -342,34 +280,39 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           }}
         >
           <View style={[flexDirectionRow, alignItemsCenter]}>
-            <Image source={MYADDRESS_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
-            <Text style={[styles.optionText, { color: blackColor }]}>{"Address Book"}</Text>
+            <Image source={isDarkMode ? WHITE_MYADDRESS_IMAGE : MYADDRESS_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
+            <Text style={[styles.optionText, { color: colors.blackColor }]}>{"Address Book"}</Text>
           </View>
-          <Feather name={"chevron-right"} size={30} color={blackColor} />
+          <Feather name={"chevron-right"} size={30} color={colors.blackColor} />
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: mediumGray }}></View>
-        {/* <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { paddingRight: spacings.large }]}
-          onPress={() => {
-            navigation.navigate('Contact_Us')
-          }}
+        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
+        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
+          onPress={toggleTheme}
         >
           <View style={[flexDirectionRow, alignItemsCenter]}>
-            <Image source={CONTACT_US_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
-            <Text style={[styles.optionText, { color: blackColor }]}>{"Contact US"}</Text>
+            <FontAwesome name={isDarkMode ? 'moon-o' : 'sun-o'} size={24} color={isDarkMode ? whiteColor : blackColor} />
+            <Text style={[styles.optionText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
           </View>
-          <Feather name={"chevron-right"} size={30} color={blackColor} />
+          <TouchableOpacity onPress={toggleTheme} style={[styles.toggleButton]}>
+
+            <FontAwesome
+              name={isDarkMode ? 'toggle-on' : 'toggle-off'}
+              size={30}
+              color={redColor}
+            />
+          </TouchableOpacity>
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: "#E6E6E6" }}></View> */}
+        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
           onPress={() => toggleModal(ARE_YOU_SURE_DELETE_ACCOUNT, handleDelete)}
         >
           <View style={[flexDirectionRow, alignItemsCenter]}>
             <Image source={DELETE_IMAGE} style={[resizeModeContain, { width: wp(6), height: wp(6) }]} />
-            <Text style={[styles.optionText, { color: blackColor }]}>{DELETE}</Text>
+            <Text style={[styles.optionText, { color: colors.blackColor }]}>{DELETE}</Text>
           </View>
 
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: mediumGray }}></View>
+        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
           onPress={() => toggleModal(ARE_YOU_SURE_SIGNOUT, handleSignOut)}
         >
@@ -385,9 +328,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           onCancel={() => setShowModal(false)}
           message={modalMessage}
         />}
-         {loading &&
-        <LoadingModal visible={loading} />
-      }
+        {loading &&
+          <LoadingModal visible={loading} />
+        }
       </View>
     </ImageBackground >
   );
@@ -411,13 +354,12 @@ const styles = StyleSheet.create({
     height: wp(30),
     borderRadius: 100,
     borderWidth: 4,
-    borderColor: grayColor
   },
   username: {
     marginTop: spacings.large,
     fontSize: style.fontSizeLarge.fontSize,
     fontWeight: style.fontWeightMedium1x.fontWeight,
-    color: blackColor
+    // color: blackColor
   },
   section: {
     marginTop: spacings.Large2x,
@@ -439,6 +381,9 @@ const styles = StyleSheet.create({
   backIcon: {
     width: wp(10),
     height: hp(5)
+  },
+  toggleButton: {
+    marginRight: 10,
   },
 });
 

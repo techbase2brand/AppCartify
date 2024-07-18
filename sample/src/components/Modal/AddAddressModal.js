@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Pressable } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '.././../utils';
-import { blackColor, redColor, whiteColor ,blackOpacity5} from '../../constants/Color';
-import { getAdminAccessToken, getStoreDomain,STOREFRONT_DOMAIN,ADMINAPI_ACCESS_TOKEN} from '../../constants/Constants';
+import { blackColor, redColor, whiteColor, blackOpacity5 } from '../../constants/Color';
+import { getAdminAccessToken, getStoreDomain, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../../constants/Constants';
 import { spacings, style } from '../../constants/Fonts';
 import { BaseStyle } from '../../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
@@ -12,10 +12,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useThemes } from '../../context/ThemeContext';
+import { lightColors, darkColors } from '../../constants/Color';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, positionAbsolute } = BaseStyle;
 
 const AddAddressModal = ({ visible, onClose }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const navigation = useNavigation()
@@ -71,7 +75,7 @@ const AddAddressModal = ({ visible, onClose }) => {
         // Find the selected country
         const selectedCountry = countries.find(c => c.name === country);
         const country_Id = selectedCountry.id;
-        console.log(country_Id)
+        // console.log(country_Id)
         const countryCode = selectedCountry.code;
         setCountryCode(countryCode)
 
@@ -85,9 +89,9 @@ const AddAddressModal = ({ visible, onClose }) => {
 
         // Find the selected province/state
         const selectedProvince = provinces.find(p => p.name.toLowerCase() === state.toLowerCase());
-        console.log("selectedProvince", selectedProvince)
+        // console.log("selectedProvince", selectedProvince)
         const provinceCode = selectedProvince.code;
-        console.log("provinceCode", provinceCode)
+        // console.log("provinceCode", provinceCode)
         setProvinceCode(provinceCode)
 
       } catch (error) {
@@ -145,7 +149,7 @@ const AddAddressModal = ({ visible, onClose }) => {
       );
       Toast.show('Address added successfully');
       logEvent('Address added successfully');
-      console.log("Address added successfully:", response.data.address);
+      // console.log("Address added successfully:", response.data.address);
       // Clear form fields
       setFirstName('');
       setLastName('');
@@ -170,20 +174,20 @@ const AddAddressModal = ({ visible, onClose }) => {
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
-      <Pressable style={[styles.modalContainer, flex,{justifyContent:"flex-end"}]} onPress={onClose}>
-        <View style={[styles.modalContent, alignJustifyCenter]}>
+      <Pressable style={[styles.modalContainer, flex, { justifyContent: "flex-end" }]} onPress={onClose}>
+        <View style={[styles.modalContent, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
           <TouchableOpacity onPress={onClose} style={[styles.closeButton, positionAbsolute]}>
-            <Ionicons name="close" size={28} color={blackColor} />
+            <Ionicons name="close" size={28} color={colors.blackColor} />
           </TouchableOpacity>
-          <Text style={[styles.title, textAlign, { marginBottom: spacings.Large1x }]}>Add Address</Text>
+          <Text style={[styles.title, textAlign, { marginBottom: spacings.Large1x, color: colors.blackColor }]}>Add Address</Text>
           <ScrollView style={{ width: "100%", height: hp(40) }}>
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: firstNameError ? redColor : blackColor }
+                { borderBottomColor: firstNameError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="First Name*"
-              placeholderTextColor={firstNameError ? redColor : blackColor }
+              placeholderTextColor={firstNameError ? colors.redColor : colors.blackColor}
               value={firstName}
               onChangeText={text => {
                 setFirstName(text);
@@ -193,10 +197,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: lastNameError ? redColor : blackColor }
+                { borderBottomColor: lastNameError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Last Name*"
-              placeholderTextColor={lastNameError ? redColor : blackColor }
+              placeholderTextColor={lastNameError ? colors.redColor : colors.blackColor}
               value={lastName}
               onChangeText={text => {
                 setLastName(text);
@@ -206,10 +210,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: address1Error ? redColor : blackColor }
+                { borderBottomColor: address1Error ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Address 1*"
-              placeholderTextColor={address1Error ? redColor : blackColor}
+              placeholderTextColor={address1Error ? colors.redColor : colors.blackColor}
               value={address1}
               onChangeText={text => {
                 setAddress1(text);
@@ -217,19 +221,21 @@ const AddAddressModal = ({ visible, onClose }) => {
               }}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input,
+              { borderBottomColor: colors.blackColor, color: colors.blackColor }
+              ]}
               placeholder="Address 2"
-              placeholderTextColor={blackColor}
+              placeholderTextColor={colors.blackColor}
               value={address2}
               onChangeText={setAddress2}
             />
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: countryError ? redColor : blackColor }
+                { borderBottomColor: countryError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Country*"
-              placeholderTextColor={countryError ? redColor : blackColor }
+              placeholderTextColor={countryError ? colors.redColor : colors.blackColor}
               value={country}
               onChangeText={text => {
                 setCountry(text);
@@ -239,10 +245,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: stateError ? redColor : blackColor }
+                { borderBottomColor: stateError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="State*"
-              placeholderTextColor={stateError ? redColor : blackColor }
+              placeholderTextColor={stateError ? colors.redColor : colors.blackColor}
               value={state}
               onChangeText={text => {
                 setState(text);
@@ -252,10 +258,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: cityError ? redColor : blackColor }
+                { borderBottomColor: cityError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="City*"
-              placeholderTextColor={cityError ? redColor : blackColor }
+              placeholderTextColor={cityError ? colors.redColor : colors.blackColor}
               value={city}
               onChangeText={text => {
                 setCity(text);
@@ -265,10 +271,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: companyError ? redColor : blackColor }
+                { borderBottomColor: companyError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Company*"
-              placeholderTextColor={companyError ? redColor : blackColor }
+              placeholderTextColor={companyError ? colors.redColor : colors.blackColor}
               value={company}
               onChangeText={text => {
                 setCompany(text);
@@ -278,10 +284,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: phoneError ? redColor : blackColor }
+                { borderBottomColor: phoneError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Phone*"
-              placeholderTextColor={phoneError ? redColor : blackColor }
+              placeholderTextColor={phoneError ? colors.redColor : colors.blackColor}
               value={phone}
               onChangeText={text => {
                 setPhone(text);
@@ -293,10 +299,10 @@ const AddAddressModal = ({ visible, onClose }) => {
             <TextInput
               style={[
                 styles.input,
-                { borderBottomColor: zipError ? redColor : blackColor }
+                { borderBottomColor: zipError ? colors.redColor : colors.blackColor, color: colors.blackColor }
               ]}
               placeholder="Zip Code*"
-              placeholderTextColor={zipError ? redColor : blackColor }
+              placeholderTextColor={zipError ? colors.redColor : colors.blackColor}
               value={zip}
               onChangeText={text => {
                 setZip(text);
@@ -310,8 +316,8 @@ const AddAddressModal = ({ visible, onClose }) => {
             </TouchableOpacity> */}
           </ScrollView>
           <Pressable onPress={handleSubmit} style={[styles.submitButton, alignJustifyCenter, borderRadius10]}>
-              <Text style={[styles.title, textAlign, { color: whiteColor }]}>Submit</Text>
-            </Pressable>
+            <Text style={[styles.title, textAlign, { color: whiteColor }]}>Submit</Text>
+          </Pressable>
         </View>
       </Pressable>
     </Modal>

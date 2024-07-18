@@ -28,7 +28,14 @@ export const LOGOUT_IMAGE = require('./Logout.png');
 export const USER_IMAGE = require('./user.png');
 export const SHOPPINGBUCKET_ICON = require('./shoppingbucket.png');
 export const SEARCH_ICON = require('./search.png');
-
+export const WHITE_MENU_ICON = require('./whiteMenu.png');
+export const WHITE_SHOPPINGBUCKET_ICON = require('./whiteShoppingBucket.png');
+export const WHITE_SEARCH_ICON = require('./whiteSearch.png');
+export const WHITE_MYACCOUNT_IMAGE = require('./whiteDetails.png');
+export const WHITE_MYORDER_IMAGE = require('./whiteBox.png');
+export const WHITE_MYADDRESS_IMAGE = require('./whiteAddress.png');
+export const WHITE_FILTER_ICON = require('./whiteFilter.png');
+export const WHITE_USER_IMAGE = require('./whiteUser.png');
 
 // export const GIF_ONE=require('./gif/Gif.gif');
 // export const GIF_TWO=require('./gif/Sequence.gif');
@@ -36,3 +43,5 @@ export const SEARCH_ICON = require('./search.png');
 
 export const LOVE_DRINK_LOGO = require('./loveDrinks.png');
 export const APP_CARTIFY_HEADER_LOGO = require('./appCartifyHeaderLogo.png');
+export const APP_CARTIFY_HEADER_LOGO_NEW = require('./AppLogo.png');
+export const DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW = require('./darkModeAppLogo.png');

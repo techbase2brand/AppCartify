@@ -22,17 +22,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectMenuItem } from '../redux/actions/menuActions';
 import { useFocusEffect } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import LoaderKit from 'react-native-loader-kit'
-
+import LoaderKit from 'react-native-loader-kit';
+import { clearWishlist } from '../redux/actions/wishListActions';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden, positionRelative, positionAbsolute } = BaseStyle;
 
 const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem);
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem);
   // const OUR_PRODUCT_COLLECTION_ID = getOurProductCollectionID(selectedItem)
-  const { addToCart, addingToCart } = useCart();
+  const { addToCart, addingToCart, clearCart } = useCart();
   const [lineHeights, setLineHeights] = useState({});
   const [inventoryQuantities, setInventoryQuantities] = useState('');
   const [tags, setTags] = useState<string[][]>([]);
@@ -73,7 +77,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-      collection(id: "gid://shopify/Collection/331342872729") {
+      collection(id: "gid://shopify/Collection/331435016345") {
         products(first: 10) {
           nodes {
             id
@@ -153,7 +157,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-        collection(id: "gid://shopify/Collection/331343265945") {
+        collection(id: "gid://shopify/Collection/331437375641") {
           products(first: 4) {
             nodes {
               id
@@ -237,7 +241,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
     handleInitialLink();
     const unsubscribe = dynamicLinks().onLink(handleDynamicLinks);
     return () => {
-      console.log("Unsubscribing from dynamic links");
+      // console.log("Unsubscribing from dynamic links");
       unsubscribe();
     };
   }, []);
@@ -270,8 +274,10 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    console.log("handleMenuPress::::item", item);
+    // console.log("handleMenuPress::::item", item);
     dispatch(selectMenuItem(item));
+    dispatch(clearWishlist());
+    clearCart()
   };
 
   //fetch menu item
@@ -308,26 +314,26 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
         item?.title?.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        console.log(`Items for ${item?.title}:`);
-        console.log(item?.items);
+        // console.log(`Items for ${item?.title}:`);
+        // console.log(item?.items);
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          console.log("selectedItem title", selectedItem?.title);
-          console.log("Collection", collectionData?.collections?.edges);
+          // console.log("selectedItem title", selectedItem?.title);
+          // console.log("Collection", collectionData?.collections?.edges);
 
           if (collectionData && collectionData?.collections && collectionData?.collections?.edges) {
             let matchedCollection = collectionData?.collections?.edges?.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            console.log("matchedCollection::::", matchedCollection);
+            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
         });
 
-        console.log("matchedmenu:::::", matchedCollectionsArray);
+        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -339,11 +345,11 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   const handleDynamicLinks = async (link) => {
     try {
       if (link && link.url) {
-        console.log('Foreground link handling:', link);
+        // console.log('Foreground link handling:', link);
         let productId = link?.url?.split('=').pop();
-        console.log('productId:', productId);
+        // console.log('productId:', productId);
         const productData = await fetchProductDetails(productId);
-        console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
+        // console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
         navigation.navigate('ProductDetails', {
           product: productData?.product,
           variant: productData?.variants,
@@ -353,7 +359,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
           ids: productData?.ids
         });
       } else {
-        console.log('No link or URL found');
+        // console.log('No link or URL found');
       }
     } catch (error) {
       console.error('Error handling dynamic link:', error);
@@ -364,7 +370,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   const fetchProductDetails = async (productId) => {
     const parts = productId.split('/');
     const lastValue = parts[parts.length - 1];
-    console.log(lastValue);
+    // console.log(lastValue);
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/products/${lastValue}.json`, {
         headers: {
@@ -417,7 +423,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
-    console.log(id)
+    // console.log(id)
     logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
@@ -444,7 +450,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={[flex, { backgroundColor: whiteColor }]} behavior="padding" enabled>
+    <KeyboardAvoidingView style={[flex, { backgroundColor: colors.whiteColor }]} behavior="padding" enabled>
       <Header
         navigation={navigation}
         textinput={true}
@@ -453,7 +459,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
         shoppingCart={true}
         onPressShopByCatagory={onPressShopAll}
       />
-      <View style={[styles.container, flex]}>
+      <View style={[styles.container, flex, { backgroundColor: colors.whiteColor }]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -468,7 +474,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
               ]}
               onPress={() => handleMenuPress(item.title)}
             >
-              <Text style={styles.menuText}>{item.title}</Text>
+              <Text style={[styles.menuText, { color: colors.blackColor }]}>{item.title}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -481,7 +487,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
             <Pressable onPress={onPressShopAll}>
               <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} >{SEE_ALL}</Text>
             </Pressable>
@@ -492,8 +498,8 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
               data={shopifyCollection.slice(0, 8)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(23), height: hp(18) }, alignItemsCenter]}>
-                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter]} onPress={() => onPressCollection(item?.id, item?.title)}>
-                    <Image source={{ uri: item?.image?.url }} style={[styles.categoryImage, resizeModeContain]} />
+                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter, { borderColor: isDarkMode ? "transparent" : lightGrayOpacityColor }]} onPress={() => onPressCollection(item?.id, item?.title)}>
+                    <Image source={{ uri: item?.image?.url }} style={[styles.categoryImage, resizeModeCover]} />
                   </Pressable>
                   <Text
                     style={[
@@ -504,7 +510,8 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
                         color: blackColor,
                         paddingVertical: spacings.large,
                         fontWeight: style.fontWeightBold.fontWeight,
-                        fontSize: style.fontSizeSmall.fontSize
+                        fontSize: style.fontSizeSmall.fontSize,
+                        color: colors.blackColor
                       }
                     ]}
                     onTextLayout={handleTextLayout(item?.title)}>{item?.title}</Text>
@@ -514,7 +521,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
               keyExtractor={(item) => item?.id}
             />
           </View>
-          <Text style={[styles.text]}>{BEST_SELLING}</Text>
+          <Text style={[styles.text, { color: colors.blackColor, marginVertical: 10 }]}>{BEST_SELLING}</Text>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {bestDealProducts?.length > 0 ? <FlatList
               data={bestDealProducts}
@@ -560,7 +567,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text]}>{OUR_PRODUCT}</Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>{OUR_PRODUCT}</Text>
             <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(ELECTRONIC_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
           </View>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
@@ -630,13 +637,13 @@ const styles = StyleSheet.create({
     height: wp(20),
     borderRadius: 100,
     borderWidth: 0.5,
-    borderColor: lightGrayOpacityColor,
+    // borderColor: lightGrayOpacityColor,
     paddingVertical: spacings.small,
   },
 
   categoryImage: {
     width: "100%",
-    height: "100%",
+    height: "110%",
     borderRadius: 10,
   },
   categoryName: {

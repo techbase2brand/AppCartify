@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { whiteColor, blackColor, grayColor, redColor,mediumGray } from '../constants/Color';
+import { whiteColor, blackColor, grayColor, redColor, mediumGray } from '../constants/Color';
 import { SHIPPING_ADDRESS, MY_WISHLIST, ORDERS } from '../constants/Constants';
 import Header from '../components/Header'
 import AntDesign from 'react-native-vector-icons/dist/AntDesign';
@@ -16,10 +16,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { BACKGROUND_IMAGE } from '../assests/images';
 import Product from '../components/ProductVertical';
-import { getAdminAccessToken, getStoreDomain, STOREFRONT_ACCESS_TOKEN ,STOREFRONT_DOMAIN,ADMINAPI_ACCESS_TOKEN} from '../constants/Constants';
+import { getAdminAccessToken, getStoreDomain, STOREFRONT_ACCESS_TOKEN, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCart } from '../context/Cart';
 import Toast from 'react-native-simple-toast';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 
 const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10, justifyContentSpaceBetween, alignItemsCenter } = BaseStyle;
 
@@ -40,6 +42,9 @@ const UserDashboardScreen = () => {
   const [defaultAddressId, setDefaultAddressId] = useState(null);
   const [loadingProductId, setLoadingProductId] = useState(null)
   const dispatch = useDispatch();
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
+
 
   useEffect(() => {
     logEvent('UserDashboardScreen Initialized');
@@ -102,7 +107,7 @@ const UserDashboardScreen = () => {
       const data = await response.json();
       await AsyncStorage.setItem('isDefaultAddress', JSON.stringify(addressId));
       setDefaultAddressId(addressId);
-      console.log('Set default address response:', data);
+      // console.log('Set default address response:', data);
     } catch (error) {
       console.error('Error setting default address:', error);
     }
@@ -110,7 +115,7 @@ const UserDashboardScreen = () => {
 
   const addToCartProduct = async (item: any, quantity: any) => {
     const variantId = item?.variants?.edges ? item?.variants?.edges[0]?.node?.id : item?.variants?.nodes ? item?.variants?.nodes[0].id : item?.variants[0]?.admin_graphql_api_id;
-    console.log(variantId)
+    // console.log(variantId)
     setLoadingProductId(variantId);
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
@@ -122,17 +127,17 @@ const UserDashboardScreen = () => {
       style={[flex]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ImageBackground style={[styles.container]} source={BACKGROUND_IMAGE}>
+      <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         <Header backIcon={true} text={route.params?.from} navigation={navigation} />
         {
           route.params?.from === ORDERS &&
           (ordersList && ordersList.length > 0 ?
-            <View style={[styles.detailsBox]}>
+            <View style={[styles.detailsBox, { backgroundColor: isDarkMode ? grayColor : "transparent" }]}>
               <FlatList
                 data={ordersList}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => {
-                  console.log("response.data.orders", ordersList);
+                  // console.log("response.data.orders", ordersList);
                   return (
                     <View style={{ padding: spacings.large }}>
                       {/* <Text style={styles.itemText}>Order ID: {item.id}</Text>
@@ -142,57 +147,57 @@ const UserDashboardScreen = () => {
                           <View key={index} style={{ marginVertical: 10, padding: spacings.large, borderWidth: 1, width: "100%", borderRadius: 10 }}>
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
-                                <Text style={styles.itemText}>Order ID</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>Order ID</Text>
                               </View>
                               <View style={{ width: "10%" }}>
-                                <Text style={styles.itemText}>:</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "75%" }}>
-                                <Text style={styles.itemText}>{item.id}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{item.id}</Text>
                               </View>
                             </View>
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
-                                <Text style={styles.itemText}>Name</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>Name</Text>
                               </View>
                               <View style={{ width: "10%" }}>
-                                <Text style={styles.itemText}>:</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "71%" }}>
-                                <Text style={styles.itemText}>{Item.title}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.title}</Text>
                               </View>
                             </View>
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
-                                <Text style={styles.itemText}>Variant</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>Variant</Text>
                               </View>
                               <View style={{ width: "10%" }}>
-                                <Text style={styles.itemText}>:</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "75%" }}>
-                                <Text style={styles.itemText}>{Item?.variant_title}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item?.variant_title}</Text>
                               </View>
                             </View>
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
-                                <Text style={styles.itemText}>Quantity</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>Quantity</Text>
                               </View>
                               <View style={{ width: "10%" }}>
-                                <Text style={styles.itemText}>:</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "75%" }}>
-                                <Text style={styles.itemText}>{Item.quantity}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.quantity}</Text>
                               </View>
                             </View>
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
-                                <Text style={styles.itemText}>Price</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>Price</Text>
                               </View>
                               <View style={{ width: "10%" }}>
-                                <Text style={styles.itemText}>:</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "75%" }}>
-                                <Text style={styles.itemText}>{Item.price}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.price}</Text>
                               </View>
                             </View>
                           </View>
@@ -203,8 +208,8 @@ const UserDashboardScreen = () => {
               />
             </View> :
             <View style={[styles.centeredContainer, alignJustifyCenter]}>
-              <Text style={{ color: blackColor }}>No orders placed.</Text>
-              <Text style={[textAlign, { color: blackColor, margin: spacings.large }]}>Your all ordered will appear here. Currently its Empty</Text>
+              <Text style={{ color: colors.blackColor }}>No orders placed.</Text>
+              <Text style={[textAlign, { color: colors.blackColor, margin: spacings.large }]}>Your all ordered will appear here. Currently its Empty</Text>
               <Pressable style={styles.button} onPress={() => onPressContinueShopping(ORDERS)}>
                 <Text style={[styles.buttonText, textAlign]}>Continue Shopping</Text>
               </Pressable>
@@ -224,25 +229,25 @@ const UserDashboardScreen = () => {
                   const itemCurrencyCode = item?.variants?.edges?.[0]?.node?.price?.currencyCode ?? null;
                   const inventoryQuantity = item?.variants?.nodes ? item?.variants?.nodes[0]?.inventoryQuantity : (item?.variants?.[0]?.inventory_quantity ? item?.variants?.[0]?.inventory_quantity : (Array.isArray(item?.inventoryQuantity) ? item?.inventoryQuantity[0] : item?.inventoryQuantity));
                   const variantId = item?.variants?.edges ? item?.variants.edges[0]?.node.id : item.variants.nodes ? item.variants.nodes[0].id : item.variants[0].admin_graphql_api_id;
-                  console.log(item)
+                  // console.log(item)
                   return (
-                    <View style={[styles.itemContainer]}>
+                    <View style={[styles.itemContainer, { backgroundColor: isDarkMode ? grayColor : whiteColor }]}>
                       <Pressable style={[positionAbsolute, alignJustifyCenter, styles.favButton]} onPress={() => handlePress(item)}>
                         <AntDesign
                           name={"heart"}
                           size={20}
-                          color={redColor}
+                          color={colors.redColor}
                         />
                       </Pressable>
                       <Image
                         source={{ uri: imageUrl }}
                         style={[styles.productImage, resizeModeContain]}
                       />
-                      <View style={{ width: "100%", height: hp(7),alignItems:"center",justifyContent:"center"}}>
-                        <Text style={[styles.wishListItemName,textAlign]}>{item?.title}</Text>
-                        {itemPrice && <Text style={[styles.wishListItemPrice,textAlign]}>{itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode}</Text></Text>}
+                      <View style={{ width: "100%", height: hp(7), alignItems: "center", justifyContent: "center" }}>
+                        <Text style={[styles.wishListItemName, textAlign, { color: colors.blackColor }]}>{item?.title}</Text>
+                        {itemPrice && <Text style={[styles.wishListItemPrice, textAlign, { color: colors.blackColor }]}>{itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode}</Text></Text>}
                       </View>
-                      <View style={[{ width: "100%", flexDirection: "row", paddingTop:spacings.large }, alignJustifyCenter]}>
+                      <View style={[{ width: "100%", flexDirection: "row", paddingTop: spacings.large }, alignJustifyCenter]}>
                         {inventoryQuantity <= 0 ? <Pressable
                           style={[styles.addtocartButton, borderRadius10, alignJustifyCenter]}
                         >
@@ -266,24 +271,24 @@ const UserDashboardScreen = () => {
                 <AntDesign
                   name={"hearto"}
                   size={50}
-                  color={mediumGray}
+                  color={colors.mediumGray}
                 />
               </View>
-              <Text style={{ color: blackColor, fontSize: style.fontSizeLarge.fontSize }}>No Saved found.</Text>
-              <Text style={{ color: mediumGray, textAlign: "center" }}>You don’t have any saved items. Go to home and add some.</Text>
+              <Text style={{ color: colors.blackColor, fontSize: style.fontSizeLarge.fontSize }}>No Saved found.</Text>
+              <Text style={{ color: colors.mediumGray, textAlign: "center" }}>You don’t have any saved items. Go to home and add some.</Text>
             </View>)
         }
         {
           route.params?.from === SHIPPING_ADDRESS &&
           (customerAddresses && customerAddresses.length > 0 ? <View style={[styles.centeredContainer]}>
-            <Text style={[styles.itemText, { marginVertical: spacings.normal }]}>Saved Address</Text>
+            <Text style={[styles.itemText, { marginVertical: spacings.normal, color: colors.blackColor }]}>Saved Address</Text>
             <FlatList
               data={customerAddresses}
               keyExtractor={(item) => item?.id.toString()}
               renderItem={({ item }) => {
                 const isSelected = defaultAddressId === item?.id;
                 return (
-                  <Pressable style={[{ padding: spacings.large, borderWidth: 1, width: "100%", borderRadius: 10, marginVertical: 5 }, flexDirectionRow]}
+                  <Pressable style={[{ padding: spacings.large, borderWidth: 1, width: "100%", borderRadius: 10, marginVertical: 5, borderColor: colors.blackColor, backgroundColor: isDarkMode ? grayColor : "tranparent" }, flexDirectionRow]}
                     onPress={() => [setSelectedAddressId(item.id), setDefaultAddress(item?.id)]}>
                     <View style={[{ width: "15%" }, alignJustifyCenter]}>
                       <Ionicons
@@ -295,35 +300,35 @@ const UserDashboardScreen = () => {
                     <View style={{ width: "75%" }}>
                       {item.name && <View style={[flexDirectionRow]}>
                         <View style={{ width: "25%" }}>
-                          <Text style={styles.additemText}>Name</Text>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>Name</Text>
                         </View>
-                        <View style={{ width: "10%" }}>
-                          <Text style={styles.additemText}>:</Text>
+                        <View style={{ width: "5%" }}>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>:</Text>
                         </View>
                         <View style={{ width: "50%" }}>
-                          <Text style={styles.additemText}>{item.name}</Text>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>{item.name}</Text>
                         </View>
                       </View>}
                       {item.phone && <View style={[flexDirectionRow]}>
                         <View style={{ width: "25%" }}>
-                          <Text style={styles.additemText}>Phone</Text>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>Phone</Text>
                         </View>
-                        <View style={{ width: "10%" }}>
-                          <Text style={styles.additemText}>:</Text>
+                        <View style={{ width: "5%" }}>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>:</Text>
                         </View>
                         <View style={{ width: "50%" }}>
-                          <Text style={styles.additemText}>{item.phone}</Text>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>{item.phone}</Text>
                         </View>
                       </View>}
                       <View style={[flexDirectionRow]}>
                         <View style={{ width: "25%" }}>
-                          <Text style={styles.additemText}>Address</Text>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>Address</Text>
                         </View>
-                        <View style={{ width: "10%" }}>
-                          <Text style={styles.additemText}>:</Text>
+                        <View style={{ width: "5%" }}>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>:</Text>
                         </View>
-                        <View style={{ width: "65%" }}>
-                          <Text style={styles.additemText}>{`${item.address1}, ${item.city}, ${item.province}, ${item.country}-${item.zip}`}</Text>
+                        <View style={{ width: "70%" }}>
+                          <Text style={[styles.additemText, { color: colors.blackColor }]}>{`${item.address1}, ${item.city}, ${item.province}, ${item.country}-${item.zip}`}</Text>
                         </View>
                       </View>
                     </View>
@@ -343,7 +348,7 @@ const UserDashboardScreen = () => {
             </Pressable>
           </View> :
             <View style={[styles.centeredContainer, alignJustifyCenter]}>
-              <Text style={{ color: blackColor }}>No address found.</Text>
+              <Text style={{ color: colors.blackColor }}>No address found.</Text>
               <Pressable style={styles.button} onPress={() => onPressContinueShopping(SHIPPING_ADDRESS)}>
                 <Text style={[styles.buttonText, textAlign]}>Continue Shopping</Text>
               </Pressable>
@@ -444,11 +449,13 @@ const styles = StyleSheet.create({
     marginVertical: spacings.large
   },
   favButton: {
-    width: wp(10),
-    height: wp(10),
+    width: wp(8),
+    height: wp(8),
     right: 2,
     top: 2,
     zIndex: 10,
+    // backgroundColor:whiteColor,
+    borderRadius: 5
   },
   additemText: {
     fontSize: style.fontSizeNormal.fontSize,

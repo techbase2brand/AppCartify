@@ -248,51 +248,117 @@ export const CartProvider: React.FC<PropsWithChildren> = ({ children }) => {
     ],
   );
 
+  // const removeOneFromCart = useCallback(
+  //   async (variantId: string, quantityToRemove: number) => {
+  //     let id = cartId;
+  //     console.log("cartid:::", cartId)
+  //     dispatch({ type: 'add', variantId });
+
+  //     if (!id) {
+  //       // Handle scenario where cartId is not available
+  //       return;
+  //     }
+  //     console.log(`Attempting to remove ${quantityToRemove} of variant ${variantId} from cart`);
+
+  //     const { data } = await cartLinesUpdate({
+  //       variables: {
+  //         cartId: cartId,
+  //         // lines: [{ quantity: quantityToRemove, merchandiseId: variantId }], // Use negative quantity to remove items
+  //         lines: [{ id: variantId, quantity: quantityToRemove }],
+  //       },
+  //     });
+
+  //     console.log(`Removed ${quantityToRemove} of variant ${variantId} from cart`);
+
+  //     dispatch({ type: 'remove', variantId });
+
+  //     // Update checkout URL and total quantity if needed
+  //     setCheckoutURL(data.cartLinesUpdate.cart.checkoutUrl);
+  //     setTotalQuantity(data.cartLinesUpdate.cart.totalQuantity);
+
+  //     // Preload checkout if URL is available
+  //     if (data.cartLinesUpdate.cart.checkoutUrl) {
+  //       ShopifyCheckout.preload(data.cartLinesUpdate.cart.checkoutUrl);
+  //     }
+
+  //     // Fetch updated cart details
+  //     fetchCart({ variables: { cartId: id } });
+  //   },
+  //   [
+  //     cartId,
+  //     cartLinesUpdate,
+  //     setCheckoutURL,
+  //     setTotalQuantity,
+  //     ShopifyCheckout,
+  //     fetchCart,
+  //   ],
+  // );
+
   const removeOneFromCart = useCallback(
     async (variantId: string, quantityToRemove: number) => {
       let id = cartId;
-      console.log("cartid:::", cartId)
+      console.log("cartid:::", cartId);
+
+      // Check if variantId and quantityToRemove are valid
+      if (!variantId || quantityToRemove <= 0) {
+        console.error("Invalid variantId or quantityToRemove:", variantId, quantityToRemove);
+        return;
+      }
+
       dispatch({ type: 'add', variantId });
 
       if (!id) {
         // Handle scenario where cartId is not available
+        console.error("Cart ID is not available");
         return;
       }
-      console.log(`Removed ${quantityToRemove} of variant ${variantId} from cart`);
 
-      const { data } = await cartLinesUpdate({
-        variables: {
-          cartId: cartId,
-          // lines: [{ quantity: quantityToRemove, merchandiseId: variantId }], // Use negative quantity to remove items
-          lines: [{ id: variantId, quantity: quantityToRemove }],
-        },
-      });
+      console.log(`Attempting to remove ${quantityToRemove} of variant ${variantId} from cart`);
 
-      console.log(`Removed1111 ${quantityToRemove} of variant ${variantId} from cart`);
+      try {
+        const { data, errors } = await cartLinesUpdate({
+          variables: {
+            cartId: id,
+            lines: [{ id: variantId, quantity: quantityToRemove }],
+          },
+        });
 
-      dispatch({ type: 'remove', variantId });
+        // Log any errors returned by the mutation
+        if (errors) {
+          console.error("Mutation errors:", errors);
+        }
 
-      // Update checkout URL and total quantity if needed
-      setCheckoutURL(data.cartLinesUpdate.cart.checkoutUrl);
-      setTotalQuantity(data.cartLinesUpdate.cart.totalQuantity);
+        // Check if there are user errors in the response data
+        if (data.cartLinesUpdate.userErrors.length > 0) {
+          console.error("User Errors:", data.cartLinesUpdate.userErrors);
+          return;
+        }
 
-      // Preload checkout if URL is available
-      if (data.cartLinesUpdate.cart.checkoutUrl) {
-        ShopifyCheckout.preload(data.cartLinesUpdate.cart.checkoutUrl);
+        console.log(`Removed1111 ${quantityToRemove} of variant ${variantId} from cart`);
+
+        dispatch({ type: 'remove', variantId });
+
+        // Update checkout URL if available
+        if (data.cartLinesUpdate.cart.checkoutUrl) {
+          setCheckoutURL(data.cartLinesUpdate.cart.checkoutUrl);
+          ShopifyCheckout.preload(data.cartLinesUpdate.cart.checkoutUrl);
+        }
+
+        // Fetch updated cart details
+        fetchCart({ variables: { cartId: id } });
+      } catch (error) {
+        console.error("Error updating cart lines:", error);
       }
-
-      // Fetch updated cart details
-      fetchCart({ variables: { cartId: id } });
     },
     [
       cartId,
       cartLinesUpdate,
       setCheckoutURL,
-      setTotalQuantity,
       ShopifyCheckout,
       fetchCart,
-    ],
+    ]
   );
+
 
   const value = useMemo(
     () => ({

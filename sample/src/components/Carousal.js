@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
 import { View, ScrollView, Dimensions, StyleSheet, Animated } from 'react-native';
-
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { width } = Dimensions.get('window');
 const itemWidth = width * 0.92; // Adjust the width of each item
 const itemSpacing = width * 0.01;
 
-const Carousal = ({ data, renderItem,dostsShow }) => {
+const Carousal = ({ data, renderItem, dostsShow }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
-
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   return (
     <View style={styles.container}>
       <View style={styles.carouselContainer}>
@@ -26,7 +28,7 @@ const Carousal = ({ data, renderItem,dostsShow }) => {
           ))}
         </ScrollView>
       </View>
-     {dostsShow && <View style={styles.dotsContainer}>
+      {dostsShow && <View style={styles.dotsContainer}>
         {data?.map((_, index) => {
           const inputRange = [
             (index - 1) * width,
@@ -43,7 +45,7 @@ const Carousal = ({ data, renderItem,dostsShow }) => {
           return (
             <Animated.View
               key={index.toString()}
-              style={[styles.dot, { opacity: dotOpacity }]}
+              style={[styles.dot, { opacity: dotOpacity, backgroundColor: colors.blackColor }]}
             />
           );
         })}

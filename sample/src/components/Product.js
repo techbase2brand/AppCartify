@@ -7,7 +7,8 @@ import { BaseStyle } from '../constants/Style';
 import { ADD_TO_CART, OUT_OF_STOCK } from '../constants/Constants';
 import { logEvent } from '@amplitude/analytics-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignItemsCenter, resizeModeCover, flexDirectionRow, alignJustifyCenter, borderWidth1 } = BaseStyle;
 
 const Product = ({ product, onAddToCart, loading, inventoryQuantity, onPress }) => {
@@ -17,6 +18,8 @@ const Product = ({ product, onAddToCart, loading, inventoryQuantity, onPress }) 
   const currencyCode = price ? price?.currencyCode : null;
   const [quantity, setQuantity] = useState(1);
   const [shopCurrency, setShopCurrency] = useState('');
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   useEffect(() => {
     const fetchCurrency = async () => {
       try {
@@ -51,27 +54,27 @@ const Product = ({ product, onAddToCart, loading, inventoryQuantity, onPress }) 
     return text;
   };
   return (
-    <Pressable style={[styles.productContainer, alignItemsCenter, flexDirectionRow]} onPress={onPress}>
+    <Pressable style={[styles.productContainer, alignItemsCenter, flexDirectionRow, { backgroundColor: isDarkMode ? grayColor : whiteColor }]} onPress={onPress}>
       <Image
         source={{ uri: imageSource }}
         style={[styles.productImage, resizeModeCover]}
       />
       <View style={[styles.contentBox, flexDirectionRow]}>
         <View style={{ width: "45%", paddingRight: spacings.large }}>
-          <Text style={[styles.productName]}>{trimcateText(product?.title)}</Text>
+          <Text style={[styles.productName, { color: colors.blackColor }]}>{trimcateText(product?.title)}</Text>
           {priceAmount && (
-            <Text style={[styles.productPrice]}>
-               {priceAmount} {currencyCode ? currencyCode : shopCurrency}
+            <Text style={[styles.productPrice, { color: colors.blackColor }]}>
+              {priceAmount} {currencyCode ? currencyCode : shopCurrency}
             </Text>)}
         </View>
         <View style={[{ width: "42%", paddingVertical: spacings.small, alignItems: "center", justifyContent: "space-around", marginLeft: spacings.large }]}>
-          <View style={[styles.quantityContainer, borderWidth1,{marginBottom:spacings.normal}]}>
+          <View style={[styles.quantityContainer, borderWidth1, { marginBottom: spacings.normal, backgroundColor: colors.whiteColor }]}>
             <TouchableOpacity onPress={decrementQuantity}>
-              <Text style={styles.quantityButton}>-</Text>
+              <Text style={[styles.quantityButton, { color: colors.blackColor }]}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.quantity}>{quantity}</Text>
+            <Text style={[styles.quantity, { color: colors.blackColor }]}>{quantity}</Text>
             <TouchableOpacity onPress={incrementQuantity}>
-              <Text style={styles.quantityButton}>+</Text>
+              <Text style={[styles.quantityButton, { color: colors.blackColor }]}>+</Text>
             </TouchableOpacity>
           </View>
           {!outOfStock ? (
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     padding: spacings.large,
     marginVertical: 10,
     // height: hp(14),
-    backgroundColor:whiteColor,
+    // backgroundColor: whiteColor,
     borderColor: 'transparent',
     borderWidth: .1,
     borderRadius: 10,
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     // fontSize: style.fontSizeMedium.fontSize,
     // fontWeight: style.fontWeightThin.fontWeight,
     // color: blackColor,
-    color: blackColor,
+    // color: blackColor,
     fontSize: style.fontSizeNormal.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
   },
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     // color: redColor,
     fontSize: style.fontSizeSmall1x.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
-    color: blackColor,
+    // color: blackColor,
     fontFamily: 'GeneralSans-Variable'
   },
   contentBox: {
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     // marginBottom: 10,
-    backgroundColor: whiteColor,
+    // backgroundColor: whiteColor,
     paddingHorizontal: 5,
     justifyContent: "center",
     borderRadius: 10

@@ -22,10 +22,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest, loginSuccess, loginFailure } from '../redux/actions/authActions';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import LoadingModal from '../components/Modal/LoadingModal';
-import AuthModal from '../components/Modal/AuthModal';
-import WebViewModal from '../components/Modal/WebViewModal';
 import { logEvent } from '@amplitude/analytics-react-native';
 import PushNotification from 'react-native-push-notification';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 
 const { flex, alignJustifyCenter, alignItemsCenter, borderWidth1, borderRadius5, textDecorationUnderline, resizeModeContain, flexDirectionRow,
   positionAbsolute, textAlign, justifyContentSpaceBetween } = BaseStyle;
@@ -33,6 +33,8 @@ const { flex, alignJustifyCenter, alignItemsCenter, borderWidth1, borderRadius5,
 const LoginScreen = ({ navigation }: { navigation: any }) => {
   const { setIsLoggedIn } = useContext(AuthContext)
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const [email, setEmail] = useState('');
@@ -88,7 +90,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     }
     try {
       // const response = await fetch(`https://${STOREFRONT_DOMAIN}/activate-account`, {
-      const response = await fetch(`https://0a18-122-161-196-251.ngrok-free.app/api/customerLogin`, {
+      const response = await fetch(`http://admin.appcartify.com/api/customerLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +99,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       });
       dispatch(loginRequest({ email, password }));
       if (response.ok) {
-        console.log("response", response)
+        // console.log("response", response)
         await AsyncStorage.setItem('isUserLoggedIn', response.url)
         setIsLoggedIn(true)
         navigation.navigate("Home");
@@ -105,7 +107,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         logEvent('LoginSuccess');
       } else {
         const responseData = await response.json();
-        console.log('Activation Failed', responseData.message);
+        // console.log('Activation Failed', responseData.message);
         setPasswordError(responseData.message)
         dispatch(loginFailure(responseData.message));
         logEvent(`LoginFailure ${responseData.message}`);
@@ -119,7 +121,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
   //check user registered in shopify or not
   const checkIfUserIsRegistered = async (email) => {
-    console.log("check user exit email ", email)
+    // console.log("check user exit email ", email)
     try {
       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
         method: 'GET',
@@ -135,7 +137,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         // Check if any customer matches the provided email
         const isRegistered = customers.some(customer => {
           if (customer.email === email) {
-            console.log('Customer found:', customer);
+            // console.log('Customer found:', customer);
             return true;
           }
           return false;
@@ -336,7 +338,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       const { idToken, user } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
-      console.log('User signed In with Google successfully!', user);
+      // console.log('User signed In with Google successfully!', user);
       await AsyncStorage.setItem('userImage', user.photo)
       // Extract necessary details from the user's Google account
       const { email, givenName, familyName } = user;
@@ -355,7 +357,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           first_name: givenName,
           last_name: familyName,
         });
-        console.log('Shopify response:', shopifyResponse);
+        // console.log('Shopify response:', shopifyResponse);
         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
         Toast.show(`User Registered Succesfully`);
         handleNotificationTrigger();
@@ -392,7 +394,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
       const userCredential = await auth().signInWithCredential(facebookCredential);
 
-      console.log(userCredential);
+      // console.log(userCredential);
 
       if (userCredential.additionalUserInfo.isNewUser) {
         const { profile } = userCredential.additionalUserInfo;
@@ -419,7 +421,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             last_name,
           });
 
-          console.log('Shopify response:', shopifyResponse);
+          // console.log('Shopify response:', shopifyResponse);
           await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse));
           Toast.show('User Logged In Successfully');
           dispatch(loginSuccess({ email, password: '' }));
@@ -446,23 +448,24 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, flex]}
+      style={[styles.container, { backgroundColor: colors.whiteColor }, flex]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+      {/* <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}> */}
+      <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         <TouchableOpacity style={[positionAbsolute, styles.backIcon]} onPress={() => { logEvent(`Back Button Pressed from Login`), navigation.goBack() }}>
-          <Ionicons name={"arrow-back"} size={33} color={blackColor} />
+          <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
         </TouchableOpacity>
         <View style={[styles.logoBox, alignJustifyCenter]}>
-          <Text style={styles.text}>Welcome Back!</Text>
+          <Text style={[styles.text, { color: colors.blackColor }]}>Welcome Back!</Text>
         </View>
         <View style={[styles.textInputBox]}>
-          <Text style={styles.textInputHeading}>{EMAIL}</Text>
+          <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{EMAIL}</Text>
           <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
             <View style={{ flex: 1 }}>
               <TextInput
                 placeholder={EMAIL}
-                placeholderTextColor={grayColor}
+                placeholderTextColor={colors.grayColor}
                 onChangeText={(text) => {
                   setEmail(text);
                   if (emailError) {
@@ -472,18 +475,18 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 value={email}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                style={{ color: blackColor }}
+                style={{ color: colors.blackColor }}
               />
             </View>
             {/* <MaterialCommunityIcons name="email" size={25} color={grayColor} /> */}
           </View>
           {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-          <Text style={styles.textInputHeading}>{PASSWORD}</Text>
+          <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{PASSWORD}</Text>
           <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
             <View style={{ flex: 1 }}>
               <TextInput
                 placeholder={PASSWORD}
-                placeholderTextColor={grayColor}
+                placeholderTextColor={colors.grayColor}
                 onChangeText={(text) => {
                   setPassword(text);
                   if (passwordError) {
@@ -492,21 +495,21 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 }}
                 value={password}
                 secureTextEntry={!showPassword}
-                style={{ color: blackColor }}
+                style={{ color: colors.blackColor }}
               />
             </View>
             <TouchableOpacity onPress={toggleShowPassword}>
-              <MaterialCommunityIcons name={showPassword ? "eye" : "eye-off"} size={20} color={grayColor} />
+              <MaterialCommunityIcons name={showPassword ? "eye" : "eye-off"} size={20} color={colors.grayColor} />
             </TouchableOpacity>
           </View>
           {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
           <View style={[{ width: "100%", height: hp(5) }, flexDirectionRow, justifyContentSpaceBetween]}>
             <View style={[flexDirectionRow, alignItemsCenter, { height: hp(3) }]}>
               <TouchableOpacity onPress={() => setRememberMe(!rememberMe)}>
-                {rememberMe ? <Ionicons name={'checkbox'} size={20} color={redColor} />
-                  : <MaterialIcons name="check-box-outline-blank" size={20} color={redColor} />}
+                {rememberMe ? <Ionicons name={'checkbox'} size={20} color={colors.redColor} />
+                  : <MaterialIcons name="check-box-outline-blank" size={20} color={colors.redColor} />}
               </TouchableOpacity>
-              <Text style={[{ color: blackColor }]}>{REMEMBER_ME}</Text>
+              <Text style={[{ color: colors.blackColor }]}>{REMEMBER_ME}</Text>
             </View >
             <TouchableOpacity
               onPress={() => navigation.navigate("ForgetPasswordScreen")}
@@ -518,12 +521,12 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             <Text style={styles.buttonText}>{LOGIN}</Text>
           </Pressable>
           <Pressable style={[{ width: "100%" }, alignJustifyCenter]} onPress={() => { logEvent('SignUp Button clicked From Login Screen'), navigation.navigate("Register") }}>
-            <Text style={[{ marginTop: spacings.Large1x, color: blackColor }]}>{DONT_HAVE_AN_ACCOUNT}<Text style={[{ color: redColor }]}>{REGISTER}</Text></Text>
+            <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }]}>{DONT_HAVE_AN_ACCOUNT}<Text style={[{ color: colors.redColor }]}>{REGISTER}</Text></Text>
           </Pressable>
           <View style={[flexDirectionRow, alignJustifyCenter, { width: "100%", marginTop: spacings.large }]}>
-            <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
-            <Text style={[{ color: blackColor, marginVertical: spacings.xxxxLarge, marginHorizontal: spacings.small }, textAlign]}>or</Text>
-            <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
+            <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
+            <Text style={[{ color: colors.blackColor, marginVertical: spacings.xxxxLarge, marginHorizontal: spacings.small }, textAlign]}>or</Text>
+            <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
           </View>
           <View style={[styles.socialAuthBox, alignJustifyCenter, flexDirectionRow]}>
             <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignIn}>
@@ -536,7 +539,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               <Image source={APPLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
             </TouchableOpacity>}
           </View>
-          <Text style={[{ marginTop: spacings.Large1x, color: blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
+          <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
           <View style={[flexDirectionRow, { marginTop: spacings.large, width: "100%" }, alignJustifyCenter]}>
             {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(TERM_OF_SERVICES_URL) }}> */}
             <TouchableOpacity onPress={() => {
@@ -544,7 +547,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 headerText: TERM_OF_SERVICES
               })
             }}>
-              <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
+              <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(PRIVACY_POLICY_URL) }}> */}
             <TouchableOpacity onPress={() => {
@@ -552,7 +555,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 headerText: PRIVACY_POLICY
               })
             }}>
-              <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
+              <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(CONTENT_POLICY_URL) }}>
           <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{CONTENT_POLICY}</Text>
@@ -564,24 +567,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         <LoadingModal visible={loading} />
       }
 
-      {
-        socialLogin &&
-        <AuthModal
-          modalVisible={socialLogin}
-          setModalVisible={setSocialLogin}
-          onPressFacebook={onFacebookButtonPress}
-          navigation={navigation} />
-      }
-
-      {
-        showWebView && (
-          <WebViewModal
-            modalVisible={showWebView}
-            onClose={() => setShowWebView(false)}
-            url={webViewURL}
-          />
-        )
-      }
     </KeyboardAvoidingView >
   );
 };

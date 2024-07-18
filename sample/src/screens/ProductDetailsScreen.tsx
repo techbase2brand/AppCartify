@@ -9,7 +9,7 @@ import Toast from 'react-native-simple-toast';
 import FontAwesome from 'react-native-vector-icons/dist/FontAwesome';
 import Share from 'react-native-share';
 import axios from 'axios';
-import { blackColor, redColor, whiteColor, lightGrayOpacityColor, goldColor, lightPink } from '../constants/Color';
+import { blackColor, redColor, whiteColor, lightGrayOpacityColor, goldColor, lightPink, grayColor } from '../constants/Color';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -24,6 +24,8 @@ import Header from '../components/Header';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import LoadingModal from '../components/Modal/LoadingModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, borderRadius5, textAlign, positionAbsolute,
   alignItemsCenter, resizeModeContain, textDecorationUnderline } = BaseStyle;
 
@@ -40,6 +42,8 @@ function ProductDetailsScreen({ navigation, route }: Props) {
   const { tags, option, ids } = route?.params;
   const [selectedOptions, setSelectedOptions] = useState({});
   const dispatch = useDispatch();
+  const { isDarkMode } = useThemes();
+  const themecolors = isDarkMode ? darkColors : lightColors;
   if (!route?.params) {
     return null;
   }
@@ -48,13 +52,69 @@ function ProductDetailsScreen({ navigation, route }: Props) {
     logEvent('Product Details Screen Initialized');
   }, [])
 
+  // useEffect(() => {
+  //   const fetchRelatedProducts = async () => {
+  //     try {
+  //       // Constructing the tags string from array
+
+  //       const tagsString = tags.join(',');
+  //       const excludedProductTitle = route?.params?.product.title;
+  //       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/products.json?tags=${tagsString}`, {
+  //         headers: {
+  //           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       });
+
+  //       if (response.data.products) {
+  //         // console.log("Response data:", response?.data);
+
+  //         // Logging each product's tags for verification
+  //         // response.data.products.forEach((product, index) => {
+  //         //   console.log(`Product ${index + 1} tags:`, product.tags);
+  //         // });
+
+  //         // Filtering products based on tags
+  //         const filteredProducts = response?.data?.products?.filter(product => {
+  //           const excludeProduct = tags.includes(product?.title) || product?.title === excludedProductTitle;
+  //           const includeProduct = tags.some(tag => product?.tags?.includes(tag) || product?.title?.includes(tag));
+  //           if (!excludeProduct && includeProduct) {
+  //             // console.log(`Included Product: ${product.title}`);
+  //             return true;
+  //           } else {
+  //             // console.log(`Excluded Product: ${product.title}`);
+  //             return false;
+  //           }
+  //         });
+  //         // const filteredProducts = response.data.products.filter(product =>
+  //         //   tags.some(tag => product.tags.includes(tag))
+  //         // );
+
+  //         // console.log("Filtered Products:", filteredProducts);
+
+  //         // Update state with filtered products
+  //         setRelatedProducts(filteredProducts);
+  //       }
+  //     } catch (error) {
+  //       console.log('Error fetching related products:', error);
+  //     }
+  //   };
+
+  //   if (tags.length > 0) {
+  //     fetchRelatedProducts();
+  //   } else {
+  //     // Clear related products when tags are empty
+  //     setRelatedProducts([]);
+  //   }
+
+  // }, [tags]);
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
-        // Constructing the tags string from array
-
+        // Constructing the tags string from the array
         const tagsString = tags.join(',');
-        const excludedProductTitle = route?.params?.product.title;
+        const excludedProductTitle = route?.params?.product?.title;
+
         const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/products.json?tags=${tagsString}`, {
           headers: {
             'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
@@ -63,30 +123,14 @@ function ProductDetailsScreen({ navigation, route }: Props) {
         });
 
         if (response.data.products) {
-          console.log("Response data:", response?.data);
+          // Filtering products based on tags and ensuring they are active
+          const filteredProducts = response.data.products.filter(product => {
+            const isActive = product.status === 'active';
+            const isExcluded = product.title === excludedProductTitle || tags.includes(product.title);
+            const hasMatchingTag = tags.some(tag => product.tags.includes(tag));
 
-          // Logging each product's tags for verification
-          // response.data.products.forEach((product, index) => {
-          //   console.log(`Product ${index + 1} tags:`, product.tags);
-          // });
-
-          // Filtering products based on tags
-          const filteredProducts = response?.data?.products?.filter(product => {
-            const excludeProduct = tags.includes(product?.title) || product?.title === excludedProductTitle;
-            const includeProduct = tags.some(tag => product?.tags?.includes(tag) || product?.title?.includes(tag));
-            if (!excludeProduct && includeProduct) {
-              // console.log(`Included Product: ${product.title}`);
-              return true;
-            } else {
-              // console.log(`Excluded Product: ${product.title}`);
-              return false;
-            }
+            return isActive && !isExcluded && hasMatchingTag;
           });
-          // const filteredProducts = response.data.products.filter(product =>
-          //   tags.some(tag => product.tags.includes(tag))
-          // );
-
-          console.log("Filtered Products:", filteredProducts);
 
           // Update state with filtered products
           setRelatedProducts(filteredProducts);
@@ -102,8 +146,9 @@ function ProductDetailsScreen({ navigation, route }: Props) {
       // Clear related products when tags are empty
       setRelatedProducts([]);
     }
+  }, [tags, route?.params?.product?.title]);
 
-  }, [tags]);
+
 
   const handleSelectOption = (optionName, value) => {
     logEvent(`Selected Product  variant Name:${optionName} Value:${value}`);
@@ -115,14 +160,14 @@ function ProductDetailsScreen({ navigation, route }: Props) {
 
   const onAddtoCartProduct = async (id: any, quantity: number) => {
     logEvent(`Add To Cart  Product variantId:${id} Qty:${quantity}`);
-    console.log("addto cart id", id, quantity)
+    // console.log("addto cart id", id, quantity)
     await addToCart(id, quantity);
     navigation.navigate('CartModal');
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
   return (
-    <ImageBackground style={styles.container} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[styles.container, { backgroundColor: themecolors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
         backIcon={true} text={route?.params?.product.title}
         shoppingCart={true} navigation={navigation} />
@@ -194,6 +239,8 @@ function ProductDetails({
   // const STOREFRONT_ACCESS_TOKEN = getStoreFrontAccessToken(selectedItem)
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
+  const { isDarkMode } = useThemes();
+  const themecolors = isDarkMode ? darkColors : lightColors;
 
   useEffect(() => {
     // Check if no option is selected
@@ -243,7 +290,7 @@ function ProductDetails({
 
   const getInventoryQuantity = () => {
     const selectedVariantId = getSelectedVariantId();
-    console.log("selectedVariantId", selectedVariantId)
+    // console.log("selectedVariantId", selectedVariantId)
     if (selectedVariantId) {
       const selectedVariant = ids?.find(variant => variant.id === selectedVariantId);
       return selectedVariant ? selectedVariant.inventoryQty : 0;
@@ -271,7 +318,7 @@ function ProductDetails({
       body: JSON.stringify({ query, variables })
     });
     const responseData = await response.json();
-    console.log(responseData)
+    // console.log(responseData)
     if (responseData.errors) {
       console.error('Error fetching product handle:', responseData.errors);
       return null;
@@ -292,7 +339,7 @@ function ProductDetails({
         //   bundleId: 'com.deepLinkingProjectBundleId',
         // },
       }, dynamicLinks.ShortLinkType.DEFAULT)
-      console.log('link:', link)
+      // console.log('link:', link)
       return link
     } catch (error) {
       console.log('Generating Link Error:', error)
@@ -342,7 +389,7 @@ function ProductDetails({
   };
 
   const handlePress = (item) => {
-    console.log("handelePress", item)
+    // console.log("handelePress", item)
     if (!getIsFavSelected(item.admin_graphql_api_id)) {
       logEvent(`Product Add to wishlish ProductId: ${item.admin_graphql_api_id}`);
       dispatch(addToWishlist(item));
@@ -359,7 +406,7 @@ function ProductDetails({
       setLoadingProductId(null);
     });
   };
-  console.log(options)
+  // console.log(options)
   return (
     <View>
       <ScrollView
@@ -384,17 +431,17 @@ function ProductDetails({
             <View>
               <View style={[flexDirectionRow, { width: "100%" }]}>
                 <View style={{ width: "90%" }}>
-                  <Text style={styles.productTitle}>{product.title}</Text>
+                  <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>{product.title}</Text>
                 </View>
                 <TouchableOpacity style={[alignJustifyCenter, styles.shareButton]} onPress={() => shareProduct(product.id)}>
-                  <FontAwesome name="share" size={20} color={"#B5A2A2"} />
+                  <FontAwesome name="share" size={20} color={isDarkMode ? themecolors.lightPink : "#B5A2A2"} />
                 </TouchableOpacity>
               </View>
               <View style={[flexDirectionRow, { width: "100%" }]}>
-                <Text style={styles.productPrice}>{(variant?.price?.amount) ? (variant?.price?.amount) : (variant?.price)} {(variant?.price?.currencyCode) ? (variant?.price?.currencyCode) : shopCurrency}</Text>
+                <Text style={[styles.productPrice, { color: themecolors.blackColor }]}>{(variant?.price?.amount) ? (variant?.price?.amount) : (variant?.price)} {(variant?.price?.currencyCode) ? (variant?.price?.currencyCode) : shopCurrency}</Text>
                 <Pressable style={[flexDirectionRow, alignItemsCenter, { marginLeft: spacings.large }]}>
                   <FontAwesome name="star" size={15} color={goldColor} />
-                  <Text style={styles.productDescription}>  <Text style={[styles.productDescription, textDecorationUnderline, { fontWeight: style.fontWeightMedium1x.fontWeight }]}>4.0/5</Text> (45 reviews)</Text>
+                  <Text style={[styles.productDescription, { color: themecolors.blackColor }]}>  <Text style={[styles.productDescription, textDecorationUnderline, { fontWeight: style.fontWeightMedium1x.fontWeight, color: themecolors.blackColor }]}>4.0/5</Text> (45 reviews)</Text>
                 </Pressable>
               </View>
               {product.description && <Pressable onPress={toggleExpanded} style={{ marginVertical: spacings.large }}>
@@ -426,7 +473,7 @@ function ProductDetails({
 
                   return (
                     <View key={index} style={styles.optionContainer}>
-                      <Text style={styles.relatedProductsTitle}>Choose {option?.name}</Text>
+                      <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>Choose {option?.name}</Text>
                       <View style={[flexDirectionRow, { marginTop: spacings.large }]}>
                         <ScrollView horizontal>
                           {option?.values.map((value, idx) => (
@@ -439,11 +486,11 @@ function ProductDetails({
                                 borderRadius5,
                                 alignJustifyCenter,
                                 selectedOptions[option.name] === value
-                                  ? { backgroundColor: redColor, borderWidth: 0 }
-                                  : { backgroundColor: whiteColor }
+                                  ? { backgroundColor: themecolors.redColor, borderWidth: 0 }
+                                  : { backgroundColor: themecolors.whiteColor }
                               ]}
                             >
-                              <Text style={[styles.optionValue, selectedOptions[option?.name] === value && { color: whiteColor }]}>
+                              <Text style={[styles.optionValue, selectedOptions[option?.name] === value && { color: themecolors.whiteColor }]}>
                                 {value}
                               </Text>
                             </TouchableOpacity>
@@ -457,14 +504,14 @@ function ProductDetails({
 
             </View>
             <View style={{ marginBottom: spacings.large }}>
-              <Text style={styles.relatedProductsTitle}>{RATING_REVIEWS}</Text>
+              <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{RATING_REVIEWS}</Text>
               <View style={[styles.reviewSection, flexDirectionRow, alignItemsCenter]}>
                 <View style={[{ width: wp(30) }, justifyContentSpaceBetween, flexDirectionRow]}>
-                  <FontAwesome name="star" size={17} color={goldColor} />
-                  <FontAwesome name="star" size={17} color={goldColor} />
-                  <FontAwesome name="star" size={17} color={goldColor} />
-                  <FontAwesome name="star" size={17} color={goldColor} />
-                  <FontAwesome name="star-o" size={17} color={goldColor} />
+                  <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                  <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                  <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                  <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                  <FontAwesome name="star-o" size={17} color={themecolors.goldColor} />
                 </View>
                 <Text style={[styles.optionValue, { marginLeft: spacings.large, backgroundColor: lightGrayOpacityColor, paddingHorizontal: spacings.large, borderRadius: 5 }]}>4/5</Text>
               </View>
@@ -473,15 +520,15 @@ function ProductDetails({
                   <Image source={LADY_DONALD_RICE} style={[resizeModeContain, { width: wp(13), height: wp(13) }]} />
                 </View>
                 <View style={{ width: "75%" }}>
-                  <Text style={[styles.productPrice, { padding: spacings.small }]}>Donald Rice</Text>
+                  <Text style={[styles.productPrice, { padding: spacings.small, color: themecolors.blackColor }]}>Donald Rice</Text>
                   <View style={[{ width: wp(30), height: hp(3), paddingLeft: spacings.large }, justifyContentSpaceBetween, flexDirectionRow]}>
-                    <FontAwesome name="star" size={17} color={goldColor} />
-                    <FontAwesome name="star" size={17} color={goldColor} />
-                    <FontAwesome name="star" size={17} color={goldColor} />
-                    <FontAwesome name="star" size={17} color={goldColor} />
-                    <FontAwesome name="star-o" size={17} color={goldColor} />
+                    <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                    <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                    <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                    <FontAwesome name="star" size={17} color={themecolors.goldColor} />
+                    <FontAwesome name="star-o" size={17} color={themecolors.goldColor} />
                   </View>
-                  <Text style={[styles.productDescription, { fontSize: style.fontSizeSmall1x.fontSize, }]}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed ...</Text>
+                  <Text style={[styles.productDescription, { fontSize: style.fontSizeSmall1x.fontSize, color: themecolors.blackColor }]}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed ...</Text>
                 </View>
               </View>
               {/* <TouchableOpacity style={[styles.button, alignItemsCenter, borderRadius5]} onPress={onPreesViewReviewAll}>
@@ -499,7 +546,7 @@ function ProductDetails({
             </View> */}
           </View>
           {relatedProducts?.length != 0 && <View style={styles.relatedProductsContainer}>
-            <Text style={styles.relatedProductsTitle}>{YOU_MIGHT_LIKE}</Text>
+            <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{YOU_MIGHT_LIKE}</Text>
             <FlatList
               data={relatedProducts}
               renderItem={({ item }) => {
@@ -507,17 +554,17 @@ function ProductDetails({
                 const isFavSelected = getIsFavSelected(item.admin_graphql_api_id);
                 return (
                   <View
-                    style={[styles.relatedProductItem, alignJustifyCenter]}
+                    style={[styles.relatedProductItem, alignJustifyCenter, { backgroundColor: isDarkMode ? grayColor : "transparnet" }]}
                   >
-                    <View style={{ width: "100%", borderWidth: .5, borderColor: lightGrayOpacityColor, marginBottom: spacings.small, borderRadius: 10, alignItems: "center" }}>
+                    <View style={{ width: "100%", borderWidth: .5, borderColor: themecolors.lightGrayOpacityColor, marginBottom: spacings.small, borderRadius: 10, alignItems: "center" }}>
                       <Image
                         source={{ uri: item?.image?.src }}
                         style={[styles.relatedProductImage, borderRadius10, resizeModeContain]}
                       />
                     </View>
                     <View style={[{ width: "100%", height: hp(10) }]}>
-                      <Text style={[styles.relatedproductName,]}>{item.title}</Text>
-                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small }]}>{item?.variants[0]?.price}{shopCurrency}
+                      <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{item.title}</Text>
+                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants[0]?.price}{shopCurrency}
                       </Text>
                     </View>
                     <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
@@ -538,7 +585,7 @@ function ProductDetails({
                           )}
 
                         </Pressable>}
-                      <TouchableOpacity style={[alignJustifyCenter, styles.relatedProductfavButton]} onPress={() => handlePress(item)}>
+                      <TouchableOpacity style={[alignJustifyCenter, styles.relatedProductfavButton, { backgroundColor: whiteColor, borderColor: themecolors.redColor }]} onPress={() => handlePress(item)}>
                         <AntDesign
                           name={isFavSelected ? "heart" : "hearto"}
                           size={18}
@@ -559,16 +606,16 @@ function ProductDetails({
           {shareProductloading && <LoadingModal visible={shareProductloading} />}
         </View>
       </ScrollView>
-      <View style={[flexDirectionRow, justifyContentSpaceBetween, positionAbsolute, alignItemsCenter, { bottom: 0, width: wp(100), height: hp(10), zIndex: 1, backgroundColor: whiteColor }]}>
+      <View style={[flexDirectionRow, justifyContentSpaceBetween, positionAbsolute, alignItemsCenter, { bottom: 0, width: wp(100), height: hp(10), zIndex: 1, backgroundColor: themecolors.whiteColor }]}>
         {getInventoryQuantity() > 0 && <View>
-          <Text style={{ padding: spacings.large, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>{QUNATITY}:</Text>
+          <Text style={{ padding: spacings.large, color: themecolors.redColor, fontSize: style.fontSizeLarge.fontSize }}>{QUNATITY}:</Text>
           <View style={[styles.quantityContainer, flexDirectionRow, alignJustifyCenter]}>
             <TouchableOpacity onPress={decrementQuantity}>
-              <Text style={[styles.quantityButton, borderRadius5, textAlign]}>-</Text>
+              <Text style={[styles.quantityButton, borderRadius5, textAlign, { color: themecolors.blackColor, borderColor: themecolors.blackColor }]}>-</Text>
             </TouchableOpacity>
-            <Text style={styles.quantity}>{quantity}</Text>
+            <Text style={[styles.quantity, { color: themecolors.blackColor }]}>{quantity}</Text>
             <TouchableOpacity onPress={incrementQuantity} >
-              <Text style={[styles.quantityButton, borderRadius5, textAlign]}>+</Text>
+              <Text style={[styles.quantityButton, borderRadius5, textAlign, { color: themecolors.blackColor, borderColor: themecolors.blackColor }]}>+</Text>
             </TouchableOpacity>
           </View>
         </View>}
@@ -724,8 +771,9 @@ function createStyles(colors: Colors) {
     },
     relatedProductItem: {
       width: wp(40),
-      paddingHorizontal: spacings.large,
-      // margin: 5
+      marginVertical: spacings.small,
+      padding: spacings.large,
+      borderRadius: 5
       // height: hp(30),
       // marginVertical: spacings.large
     },
@@ -736,7 +784,7 @@ function createStyles(colors: Colors) {
     },
     relatedProductTitle: {
       fontSize: style.fontSizeNormal.fontSize,
-      color: blackColor,
+      // color: blackColor,
       fontWeight: style.fontWeightThin1x.fontWeight,
       // fontFamily: 'GeneralSans-Variable'
     },
@@ -800,8 +848,8 @@ function createStyles(colors: Colors) {
       // bottom: 4,
       zIndex: 10,
       borderWidth: 1,
-      borderColor: redColor,
-      backgroundColor: whiteColor,
+      // borderColor: redColor,
+      // backgroundColor: whiteColor,
       borderRadius: 10,
     },
     relatedproductName: {
@@ -809,13 +857,14 @@ function createStyles(colors: Colors) {
       // fontWeight: style.fontWeightThin1x.fontWeight,
       // color: blackColor,
       // fontFamily: 'GeneralSans-Variable'
-      color: blackColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
+      // color: blackColor,
+      fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
     },
     relatedproductPrice: {
       fontSize: style.fontSizeSmall1x.fontSize,
       fontWeight: style.fontWeightThin1x.fontWeight,
       // fontWeight: style.fontWeightMedium1x.fontWeight,
-      color: blackColor,
+      // color: blackColor,
       fontFamily: 'GeneralSans-Variable'
       // marginLeft: spacings.small,
       // fontFamily: 'GeneralSans-Variable'

@@ -18,19 +18,21 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import LoadingModal from '../components/Modal/LoadingModal';
-import AuthModal from '../components/Modal/AuthModal';
 import SuccessModal from '../components/Modal/SuccessModal';
 import { logEvent } from '@amplitude/analytics-react-native';
 import PushNotification from 'react-native-push-notification';
 import OTPTextInput from 'react-native-otp-textinput';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess } from '../redux/actions/authActions';
-import WebViewModal from '../components/Modal/WebViewModal';
 
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignJustifyCenter, alignItemsCenter, borderWidth1, borderRadius5, resizeModeContain, flexDirectionRow, positionAbsolute, textAlign, textDecorationUnderline } = BaseStyle;
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
+  const { isDarkMode } = useThemes();
+  const colors = isDarkMode ? darkColors : lightColors;
   // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
   // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const [firstName, setFirstName] = useState('');
@@ -89,7 +91,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     try {
       const formattedPhoneNumber = `+91${phone}`;
       const confirmation = await auth().signInWithPhoneNumber(formattedPhoneNumber);
-      console.log(confirmation)
+      // console.log(confirmation)
     } catch (error) {
       console.error('Error sending OTP:', error);
     }
@@ -121,7 +123,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     // }
     try {
       // const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/customers.json`, {
-      const response = await fetch('https://0a18-122-161-196-251.ngrok-free.app/api/customers', {
+      const response = await fetch('http://admin.appcartify.com/api/customers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,12 +135,12 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           email: email,
           phone: `+91${phone}`,
           addresses: [{
-            address1: '1234 Street',
-            city: 'Citytown',
-            province: 'Uttar Pradesh',
-            country: 'India',
-            zip: '12345',
-            phone: '+918219411575',
+            address1: null,
+            city: null,
+            province: null,
+            country: null,
+            zip: null,
+            phone: null,
             default: true
           }],
           password: password,
@@ -150,16 +152,16 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         setError('')
         setError(responseData.message)
       }
-      console.log('User registered successfully:', responseData);
+      // console.log('User registered successfully:', responseData);
 
       await AsyncStorage.setItem('userDetails', JSON.stringify(responseData))
       // if (response.ok) {
-        Toast.show(`User Registered Succesfully`);
-        setSuccessModalVisible(false)
-        navigation.navigate('Home');
-        dispatch(loginSuccess({ email, password }));
-        logEvent('User Registered Succesfully');
-        handleNotificationTrigger()
+      Toast.show(`User Registered Succesfully`);
+      setSuccessModalVisible(false)
+      navigation.navigate('Home');
+      dispatch(loginSuccess({ email, password }));
+      logEvent('User Registered Succesfully');
+      handleNotificationTrigger()
       // }
     } catch (error) {
       console.log('Registration error:', error);
@@ -176,7 +178,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       const { idToken, user } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
-      console.log('User signed up with Google successfully!', JSON.stringify(user));
+      // console.log('User signed up with Google successfully!', JSON.stringify(user));
       await AsyncStorage.setItem('userImage', user.photo)
       // Extract necessary details from the user's Google account
       const { email, givenName, familyName } = user;
@@ -192,7 +194,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           first_name: givenName,
           last_name: familyName,
         });
-        console.log('Shopify response:', shopifyResponse);
+        // console.log('Shopify response:', shopifyResponse);
         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
         Toast.show(`User Registered Succesfully`);
         handleNotificationTrigger();
@@ -281,7 +283,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
       const userCredential = await auth().signInWithCredential(facebookCredential);
 
-      console.log(userCredential);
+      // console.log(userCredential);
 
       if (userCredential.additionalUserInfo.isNewUser) {
         const { profile } = userCredential.additionalUserInfo;
@@ -306,7 +308,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
             first_name,
             last_name,
           });
-          console.log('Shopify response:', shopifyResponse);
+          // console.log('Shopify response:', shopifyResponse);
           await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse));
           Toast.show('User Logged In Successfully');
           dispatch(loginSuccess({ email, password: '' }));
@@ -354,7 +356,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     }
   };
   const checkIfUserIsRegistered = async (email) => {
-    console.log("check user exit email ", email)
+    // console.log("check user exit email ", email)
     try {
       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
         method: 'GET',
@@ -371,7 +373,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         // Check if any customer matches the provided email
         const isRegistered = customers.some(customer => {
           if (customer.email === email) {
-            console.log('Customer found:', customer);
+            // console.log('Customer found:', customer);
             return true;
           }
           return false;
@@ -435,9 +437,9 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     try {
       setResendButtonDisabled(true);
       const formattedPhoneNumber = `+91${phone}`;
-      console.log(formattedPhoneNumber)
+      // console.log(formattedPhoneNumber)
       await auth().signInWithPhoneNumber(formattedPhoneNumber);
-      console.log('OTP resent');
+      // console.log('OTP resent');
     } catch (error) {
       console.error('Error resending OTP:', error);
     }
@@ -446,29 +448,29 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   return (
 
     <KeyboardAvoidingView
-      style={[styles.container]}
+      style={[styles.container, { backgroundColor: colors.whiteColor }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+      <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         {showOTP ?
           <>
             <View style={[styles.logoBox, alignJustifyCenter, { height: hp(25), }]}>
               <Image source={OTP_VERIFICATION_IMAGE} style={[styles.image, resizeModeContain]} />
             </View>
             <View style={[{ marginTop: spacings.large }]}>
-              <Text style={styles.text}>OTP Verification</Text>
+              <Text style={[styles.text, { color: colors.blackColor }]}>OTP Verification</Text>
             </View>
-            <Text style={{ color: blackColor, marginHorizontal: spacings.small }}>
+            <Text style={{ color: colors.blackColor, marginHorizontal: spacings.small }}>
               {`Enter the OTP sent to +91 ${phone}`}
             </Text>
             <View style={[{ width: "100%", height: hp(18) }, alignJustifyCenter]}>
               <OTPTextInput
                 handleTextChange={handleOTPChange}
                 inputCount={6}
-                tintColor="#000"
-                offTintColor={blackColor}
+                tintColor={colors.blackColor}
+                offTintColor={colors.blackColor}
                 containerStyle={styles.otpContainer}
-                textInputStyle={styles.otpInput}
+                textInputStyle={[styles.otpInput, { color: colors.blackColor }]}
               />
               {/* <TouchableOpacity onPress={hadleResendOtp}>
                 <Text style={{ color: blackColor, marginHorizontal: spacings.small }} >
@@ -478,9 +480,9 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 </Text>
               </TouchableOpacity> */}
               <TouchableOpacity onPress={hadleResendOtp} disabled={resendButtonDisabled}>
-                <Text style={{ color: blackColor, marginHorizontal: spacings.small }}>
+                <Text style={{ color: colors.blackColor, marginHorizontal: spacings.small }}>
                   OTP not Received?
-                  <Text style={{ color: resendButtonDisabled ? 'gray' : blackColor, fontWeight: style.fontWeightThin1x.fontWeight, textDecorationLine: "underline" }}>
+                  <Text style={{ color: resendButtonDisabled ? colors.grayColor : colors.blackColor, fontWeight: style.fontWeightThin1x.fontWeight, textDecorationLine: "underline" }}>
                     {resendButtonDisabled ? ` Resend code in ${timer}s` : ' Resend code'}
                   </Text>
                 </Text>
@@ -491,18 +493,18 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 styles.button,
                 alignItemsCenter,
                 borderRadius5,
-                { backgroundColor: isOtpComplete ? redColor : mediumGray }
+                { backgroundColor: isOtpComplete ? colors.redColor : colors.mediumGray }
               ]}
               onPress={isOtpComplete ? VerifyOTP : null}
               disabled={!isOtpComplete}
             >
-              <Text style={styles.buttonText}>{"Verify & Continue"}</Text>
+              <Text style={[styles.buttonText, { color: colors.blackColor }]}>{"Verify & Continue"}</Text>
             </TouchableOpacity>
             <View style={[alignJustifyCenter, { height: hp(13), marginTop: spacings.xxxxLarge }]}>
               <View style={[flexDirectionRow, alignJustifyCenter, { width: "100%", marginTop: spacings.large }]}>
-                <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
-                <Text style={[{ color: blackColor, marginVertical: spacings.xxxxLarge, marginHorizontal: spacings.small }, textAlign]}>{"Or"}</Text>
-                <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
+                <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
+                <Text style={[{ color: colors.blackColor, marginVertical: spacings.xxxxLarge, marginHorizontal: spacings.small }, textAlign]}>{"Or"}</Text>
+                <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
               </View>
               <View style={[styles.socialAuthBox, alignJustifyCenter, flexDirectionRow]}>
                 <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignUp}>
@@ -523,84 +525,84 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           :
           <>
             <TouchableOpacity style={[positionAbsolute, styles.backIcon]} onPress={() => { logEvent(`Back Button Pressed from Register`), navigation.goBack() }}>
-              <Ionicons name={"arrow-back"} size={33} color={blackColor} />
+              <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
             </TouchableOpacity>
             <View style={[styles.logoBox, alignJustifyCenter]}>
-              <Text style={styles.text}>Get Started With</Text>
+              <Text style={[styles.text, { color: colors.blackColor }]}>Get Started With</Text>
               <Text style={[styles.text, { color: redColor }]}>{APP_NAME}</Text>
             </View>
             <View style={[styles.textInputBox]}>
               <View style={[flexDirectionRow]}>
                 <View style={{ width: "48%", marginRight: spacings.large, }}>
-                  <Text style={styles.textInputHeading}>{FIRST_NAME}</Text>
-                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+                  <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{FIRST_NAME}</Text>
+                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                     <View style={{ flex: 1 }}>
                       <TextInput
                         placeholder={FIRST_NAME}
-                        placeholderTextColor={grayColor}
+                        placeholderTextColor={colors.grayColor}
                         onChangeText={setFirstName}
                         value={firstName}
-                        style={{ color: blackColor }}
+                        style={{ color: colors.blackColor }}
                       />
                     </View>
                   </View>
                 </View>
                 <View style={{ width: "48%", marginRight: spacings.large, }}>
-                  <Text style={styles.textInputHeading}>{LAST_NAME}</Text>
-                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+                  <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{LAST_NAME}</Text>
+                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                     <View style={{ flex: 1 }}>
                       <TextInput
                         placeholder={LAST_NAME}
-                        placeholderTextColor={grayColor}
+                        placeholderTextColor={colors.grayColor}
                         onChangeText={setLastName}
                         value={lastName}
-                        style={{ color: blackColor }}
+                        style={{ color: colors.blackColor }}
                       />
                     </View>
                   </View>
                 </View>
               </View>
-              <Text style={styles.textInputHeading}>{"Phone Number"}</Text>
-              <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+              <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{"Phone Number"}</Text>
+              <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                 <View style={{ flex: 1 }}>
                   <TextInput
                     placeholder="Phone Number"
-                    placeholderTextColor={grayColor}
+                    placeholderTextColor={colors.grayColor}
                     onChangeText={setPhone}
                     value={phone}
                     keyboardType="phone-pad"
-                    style={{ color: blackColor }}
+                    style={{ color: colors.blackColor }}
                     maxLength={10}
                   />
                 </View>
               </View>
-              <Text style={styles.textInputHeading}>{EMAIL}</Text>
-              <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+              <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{EMAIL}</Text>
+              <View style={[styles.input, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                 <View style={{ flex: 1 }}>
                   <TextInput
                     placeholder={EMAIL}
-                    placeholderTextColor={grayColor}
+                    placeholderTextColor={colors.grayColor}
                     onChangeText={setEmail}
                     value={email}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    style={{ color: blackColor }}
+                    style={{ color: colors.blackColor }}
                   />
                 </View>
               </View>
               {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
               <View style={[flexDirectionRow]}>
                 <View style={{ width: "48%", marginRight: spacings.large, }}>
-                  <Text style={styles.textInputHeading}>{PASSWORD}</Text>
-                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+                  <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{PASSWORD}</Text>
+                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                     <View style={{ flex: 1 }}>
                       <TextInput
                         placeholder={PASSWORD}
-                        placeholderTextColor={grayColor}
+                        placeholderTextColor={colors.grayColor}
                         onChangeText={setPassword}
                         value={password}
                         secureTextEntry={!showPassword}
-                        style={{ color: blackColor }}
+                        style={{ color: colors.blackColor }}
                       />
                     </View>
                     <TouchableOpacity onPress={toggleShowPassword}>
@@ -609,20 +611,20 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                   </View>
                 </View>
                 <View style={{ width: "48%", marginRight: spacings.large, }}>
-                  <Text style={styles.textInputHeading}>{CONFIRM_PASSWORD}</Text>
-                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter]}>
+                  <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{CONFIRM_PASSWORD}</Text>
+                  <View style={[styles.halfInput, borderRadius5, borderWidth1, flexDirectionRow, alignItemsCenter, { borderColor: colors.grayColor }]}>
                     <View style={{ flex: 1 }}>
                       <TextInput
                         placeholder={CONFIRM_PASSWORD}
-                        placeholderTextColor={grayColor}
+                        placeholderTextColor={colors.grayColor}
                         onChangeText={setConfirmPassword}
                         value={confirmPassword}
                         secureTextEntry={!showConfirmPassword}
-                        style={{ color: blackColor }}
+                        style={{ color: colors.blackColor }}
                       />
                     </View>
                     <TouchableOpacity onPress={toggleShowConfirmPassword}>
-                      <MaterialCommunityIcons name={showConfirmPassword ? "eye" : "eye-off"} size={20} color={grayColor} />
+                      <MaterialCommunityIcons name={showConfirmPassword ? "eye" : "eye-off"} size={20} color={colors.grayColor} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -632,13 +634,13 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 <Text style={styles.buttonText}>{"Register"}</Text>
               </Pressable>
               <Pressable style={[{ width: "100%", height: hp(6) }, alignJustifyCenter]} onPress={() => { logEvent('SignUp Button clicked From Login Screen'), navigation.navigate("Login") }}>
-                <Text style={[{ marginTop: spacings.Large1x, color: blackColor }]}>{ALREADY_HAVE_AN_ACCOUNT}<Text style={[{ color: redColor }]}>{LOGIN}</Text></Text>
+                <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }]}>{ALREADY_HAVE_AN_ACCOUNT}<Text style={[{ color: colors.redColor }]}>{LOGIN}</Text></Text>
               </Pressable>
               <View style={[alignJustifyCenter, { height: hp(9) }]}>
                 <View style={[flexDirectionRow, alignJustifyCenter, { width: "100%", marginTop: spacings.large }]}>
-                  <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
-                  <Text style={[{ color: blackColor, margin: spacings.small }, textAlign]}>{"Or"}</Text>
-                  <View style={{ height: 1, backgroundColor: grayColor, width: "46%" }}></View>
+                  <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
+                  <Text style={[{ color: colors.blackColor, margin: spacings.small }, textAlign]}>{"Or"}</Text>
+                  <View style={{ height: 1, backgroundColor: colors.grayColor, width: "46%" }}></View>
                 </View>
                 <View style={[styles.socialAuthBox, alignJustifyCenter, flexDirectionRow]}>
                   <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignUp}>
@@ -652,7 +654,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                   </TouchableOpacity>}
                 </View>
               </View>
-              <Text style={[{ marginTop: spacings.Large1x, color: blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
+              <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
               <View style={[flexDirectionRow, { marginTop: spacings.large, width: "100%" }, alignJustifyCenter]}>
                 {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(TERM_OF_SERVICES_URL) }}> */}
                 <TouchableOpacity onPress={() => {
@@ -660,7 +662,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                     headerText: TERM_OF_SERVICES
                   })
                 }}>
-                  <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
+                  <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
                 </TouchableOpacity>
                 {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(PRIVACY_POLICY_URL) }}> */}
                 <TouchableOpacity onPress={() => {
@@ -668,7 +670,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                     headerText: PRIVACY_POLICY
                   })
                 }}>
-                  <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
+                  <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
                 </TouchableOpacity>
                 {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(CONTENT_POLICY_URL) }}>
                   <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{CONTENT_POLICY}</Text>
@@ -680,24 +682,12 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         {loading &&
           <LoadingModal visible={loading} />
         }
-        {socialLogin &&
-          <AuthModal
-            modalVisible={socialLogin} setModalVisible={setSocialLogin} onPressFacebook={onFacebookButtonPress} navigation={navigation}
-          />}
         {successModalVisible && <SuccessModal
           visible={successModalVisible}
           onClose={() => setSuccessModalVisible(false)}
           onPressContinue={handleSignUp}
         />}
-        {
-          showWebView && (
-            <WebViewModal
-              modalVisible={showWebView}
-              onClose={() => setShowWebView(false)}
-              url={webViewURL}
-            />
-          )
-        }
+
       </ImageBackground>
     </KeyboardAvoidingView>
 
@@ -707,7 +697,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: whiteColor,
+    // backgroundColor: whiteColor,
     width: wp(100),
     height: hp(100)
   },
@@ -731,14 +721,14 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: hp(5.5),
-    borderColor: grayColor,
+    // borderColor: grayColor,
     paddingHorizontal: spacings.xLarge,
     marginVertical: spacings.medium,
   },
   halfInput: {
     width: '100%',
     height: hp(5.5),
-    borderColor: grayColor,
+    // borderColor: grayColor,
     paddingHorizontal: spacings.large,
     marginVertical: spacings.medium,
     // marginRight: spacings.large,
@@ -797,7 +787,7 @@ const styles = StyleSheet.create({
   otpInput: {
     borderWidth: 1,
     fontSize: 20,
-    color: '#000',
+    // color: '#000',
     borderRadius: 5,
     width: "14%"
   },

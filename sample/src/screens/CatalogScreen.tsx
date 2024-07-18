@@ -18,7 +18,9 @@ import { useCart } from '../context/Cart';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
-import LoaderKit from 'react-native-loader-kit'
+import LoaderKit from 'react-native-loader-kit';
+import { useThemes } from '../context/ThemeContext';
+import { lightColors, darkColors } from '../constants/Color';
 const { flex, textAlign, alignItemsCenter, resizeModeContain, borderRadius10, positionRelative, alignJustifyCenter, resizeModeCover } = BaseStyle;
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -41,7 +43,8 @@ function CatalogScreen({ navigation }: Props) {
   const [selectedCollectionId, setSelectedCollectionId] = useState('');
   const [collectionsFetched, setCollectionsFetched] = useState(false);
   const [shopifyCollection, setShopifyCollection] = useState([])
-
+  const { isDarkMode } = useThemes();
+  const themecolors = isDarkMode ? darkColors : lightColors;
   useEffect(() => {
     logEvent('Catalog Screen Initialized');
   }, [])
@@ -62,8 +65,8 @@ function CatalogScreen({ navigation }: Props) {
       setCollectionsFetched(true);
     };
     fetchInitialData()
-    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Automotive" ? "gid://shopify/Collection/331367088281" : "gid://shopify/Collection/331148034201");
-    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Clothing" : selectedItem === "Beauty" ? "Beauty" : selectedItem === "Automotive" ? "Automotive" : "Collections");
+    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435016345" : "gid://shopify/Collection/331148034201");
+    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Clothing" : selectedItem === "Beauty" ? "Beauty" : selectedItem === "Electronics" ? "Electronics" : "Collections");
     onPressCollection(CollectionId, CollectionName)
     setSelectedCollectionId(CollectionId)
 
@@ -110,26 +113,26 @@ function CatalogScreen({ navigation }: Props) {
         item.title.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        console.log(`Items for ${item.title}:`);
-        console.log(item.items);
+        // console.log(`Items for ${item.title}:`);
+        // console.log(item.items);
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          console.log("selectedItem title", selectedItem?.title);
-          console.log("Collection", collectionData?.collections?.edges);
+          // console.log("selectedItem title", selectedItem?.title);
+          // console.log("Collection", collectionData?.collections?.edges);
 
           if (collectionData && collectionData.collections && collectionData.collections.edges) {
             let matchedCollection = collectionData.collections.edges.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            console.log("matchedCollection::::", matchedCollection);
+            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection.node);
             }
           }
         });
 
-        console.log("matchedmenu:::::", matchedCollectionsArray);
+        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -193,7 +196,7 @@ function CatalogScreen({ navigation }: Props) {
       .then((response) => response.text())
       .then((result) => {
         const fetchedProducts = JSON.parse(result);
-        console.log(fetchedProducts.data.collection.products.nodes[0].variants, "fetchedProducts.data")
+        // console.log(fetchedProducts.data.collection.products.nodes[0].variants, "fetchedProducts.data")
         setProducts(fetchedProducts?.data?.collection?.products.nodes);
         setLoading(false)
         const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
@@ -218,7 +221,7 @@ function CatalogScreen({ navigation }: Props) {
           }));
         });
         setProductVariantsIDS(productVariantData)
-        console.log(id)
+        // console.log(id)
       })
 
       .catch((error) => {
@@ -243,7 +246,8 @@ function CatalogScreen({ navigation }: Props) {
   };
 
   return (
-    <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+    // <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
+    <ImageBackground style={[flex, { backgroundColor: themecolors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
         navigation={navigation}
         backIcon={true}
@@ -251,41 +255,7 @@ function CatalogScreen({ navigation }: Props) {
         text={collectionTitle}
       />
       <View style={[styles.container]}>
-        {/* <FlatList
-          data={collectionData?.collections?.edges}
-          renderItem={({ item }) => (
-            <Pressable style={[styles.drinkBannerBox, positionRelative, alignJustifyCenter]} onPress={() => onPressCollection(item?.node?.id, item?.node?.title)}>
-              <Image source={{ uri: item?.node?.image?.url }} style={[styles.drinkBannerBox, resizeModeCover]} />
-              <View style={[styles.overlay]}>
-                <Text style={{ fontSize: style.fontSizeNormal.fontSize, color: whiteColor, marginVertical: spacings.small, fontWeight: style.fontWeightBold.fontWeight, }}>{item?.node?.title}</Text>
-              </View>
-            </Pressable>
-          )}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-        /> */}
-        <View style={[styles.productCollectionBox]}>
-          {/* <FlatList
-            data={collectionData?.collections?.edges}
-            renderItem={({ item }) => (
-              <Pressable onPress={() => onPressCollection(item?.node?.id, item?.node?.title)} style={[alignItemsCenter, borderRadius10, { flexDirection: 'row', paddingHorizontal: selectedCollectionId === item?.node?.id ? 0 : spacings.large }]}>
-                {selectedCollectionId === item?.node?.id && <View style={{ width: 5, backgroundColor: redColor, height: hp(10), borderTopRightRadius: 10, borderBottomRightRadius: 10, marginBottom: 25 }}>
-                </View>}
-                <View style={{ height: 'auto', padding: selectedCollectionId === item?.node?.id ? spacings.small : spacings.normal, alignItems: "center", justifyContent: "center", }}>
-                  <View style={{
-                    backgroundColor: whiteColor, borderWidth: selectedCollectionId === item?.node?.id ? 0 : .5,
-                    paddingVertical: spacings.medium, borderRadius: 10, height: hp(10), borderColor: selectedCollectionId === item?.node?.id ? redColor : "#B3B3B3"
-                  }}>
-                    <Image source={{ uri: item?.node?.image?.url }} style={[resizeModeContain, styles.card]} />
-                  </View>
-                  <Text style={[styles.categoryName, textAlign, { color: selectedCollectionId === item?.node?.id ? redColor : blackColor }]}>{item?.node?.title}</Text>
-                </View>
-              </Pressable>
-            )}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(index) => index.toString()}
-          /> */}
+        <View style={[styles.productCollectionBox, { backgroundColor: isDarkMode ? themecolors.grayColor : lightGrayOpacityColor }]}>
           <FlatList
             data={shopifyCollection}
             renderItem={({ item }) => (
@@ -295,11 +265,11 @@ function CatalogScreen({ navigation }: Props) {
                 <View style={{ height: 'auto', padding: selectedCollectionId === item?.id ? spacings.small : spacings.normal, alignItems: "center", justifyContent: "center", }}>
                   <View style={{
                     backgroundColor: whiteColor, borderWidth: selectedCollectionId === item?.node?.id ? 0 : .5,
-                    paddingVertical: spacings.medium, borderRadius: 10, height: hp(10), borderColor: selectedCollectionId === item?.id ? redColor : mediumGray
+                    paddingVertical: spacings.medium, borderRadius: 10, height: hp(10), borderColor: selectedCollectionId === item?.id ? redColor : themecolors.mediumGray
                   }}>
                     <Image source={{ uri: item?.image?.url }} style={[resizeModeContain, styles.card]} />
                   </View>
-                  <Text style={[styles.categoryName, textAlign, { color: selectedCollectionId === item?.id ? redColor : blackColor }]}>{item?.title}</Text>
+                  <Text style={[styles.categoryName, textAlign, { color: selectedCollectionId === item?.id ? redColor : themecolors.blackColor }]}>{item?.title}</Text>
                 </View>
               </Pressable>
             )}
@@ -309,8 +279,8 @@ function CatalogScreen({ navigation }: Props) {
         </View>
         <View style={[styles.productDetailsBox]}>
           {!loading ? <>
-            <Text style={{ fontWeight: style.fontWeightThin1x.fontWeight, color: blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>
-              <Text style={{ fontWeight: style.fontWeightMedium1x.fontWeight, color: blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>{products.length} items
+            <Text style={{ fontWeight: style.fontWeightThin1x.fontWeight, color: themecolors.blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>
+              <Text style={{ fontWeight: style.fontWeightMedium1x.fontWeight, color: themecolors.blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>{products.length} items
               </Text> in {collectionTitle}</Text>
             <FlatList
               data={products}
