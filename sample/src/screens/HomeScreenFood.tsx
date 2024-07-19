@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
     height: hp(8),
   },
   menuItem: {
-    paddingHorizontal: spacings.xxLarge,
+    paddingHorizontal: spacings.large,
     paddingVertical: spacings.medium,
     marginRight: spacings.large,
     borderBottomWidth: 0,

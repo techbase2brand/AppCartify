@@ -65,8 +65,8 @@ function CatalogScreen({ navigation }: Props) {
       setCollectionsFetched(true);
     };
     fetchInitialData()
-    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435016345" : "gid://shopify/Collection/331148034201");
-    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Clothing" : selectedItem === "Beauty" ? "Beauty" : selectedItem === "Electronics" ? "Electronics" : "Collections");
+    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" :selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193" :selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : "gid://shopify/Collection/331148034201");
+    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Headbands" : selectedItem === "Beauty" ? "Tiffany Victoria" : selectedItem === "Electronics" ? "Speakers" : selectedItem === "AutoMotives" ? "Battery" : selectedItem === "Sports" ? "Abs Exercisers" : "Collections");
     onPressCollection(CollectionId, CollectionName)
     setSelectedCollectionId(CollectionId)
 
@@ -221,7 +221,7 @@ function CatalogScreen({ navigation }: Props) {
           }));
         });
         setProductVariantsIDS(productVariantData)
-        // console.log(id)
+        console.log(id)
       })
 
       .catch((error) => {

@@ -1030,7 +1030,7 @@ const styles = StyleSheet.create({
     margin: spacings.normal,
   },
   menuItem: {
-    paddingHorizontal: spacings.xxLarge,
+    paddingHorizontal: spacings.large,
     paddingVertical: spacings.medium,
     marginRight: spacings.large,
     borderBottomWidth: 0,

@@ -8,7 +8,7 @@ import Carousal from '../components/Carousal'
 import Header from '../components/Header'
 import Product from '../components/ProductVertical';
 import {
-  SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, CLOTHING_OUR_PRODUCT_COLLECTION_ID,
+  SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, SPORTS_OUR_PRODUCT_COLLECTION_ID,
   STOREFRONT_ACCESS_TOKEN, LOADER_NAME
 } from '../constants/Constants'
 import useShopify from '../hooks/useShopify';
@@ -29,7 +29,7 @@ import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden, positionRelative, positionAbsolute } = BaseStyle;
 
-const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
+const HomeScreenSports = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
@@ -58,13 +58,13 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch();
 
   const carouselData = [
-    { id: 1, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FClothes%2FclothingBanner6.png?alt=media&token=89b405eb-f7a9-4d53-bcea-086764d512b1" },
-    { id: 2, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FClothes%2FclothingBanner2.png?alt=media&token=6e81d2ed-fe66-4b32-b138-ce6924c553f2" },
-    { id: 3, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FClothes%2FclothingBanner3.png?alt=media&token=05a4c340-7cee-43d8-b523-75886f5043a6" },
-    { id: 4, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FClothes%2FclothingBanner4.png?alt=media&token=4daea5bd-b935-4ecf-ad69-d7d7ba1129c1" },
-    { id: 5, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FClothes%2FclothingBanner5.png?alt=media&token=c5e031ff-dac9-4f2b-8c0b-b93367c9dfe6" }
+    { id: 1, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner.png?alt=media&token=f74ef227-ff88-44a9-beb0-a97c947ec743" },
+    { id: 2, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner1.png?alt=media&token=bcdc3994-459f-4c3a-b096-a4d5a253ead0" },
+    { id: 3, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner2.png?alt=media&token=0d465703-9bcb-441a-a430-d692c6ab3b62" },
+    { id: 4, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner3.png?alt=media&token=b156a993-9cbd-4502-ac83-6965a638fb20" },
+    { id: 5, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner4.png?alt=media&token=aaea2abf-cb6b-469a-9a79-afc36499826b" }
   ];
-  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/3d9f111d-eeef-454c-a1b9-5d935f739d50.gif?alt=media&token=91731615-e509-4010-bfe0-83f1d8855763" }
+  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/c58ae65c-4d35-426a-99e7-b36b200201f5.gif?alt=media&token=3a146cd4-a159-454b-b33a-b72d60e3cf21" }
 
   useEffect(() => {
     logEvent('Home Screen Initialized');
@@ -78,7 +78,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-      collection(id: "gid://shopify/Collection/331288412313") {
+      collection(id: "gid://shopify/Collection/331498061977") {
         products(first: 10) {
           nodes {
             id
@@ -158,7 +158,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-        collection(id: "gid://shopify/Collection/331288248473") {
+        collection(id: "gid://shopify/Collection/331497996441") {
           products(first: 4) {
             nodes {
               id
@@ -488,7 +488,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,,{color:colors.blackColor}]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
+            <Text style={[styles.text, , { color: colors.blackColor }]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
             <Pressable onPress={onPressShopAll}>
               <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} >{SEE_ALL}</Text>
             </Pressable>
@@ -499,7 +499,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
               data={shopifyCollection.slice(0, 8)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(24), height: hp(18) }, alignItemsCenter]}>
-                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter,{ borderColor: isDarkMode ? "transparent" : lightGrayOpacityColor }]} onPress={() => onPressCollection(item?.id, item?.title)}>
+                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter, { borderColor: isDarkMode ? "transparent" : lightGrayOpacityColor }]} onPress={() => onPressCollection(item?.id, item?.title)}>
                     <Image source={{ uri: item?.image?.url }} style={[styles.categoryImage, resizeModeCover]} />
                   </Pressable>
                   <Text
@@ -521,7 +521,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
               keyExtractor={(item) => item?.id}
             />
           </View>
-          <Text style={[styles.text,,{color:colors.blackColor,marginVertical:10}]}>{BEST_SELLING}</Text>
+          <Text style={[styles.text, , { color: colors.blackColor, marginVertical: 10 }]}>{BEST_SELLING}</Text>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {bestDealProducts?.length > 0 ? <FlatList
               data={bestDealProducts}
@@ -567,8 +567,8 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,,{color:colors.blackColor}]}>{OUR_PRODUCT}</Text>
-            <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(CLOTHING_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
+            <Text style={[styles.text, , { color: colors.blackColor }]}>{OUR_PRODUCT}</Text>
+            <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(SPORTS_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
           </View>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {products?.length > 0 ? <FlatList
@@ -678,4 +678,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreenClothing;
+export default HomeScreenSports;

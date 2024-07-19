@@ -90,7 +90,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     }
     try {
       // const response = await fetch(`https://${STOREFRONT_DOMAIN}/activate-account`, {
-      const response = await fetch(`http://admin.appcartify.com/api/customerLogin`, {
+      const response = await fetch(`https://admin.appcartify.com:8443/api/customerLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

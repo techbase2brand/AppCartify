@@ -316,11 +316,18 @@ const ProductItem = ({ item, addToCartProduct, BestDealInventoryQuantities, Best
   const productTitle = (item?.node) ? (item?.node?.title) : (item?.title);
   const imageSrc = (item?.node?.images?.edges) ? (item?.node?.images?.edges[0].node.url) : (item?.images?.nodes[0]?.url);
 
+  const trimcateText = (text) => {
+    const words = text.split(' ');
+    if (words.length > 5) {
+      return words.slice(0, 5).join(' ') + '...';
+    }
+    return text;
+  };
 
   return (
     <Pressable style={[styles.itemContainer, alignJustifyCenter, borderRadius10, overflowHidden, { backgroundColor: isDarkMode ? colors.grayColor : whiteColor }]} onPress={onPress}>
       <Image source={{ uri: imageSrc }} style={[styles.image, resizeModeContain]} />
-      <Text style={[styles.categoryName, textAlign, { fontWeight: style.fontWeightThin1x.fontWeight, color: colors.blackColor }]}>{productTitle}</Text>
+      <Text style={[styles.categoryName, textAlign, { fontWeight: style.fontWeightThin1x.fontWeight, color: colors.blackColor }]}>{trimcateText(productTitle)}</Text>
       <View style={[styles.quantityContainer, borderWidth1, flexDirectionRow, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
         <TouchableOpacity onPress={decrementQuantity}>
           <Text style={[styles.quantityButton, { color: colors.blackColor }]}>-</Text>

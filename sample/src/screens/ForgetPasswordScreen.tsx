@@ -359,7 +359,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
 
     try {
       // console.log("clicked")
-      const response = await fetch('http://admin.appcartify.com/api/forgotPassword', {
+      const response = await fetch('https://admin.appcartify.com:8443/api/forgotPassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -421,7 +421,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
     try {
       console.log({ email, otp, password, confirmPassword })
       // Call backend API to reset password
-      const response = await fetch('http://admin.appcartify.com/api/resetPassword', {
+      const response = await fetch('https://admin.appcartify.com:8443/api/resetPassword', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

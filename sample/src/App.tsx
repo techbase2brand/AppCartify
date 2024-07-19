@@ -47,6 +47,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProviders } from './context/ThemeContext';
 import { useThemes } from '../src/context/ThemeContext';
 import { lightColors, darkColors } from '../src/constants/Color';
+import HomeScreenAutomotives from './screens/HomeScreenAutomotives';
+import HomeScreenSports from './screens/HomeScreenSports';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -166,7 +168,7 @@ function HomeStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -235,9 +237,6 @@ function HomeStack() {
           headerShown: false,
         })}
       />
-
-
-
     </Stack.Navigator>
   );
 }
@@ -253,7 +252,7 @@ function HomeWithAuthStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
