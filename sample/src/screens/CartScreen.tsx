@@ -357,6 +357,13 @@ function CartItem({
   //     handleRemoveItem();
   //   }
   // };
+  const trimcateText = (text) => {
+    const words = text.split(' ');
+    if (words.length > 3) {
+      return words.slice(0, 3).join(' ') + '...';
+    }
+    return text;
+  };
   return (
     <View
       key={item?.id}
@@ -374,7 +381,7 @@ function CartItem({
       <View style={[styles.productText, flex, alignJustifyCenter, flexDirectionRow]}>
         <View style={[flex]}>
           <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>
-            {item?.merchandise?.product?.title}
+            {trimcateText(item?.merchandise?.product?.title)}
           </Text>
           <Text style={[styles.productPrice, { color: themecolors.blackColor }]}>
             {/* {price(item.cost?.totalAmount)} */}

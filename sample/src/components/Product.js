@@ -49,7 +49,7 @@ const Product = ({ product, onAddToCart, loading, inventoryQuantity, onPress }) 
   const trimcateText = (text) => {
     const words = text.split(' ');
     if (words.length > 5) {
-      return words.slice(0, 5).join(' ') + '...';
+      return words.slice(0, 4).join(' ') + '...';
     }
     return text;
   };

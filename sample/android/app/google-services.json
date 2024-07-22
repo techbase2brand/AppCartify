@@ -1,49 +1,49 @@
 {
   "project_info": {
-    "project_number": "537095689558",
-    "project_id": "ecommerceapp-34078",
-    "storage_bucket": "ecommerceapp-34078.appspot.com"
+    "project_number": "967199419468",
+    "project_id": "appcartify",
+    "storage_bucket": "appcartify.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:537095689558:android:18759ca92cd36de173f2f7",
+        "mobilesdk_app_id": "1:967199419468:android:eb683453e61cdb6732d8e9",
         "android_client_info": {
-          "package_name": "com.shopify.checkoutkitreactnative"
+          "package_name": "com.AppCatify"
         }
       },
       "oauth_client": [
         {
-          "client_id": "537095689558-1c0p9kashfq3hi3g44hlcrfqp7ab8dmt.apps.googleusercontent.com",
+          "client_id": "967199419468-pnd395haq6640r1lphq8fqjechj6bhdd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.shopify.checkoutkitreactnative",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "537095689558-hcgqifp0m92f4uet8rh8hh8slda60f7p.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.shopify.checkoutkitreactnative",
+            "package_name": "com.AppCatify",
             "certificate_hash": "6acbec925dc39ba30e4a5327294ead81de7edd0e"
           }
         },
         {
-          "client_id": "537095689558-m03hqdl58gk59qtd91capfuo964hdm6o.apps.googleusercontent.com",
+          "client_id": "967199419468-u5c5rs8enkfhcim7naam56e2rtruprah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.AppCatify",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "967199419468-57ttoef0e004g15ibt0e87tc3j0onbs6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAvhh_sn1Rm7cWVOs9_mU7HdmUDIhkrluc"
+          "current_key": "AIzaSyCNFelzIvgv_C1f4llb7ehFHFbUY1awbek"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "537095689558-m03hqdl58gk59qtd91capfuo964hdm6o.apps.googleusercontent.com",
+              "client_id": "967199419468-57ttoef0e004g15ibt0e87tc3j0onbs6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

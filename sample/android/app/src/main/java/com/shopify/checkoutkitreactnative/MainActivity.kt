@@ -1,4 +1,4 @@
-package com.shopify.checkoutkitreactnative
+package com.AppCatify
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

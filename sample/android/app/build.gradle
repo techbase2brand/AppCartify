@@ -88,15 +88,15 @@ android {
     }
   }
 
-  namespace "com.shopify.checkoutkitreactnative"
+  namespace "com.AppCatify"
   defaultConfig {
-    applicationId "com.shopify.checkoutkitreactnative"
+    applicationId "com.AppCatify"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 5
     versionName "1.0"
     // manifestPlaceholders = [
-    //     appAuthRedirectScheme: "com.shopify.checkoutkitreactnative" // Replace with your actual redirect scheme
+    //     appAuthRedirectScheme: "com.AppCatify" // Replace with your actual redirect scheme
     // ]
   }
   signingConfigs {

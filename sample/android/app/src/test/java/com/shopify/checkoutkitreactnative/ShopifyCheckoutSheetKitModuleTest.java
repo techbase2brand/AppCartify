@@ -1,4 +1,4 @@
-package com.shopify.checkoutkitreactnative;
+package com.AppCatify;
 
 import androidx.activity.ComponentActivity;
 
@@ -8,8 +8,8 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit;
 import com.shopify.checkoutsheetkit.pixelevents.*;
 import com.shopify.checkoutsheetkit.lifecycleevents.*;
-import com.shopify.reactnative.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
-import com.shopify.reactnative.checkoutsheetkit.CustomCheckoutEventProcessor;
+import com.AppCatify.checkoutsheetkit.ShopifyCheckoutSheetKitModule;
+import com.AppCatify.checkoutsheetkit.CustomCheckoutEventProcessor;
 
 import org.junit.Before;
 import org.junit.Test;

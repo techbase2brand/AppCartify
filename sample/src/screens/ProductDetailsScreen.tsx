@@ -329,17 +329,17 @@ function ProductDetails({
   const generateLink = async (id: string) => {
     try {
       const link = await dynamicLinks().buildShortLink({
-        link: `https://checkoutkitreactnative.page.link/Zi7X?productId=${id}`,
-        domainUriPrefix: 'https://checkoutkitreactnative.page.link',
+        link: `https://appcatify.page.link/ezHe?productId=${id}`,
+        domainUriPrefix: 'https://appcatify.page.link',
         android: {
-          packageName: 'com.shopify.checkoutkitreactnative',
+          packageName: 'com.AppCatify',
         },
         // ios: {
         //   appStoreId: '123456789',
         //   bundleId: 'com.deepLinkingProjectBundleId',
         // },
       }, dynamicLinks.ShortLinkType.DEFAULT)
-      // console.log('link:', link)
+      console.log('link:', link)
       return link
     } catch (error) {
       console.log('Generating Link Error:', error)
@@ -406,7 +406,13 @@ function ProductDetails({
       setLoadingProductId(null);
     });
   };
-  // console.log(options)
+  const trimcateText = (text) => {
+    const words = text.split(' ');
+    if (words.length > 3) {
+      return words.slice(0, 3).join(' ') + '...';
+    }
+    return text;
+  };
   return (
     <View>
       <ScrollView
@@ -431,7 +437,7 @@ function ProductDetails({
             <View>
               <View style={[flexDirectionRow, { width: "100%" }]}>
                 <View style={{ width: "90%" }}>
-                  <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>{product.title}</Text>
+                  <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>{trimcateText(product.title)}</Text>
                 </View>
                 <TouchableOpacity style={[alignJustifyCenter, styles.shareButton]} onPress={() => shareProduct(product.id)}>
                   <FontAwesome name="share" size={20} color={isDarkMode ? themecolors.lightPink : "#B5A2A2"} />
@@ -563,7 +569,7 @@ function ProductDetails({
                       />
                     </View>
                     <View style={[{ width: "100%", height: hp(10) }]}>
-                      <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{item.title}</Text>
+                      <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item.title)}</Text>
                       <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants[0]?.price}{shopCurrency}
                       </Text>
                     </View>
