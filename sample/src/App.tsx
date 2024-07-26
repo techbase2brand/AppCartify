@@ -49,6 +49,7 @@ import { useThemes } from '../src/context/ThemeContext';
 import { lightColors, darkColors } from '../src/constants/Color';
 import HomeScreenAutomotives from './screens/HomeScreenAutomotives';
 import HomeScreenSports from './screens/HomeScreenSports';
+import CustomSplashScreen from './screens/SplashScreen';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -685,6 +686,7 @@ function App({ navigation }: { navigation: any }) {
       throw error;
     }
   };
+
   useEffect(() => {
     fetchAndStoreShopCurrency()
     requestPermissionAndToken()
@@ -706,8 +708,8 @@ function App({ navigation }: { navigation: any }) {
                   {/* {showSplash ? <CustomSplashScreen /> : isLoggedIn ? <AppWithNavigation /> : <AuthStack navigation={navigation} />} */}
                   <AuthProvider>
                     <PersistGate loading={null} persistor={persistor}>
-                      {/* {showSplash ? <CustomSplashScreen /> : <AppWithNavigation />} */}
-                      <AppWithNavigation />
+                      {showSplash ? <CustomSplashScreen /> : <AppWithNavigation />}
+                      {/* <AppWithNavigation /> */}
                     </PersistGate>
                   </AuthProvider>
                 </ThemeProviders>

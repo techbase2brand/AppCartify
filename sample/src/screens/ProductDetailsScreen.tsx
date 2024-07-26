@@ -435,8 +435,8 @@ function ProductDetails({
           </TouchableOpacity>
           <View style={[styles.productText, justifyContentSpaceBetween]}>
             <View>
-              <View style={[flexDirectionRow, { width: "100%" }]}>
-                <View style={{ width: "90%" }}>
+              <View style={[flexDirectionRow, { width: "100%"}]}>
+                <View style={{ width: "90%"}}>
                   <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>{trimcateText(product.title)}</Text>
                 </View>
                 <TouchableOpacity style={[alignJustifyCenter, styles.shareButton]} onPress={() => shareProduct(product.id)}>
@@ -527,7 +527,7 @@ function ProductDetails({
                 </View>
                 <View style={{ width: "75%" }}>
                   <Text style={[styles.productPrice, { padding: spacings.small, color: themecolors.blackColor }]}>Donald Rice</Text>
-                  <View style={[{ width: wp(30), height: hp(3), paddingLeft: spacings.large }, justifyContentSpaceBetween, flexDirectionRow]}>
+                  <View style={[{ width: wp(30), height: hp(3), paddingLeft: spacings.normal }, justifyContentSpaceBetween, flexDirectionRow]}>
                     <FontAwesome name="star" size={17} color={themecolors.goldColor} />
                     <FontAwesome name="star" size={17} color={themecolors.goldColor} />
                     <FontAwesome name="star" size={17} color={themecolors.goldColor} />
@@ -568,7 +568,7 @@ function ProductDetails({
                         style={[styles.relatedProductImage, borderRadius10, resizeModeContain]}
                       />
                     </View>
-                    <View style={[{ width: "100%", height: hp(10) }]}>
+                    <View style={[{ width: "100%", height: hp(9) }]}>
                       <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item.title)}</Text>
                       <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants[0]?.price}{shopCurrency}
                       </Text>
@@ -612,9 +612,9 @@ function ProductDetails({
           {shareProductloading && <LoadingModal visible={shareProductloading} />}
         </View>
       </ScrollView>
-      <View style={[flexDirectionRow, justifyContentSpaceBetween, positionAbsolute, alignItemsCenter, { bottom: 0, width: wp(100), height: hp(10), zIndex: 1, backgroundColor: themecolors.whiteColor }]}>
+      <View style={[flexDirectionRow, positionAbsolute, justifyContentSpaceBetween, { alignItems: "baseline", bottom: 4, width: wp(100), zIndex: 1, backgroundColor: themecolors.whiteColor, height: hp(10) }]}>
         {getInventoryQuantity() > 0 && <View>
-          <Text style={{ padding: spacings.large, color: themecolors.redColor, fontSize: style.fontSizeLarge.fontSize }}>{QUNATITY}:</Text>
+          <Text style={{ padding: spacings.large, color: themecolors.redColor, fontSize: style.fontSizeMedium.fontSize }}>{QUNATITY}:</Text>
           <View style={[styles.quantityContainer, flexDirectionRow, alignJustifyCenter]}>
             <TouchableOpacity onPress={decrementQuantity}>
               <Text style={[styles.quantityButton, borderRadius5, textAlign, { color: themecolors.blackColor, borderColor: themecolors.blackColor }]}>-</Text>
@@ -625,7 +625,7 @@ function ProductDetails({
             </TouchableOpacity>
           </View>
         </View>}
-        <View style={styles.addToCartButtonContainer}>
+        <View style={[styles.addToCartButtonContainer, { position: "absolute", bottom: 4, right: 10, }]}>
           {getInventoryQuantity() <= 0 ? (
             <Pressable style={[styles.outOfStockButton, borderRadius10]}>
               <Text style={[styles.addToCartButtonText, textAlign]}>
@@ -636,7 +636,6 @@ function ProductDetails({
             <Pressable
               disabled={loading || !variantSelected}
               style={[styles.addToCartButton, borderRadius10]}
-              // onPress={() => variant?.id && onAddToCart(variant.id, quantity)}
               onPress={() => {
                 const selectedVariantId = getSelectedVariantId();
                 if (selectedVariantId) {
@@ -653,8 +652,6 @@ function ProductDetails({
               ) : (
                 <Text style={[styles.addToCartButtonLoading, textAlign, { color: whiteColor }]}>
                   Add to cart
-                  {/* &bull;{' '} */}
-                  {/* {currency(((variant?.price.amount) ? (variant?.price?.amount) : variant?.price), variant?.price?.currencyCode)} */}
                 </Text>
               )}
             </Pressable>
@@ -687,7 +684,7 @@ function createStyles(colors: Colors) {
       fontWeight: style.fontWeightThin1x.fontWeight,
       marginTop: spacings.large,
       marginBottom: spacings.normal,
-      marginHorizontal: spacings.normal,
+      // marginHorizontal: spacings.normal,
       lineHeight: 28,
       textAlign: 'left',
       color: blackColor,
@@ -707,7 +704,7 @@ function createStyles(colors: Colors) {
       fontSize: style.fontSizeLarge.fontSize,
       color: blackColor,
       fontWeight: style.fontWeightThin1x.fontWeight,
-      marginLeft: spacings.small,
+      // marginLeft: spacings.small,
       // fontFamily: 'GeneralSans-Variable'
     },
     productImage: {
@@ -716,7 +713,9 @@ function createStyles(colors: Colors) {
       marginTop: spacings.normal,
     },
     addToCartButtonContainer: {
-      margin: spacings.large,
+      // marginHorizontal: spacings.large,
+      // height: hp(5),
+      // backgroundColor:"red"
     },
     addToCartButton: {
       fontSize: style.fontSizeExtraExtraSmall.fontSize,
@@ -777,7 +776,7 @@ function createStyles(colors: Colors) {
     },
     relatedProductItem: {
       width: wp(40),
-      marginVertical: spacings.small,
+      margin: spacings.small,
       padding: spacings.large,
       borderRadius: 5
       // height: hp(30),

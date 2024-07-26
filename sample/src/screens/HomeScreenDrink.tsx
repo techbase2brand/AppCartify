@@ -820,7 +820,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={colors.blackColor}
               />
             }
           </View>
@@ -868,7 +868,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={colors.blackColor}
               />
             }
           </View>

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Pressable, KeyboardAvoidingView, ActivityIndicator, Alert } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Pressable, KeyboardAvoidingView, ActivityIndicator, Alert, Dimensions, Animated } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { whiteColor, blackColor, grayColor, redColor, lightGrayOpacityColor } from '../constants/Color'
 import { spacings, style } from '../constants/Fonts';
@@ -529,6 +529,19 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
+  const screenWidth = Dimensions.get('window').width;
+  const translateX = useRef(new Animated.Value(screenWidth)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(translateX, {
+        toValue: -screenWidth,
+        duration: 5000, // Adjust the duration as needed
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [translateX]);
+
 
   return (
     <KeyboardAvoidingView style={[flex, { backgroundColor: colors.whiteColor }]} behavior="padding" enabled>
@@ -560,8 +573,22 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
           ))}
         </ScrollView>
         <ScrollView showsVerticalScrollIndicator={false} >
-          <View style={[alignJustifyCenter, { width: wp(100), height: hp(5), backgroundColor: colors.blackColor }]}>
-            <Text style={[styles.menuText, { color: colors.whiteColor }]} >Free Shipping All Orders</Text>
+          <View style={[alignJustifyCenter, { width: wp(100), height: hp(4.5), backgroundColor: colors.blackColor, marginTop: 5 }]}>
+            {/* <Text style={[styles.menuText, { color: colors.whiteColor,fontWeight: style.fontWeightThin.fontWeight,  fontSize: 14 }]} >Free Shipping on All Orders</Text> */}
+            <Animated.Text
+              style={[
+                styles.marqueeText,
+                {
+                  transform: [{ translateX }],
+                  color: colors.whiteColor,
+                  fontWeight: '300', // Adjust if you have a fontWeightThin style
+                  fontSize: 14,
+                },
+              ]}
+            >
+              Free Shipping on All Orders
+            </Animated.Text>
+
           </View>
           <View style={[{ width: wp(100), height: "auto", marginTop: 5, paddingHorizontal: spacings.large }, flexDirectionRow]}>
             <FlatList
@@ -665,7 +692,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
                     inventoryQuantity={bestDealInventoryQuantities[index]}
                     option={bestDealoptions[index]}
                     ids={bestDealProductVariantsIDS[index]}
-                    width={wp(37)}
+                    width={wp(36)}
                     onPress={() => {
                       navigation.navigate('ProductDetails', {
                         product: item,
@@ -686,7 +713,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={colors.blackColor}
               />
             }
           </View>
@@ -794,7 +821,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
                     inventoryQuantity={inventoryQuantities[index]}
                     option={options[index]}
                     ids={productVariantsIDS[index]}
-                    width={isDarkMode?wp(32.5):wp(33.2)}
+                    width={isDarkMode ? wp(32.5) : wp(33.2)}
                     onPress={() => {
                       navigation.navigate('ProductDetails', {
                         product: node,
@@ -829,8 +856,8 @@ const styles = StyleSheet.create({
     height: hp(8),
   },
   menuItem: {
-    paddingHorizontal: spacings.large,
-    paddingVertical: spacings.medium,
+    paddingHorizontal: spacings.normal,
+    paddingVertical: spacings.xxsmall,
     marginRight: spacings.large,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
@@ -839,11 +866,11 @@ const styles = StyleSheet.create({
   selectedMenuItem: {
     borderBottomColor: redColor,
     borderBottomWidth: 2,
-    paddingVertical: spacings.normalx,
+    paddingVertical: spacings.xxsmall,
   },
   menuText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "500",
     color: blackColor,
   },
   text: {
@@ -901,7 +928,11 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10,
   },
-
+  marqueeText: {
+    position: 'absolute',
+    width: '100%',
+    textAlign: 'center',
+  },
 
 });
 

@@ -65,7 +65,7 @@ function CatalogScreen({ navigation }: Props) {
       setCollectionsFetched(true);
     };
     fetchInitialData()
-    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" :selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193" :selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : "gid://shopify/Collection/331148034201");
+    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" : selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193" : selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : "gid://shopify/Collection/331148034201");
     const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Headbands" : selectedItem === "Beauty" ? "Tiffany Victoria" : selectedItem === "Electronics" ? "Speakers" : selectedItem === "AutoMotives" ? "Battery" : selectedItem === "Sports" ? "Abs Exercisers" : "Collections");
     onPressCollection(CollectionId, CollectionName)
     setSelectedCollectionId(CollectionId)
@@ -277,7 +277,7 @@ function CatalogScreen({ navigation }: Props) {
             keyExtractor={(index) => index.toString()}
           />
         </View>
-        <View style={[styles.productDetailsBox]}>
+        <View style={[styles.productDetailsBox, { paddingBottom: isDarkMode ? spacings.xLarge : 0 }]}>
           {!loading ? <>
             <Text style={{ fontWeight: style.fontWeightThin1x.fontWeight, color: themecolors.blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>
               <Text style={{ fontWeight: style.fontWeightMedium1x.fontWeight, color: themecolors.blackColor, fontSize: style.fontSizeNormal2x.fontSize, padding: spacings.large }}>{products.length} items
@@ -319,7 +319,7 @@ function CatalogScreen({ navigation }: Props) {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={themecolors.blackColor}
               />
             </View>
           }

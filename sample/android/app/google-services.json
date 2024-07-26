@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "967199419468-dbp9mcd0lerbgu6k9ma4tklsa0jn6sjd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.AppCatify",
+            "certificate_hash": "f86369fc2271a75a2e8c310e1a849bca202bb9ea"
+          }
+        },
+        {
           "client_id": "967199419468-pnd395haq6640r1lphq8fqjechj6bhdd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -121,7 +121,7 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
         />
       </View>
       <View style={[styles.contentBox]}>
-        <View style={[{ width: "100%", height: hp(7.8) }]}>
+        <View style={[{ width: "90%", height: hp(8),alignSelf:"center" }]}>
           <Text style={[styles.productName, { paddingRight: spacings.small, color: colors.blackColor }]}>{trimcateText(product?.title)}</Text>
           {priceAmount && (
             <Text style={[styles.productPrice, { color: colors.blackColor }]}>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacings.large,
   },
   productImage: {
-    width: "90%",
+    width: "100%",
     height: hp(13.5),
     borderRadius: 10,
     alignSelf: "center",
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     // color: blackColor,
     // fontFamily: 'GeneralSans-Variable'
     // color: blackColor,
-    fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
+    fontSize: style.fontSizeSmall1x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
   },
   text: {
     color: "#006400",
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   addToCartButtonText: {
-    fontSize: 12,
+    fontSize: 11,
     lineHeight: 18,
     color: redColor,
     fontWeight: '700',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   favButton: {
     width: wp(10),
-    paddingVertical: 5,
+    paddingVertical: 4,
     // height: hp(3.8),
     right: 0,
     bottom: 4,
@@ -277,8 +277,8 @@ const styles = StyleSheet.create({
   eyeButton: {
     width: wp(8),
     height: wp(8),
-    right: 2,
-    top: 2,
+    right: 3,
+    top: 6,
     zIndex: 10,
     // borderWidth: .5,
     // borderColor: lightGrayOpacityColor,

@@ -20,6 +20,7 @@ import { BACKGROUND_IMAGE } from '../assests/images';
 import { useSelector } from 'react-redux';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, flex, positionRelative, positionAbsolute, resizeModeContain, borderRadius5, justifyContentSpaceBetween } = BaseStyle;
 const SearchScreen = ({ navigation }: { navigation: any }) => {
@@ -38,10 +39,22 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   const [tags, setTags] = useState<string[][]>([]);
   const [options, setOptions] = useState([]);
   const [productVariantsIDS, setProductVariantsIDS] = useState([]);
-
+  const [shopCurrency, setShopCurrency] = useState('');
   useEffect(() => {
     logEvent('Search Screen Initialized');
+    const fetchCurrency = async () => {
+      try {
+        const shopCurrency = await AsyncStorage.getItem('shopCurrency');
+        if (shopCurrency) {
+          setShopCurrency(shopCurrency);
+        }
+      } catch (error) {
+        console.error('Error fetching shop currency:', error);
+      }
+    };
+    fetchCurrency();
   }, [])
+
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -182,16 +195,21 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                     setSearchQuery(text);
                     if (text === '') {
                       setShowSuggestions(false);
-                      if (!suggestionClicked) {
-                        dismissKeyboard();
-                      }
+                      // if (!suggestionClicked) {
+                      //   dismissKeyboard();
+                      // }
                     } else {
-                      setShowSuggestions(searchSuggestions.length > 0);
-                      if (searchSuggestions.length > 0) {
-                        if (!suggestionClicked) {
-                          dismissKeyboard();
-                        }
-                      }
+                      // setShowSuggestions(searchSuggestions.length > 0);
+                      // if (searchSuggestions.length > 0) {
+                      //   if (!suggestionClicked) {
+                      //     dismissKeyboard();
+                      //   }
+                      // }
+                      // await handleSearch();
+                      setShowSuggestions(true);
+                      // if (!suggestionClicked) {
+                      //   dismissKeyboard();
+                      // }
                       await handleSearch();
                     }
                   }}
@@ -199,8 +217,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
               </View>
             </View>
             {showSuggestions && (
-              <View style={[positionAbsolute, styles.suggestionBox, { backgroundColor: colors.whiteColor }]}>
-                {searchSuggestions.length != 0 ? (<FlatList
+              <Pressable style={[positionAbsolute, styles.suggestionBox, { backgroundColor: colors.whiteColor }]} onPress={dismissKeyboard}>
+                {(searchSuggestions.length != 0) ? (<FlatList
                   data={searchSuggestions}
                   renderItem={({ item, index }) => {
                     return (
@@ -229,7 +247,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                         <Image source={{ uri: item?.imageSrc }} style={[{ width: wp(13), height: hp(10), marginRight: spacings.large }, resizeModeContain]} />
                         <View style={{ width: wp(55) }}>
                           <Text style={{ color: colors.blackColor }}>{item?.title}</Text>
-                          <Text style={{ color: colors.mediumGray }}>{item?.price}</Text>
+                          <Text style={{ color: colors.mediumGray }}>{item?.price} {shopCurrency}</Text>
                         </View>
                         <View style={[{ width: "25%" }, alignJustifyCenter]}>
                           <Feather name="arrow-up-right" size={25} color={colors.blackColor} />
@@ -247,7 +265,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                     <Text style={{ color: colors.mediumGray, textAlign: "center" }}>Try a similar word or something more general.</Text>
                   </View>
                 )}
-              </View>
+              </Pressable>
             )}
           </View>
           <Text style={[styles.text, { padding: 10, color: colors.blackColor }]}>{POPULAR}</Text>

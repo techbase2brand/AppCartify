@@ -1,7 +1,7 @@
 import { SELECT_MENU_ITEM } from '../actions/types';
 
 const initialState = {
-  selectedItem: "Food",
+  selectedItem: "Clothing",
 };
 
 const menuReducer = (state = initialState, action) => {

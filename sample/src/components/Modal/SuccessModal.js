@@ -28,7 +28,7 @@ const SuccessModal = ({ visible, onClose, onPressContinue, headingText, text }) 
           </TouchableOpacity> */}
           <Image source={SUCCESS_IMAGE} style={styles.image} resizeMode="contain" />
           <Text style={[styles.message, textAlign, { color: colors.blackColor }]}>{headingText ? headingText : "Successfully"}</Text>
-          <Text style={[styles.text, textAlign, { color: colors.grayColor }]}>{text ? text : "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}</Text>
+          <Text style={[styles.text, textAlign, { color: colors.grayColor }]}>{text ? text : "Please complete the process by clicking the continue button."}</Text>
           <TouchableOpacity onPress={handleContinue} style={[styles.continueButton, alignJustifyCenter, borderRadius10]}>
             <Text style={[styles.buttonText, textAlign]}>Continue</Text>
           </TouchableOpacity>

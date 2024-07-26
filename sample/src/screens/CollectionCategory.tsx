@@ -137,7 +137,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   }, [])
 
   const vendors = Array.from(new Set(products?.map(product => product?.vendor)));
-
+  // console.log(vendors)
   // onAdd To cart Product
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
@@ -185,6 +185,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   }
 
   return (
+
     <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header backIcon={true} text={headingText} navigation={navigation} onPress={() => { logEvent('Back Button Clicked'), navigation.goBack() }} />
       <View style={{ paddingHorizontal: spacings.large }}>
@@ -226,7 +227,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
                 <LoaderKit
                   style={{ width: 50, height: 50 }}
                   name={LOADER_NAME}
-                  color={blackColor}
+                  color={colors.blackColor}
                 />
               </View>
             }
@@ -274,6 +275,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
         allProducts={products}
         vendor={vendors}
         onSelectVendor={applyFilterByVendor}
+        product={products}
       />
 
       {loading && <LoadingModal visible={loading} text={"Please wait while we load the products."} />}

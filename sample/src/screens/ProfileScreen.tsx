@@ -77,9 +77,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     const userDetails = await AsyncStorage.getItem('userDetails')
     if (userDetails) {
       const userDetailsObject = JSON.parse(userDetails);
-      // console.log(userDetailsObject)
+      console.log(userDetailsObject)
       const userId = userDetailsObject?.customer ? userDetailsObject?.customer.id : userDetailsObject?.id;
-      // console.log("userDetailsObject", userId)
+      console.log("userDetailsObject", userId)
       setCustomerId(userId)
     }
   };
@@ -94,7 +94,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           'Content-Type': 'application/json',
         },
       });
-      // console.log('Response fetchUserProfileDatar:', response.data);
+      console.log('Response fetchUserProfileDatar:', response.data);
       const customer = response?.data?.customer;
       setUserName(`${customer.first_name} ${customer.last_name}`);
     } catch (error) {
@@ -180,6 +180,8 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
   //for deleteAccount
   const handleDelete = async () => {
+    const userDetails = await AsyncStorage.getItem('userDetails')
+    const userDetailsObject = JSON.parse(userDetails);
     logEvent('Delete Button Clicked');
     try {
       // const currentUser = auth().currentUser;
@@ -202,6 +204,18 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           },
         }
       );
+      // Delete user from your app's database if userDetailsObject.id is present
+      // if (userDetailsObject?.id) {
+      //   console.log(`Deleting customer from app database: ${userDetailsObject?.id}`);
+      //   const response = await axios.request({
+      //     url: `https://admin.appcartify.com:8443/api/deleteCustomer/${userDetailsObject?.id}`,
+      //     method: 'DELETE',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //   });
+      //   console.log('Response from app database delete:', response.data);
+      // }
       setLoading(true)
       // console.log(`Customer  deleted successfully.`);
       await AsyncStorage.removeItem('isUserLoggedIn');
@@ -225,6 +239,15 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     if (str.length === 0) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
+  const getInitials = (name) => {
+    return name ? name.charAt(0).toUpperCase() : '';
+  };
+
+  const FallbackAvatar = ({ name }) => (
+    <View style={[styles.fallbackAvatar, { borderColor: colors.grayColor }]}>
+      <Text style={styles.fallbackAvatarText}>{getInitials(name)}</Text>
+    </View>
+  );
 
   return (
     // <ImageBackground style={[styles.container, flex]} source={BACKGROUND_IMAGE}>
@@ -237,8 +260,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
         <Text style={[styles.text, { color: colors.blackColor }]}>{"Account"}</Text>
       </View>
       <View style={[styles.header, alignItemsCenter]}>
-        {image ? <Image source={{ uri: image }} style={[styles.profileImage, resizeModeContain, { borderColor: colors.grayColor }]} /> :
-          <Image source={PROFILE_IMAGE} style={[styles.profileImage, resizeModeContain]} />}
+        <FallbackAvatar name={userName} />
+        {/* {image ? <Image source={{ uri: image }} style={[styles.profileImage, resizeModeContain, { borderColor: colors.grayColor }]} /> :
+          <Image source={PROFILE_IMAGE} style={[styles.profileImage, resizeModeContain]} />} */}
         <Text style={[styles.username, { color: colors.blackColor }]}>{capitalizeFirstLetter(userName)}</Text>
       </View>
       <View style={styles.section}>
@@ -285,8 +309,8 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           </View>
           <Feather name={"chevron-right"} size={30} color={colors.blackColor} />
         </TouchableOpacity>
-        <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
-        <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
+        {/* <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View> */}
+        {/* <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
           onPress={toggleTheme}
         >
           <View style={[flexDirectionRow, alignItemsCenter]}>
@@ -294,14 +318,13 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
             <Text style={[styles.optionText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
           </View>
           <TouchableOpacity onPress={toggleTheme} style={[styles.toggleButton]}>
-
-            <FontAwesome
-              name={isDarkMode ? 'toggle-on' : 'toggle-off'}
-              size={30}
-              color={redColor}
+            <Feather
+              name={isDarkMode ? 'toggle-right' : 'toggle-left'}
+              size={35}
+              color={isDarkMode ? '#81b0ff' : '#767577'}
             />
           </TouchableOpacity>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
           onPress={() => toggleModal(ARE_YOU_SURE_DELETE_ACCOUNT, handleDelete)}
@@ -384,6 +407,21 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     marginRight: 10,
+  },
+  fallbackAvatar: {
+    width: wp(30),
+    height: wp(30),
+    borderRadius: 100,
+    alignSelf: 'center',
+    backgroundColor: '#a8326b',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 4,
+    // marginBottom: 20,
+  },
+  fallbackAvatarText: {
+    fontSize: 40,
+    color: '#fff',
   },
 });
 

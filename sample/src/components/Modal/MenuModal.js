@@ -4,17 +4,18 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '.././../u
 import { blackColor, lightGrayOpacityColor, whiteColor, blackOpacity5 } from '../../constants/Color';
 import { spacings, style } from '../../constants/Fonts';
 import { BaseStyle } from '../../constants/Style';
-import { USER_IMAGE,WHITE_USER_IMAGE } from '../../assests/images'
+import { USER_IMAGE, WHITE_USER_IMAGE } from '../../assests/images'
 import Feather from 'react-native-vector-icons/dist/Feather';
 import { useSelector } from 'react-redux';
 import { LOGIN, SIGNUP, ABOUT_US, CONTACT_US } from '../../constants/Constants';
 import Header from '../Header';
 import { useThemes } from '../../context/ThemeContext';
+import FontAwesome from 'react-native-vector-icons/dist/FontAwesome';
 import { lightColors, darkColors } from '../../constants/Color';
 const { positionAbsolute, alignItemsCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, navigation, onPressShopByCatagory }) => {
-  const { isDarkMode } = useThemes();
+  const { isDarkMode, toggleTheme } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
   const userLoggedIn = useSelector(state => state.auth.isAuthenticated);
   const onPressShopByCate = () => {
@@ -68,6 +69,21 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
           <Pressable style={[styles.menuItem, justifyContentSpaceBetween, flexDirectionRow, alignItemsCenter]} onPress={onPressProfile}>
             <Text style={[styles.menuText, { color: colors.blackColor }]}>{"Profile"}</Text>
             <Feather name={"chevron-right"} size={25} color={colors.blackColor} />
+          </Pressable>
+          <Pressable style={[styles.menuItem, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
+            onPress={toggleTheme}
+          >
+            <Pressable onPress={toggleTheme} style={[flexDirectionRow, alignItemsCenter]}>
+              {/* <FontAwesome name={isDarkMode ? 'moon-o' : 'sun-o'} size={24} color={isDarkMode ? whiteColor : blackColor} /> */}
+              <Text style={[styles.menuText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
+            </Pressable>
+            <Pressable onPress={toggleTheme} style={[styles.toggleButton]}>
+              <Feather
+                name={isDarkMode ? 'toggle-right' : 'toggle-left'}
+                size={35}
+                color={isDarkMode ? '#81b0ff' : '#333333'}
+              />
+            </Pressable>
           </Pressable>
           {!userLoggedIn && <Pressable style={[styles.menuItem, justifyContentSpaceBetween, flexDirectionRow, alignItemsCenter]} onPress={onPressSignUp}>
             <Text style={[styles.menuText, { color: colors.blackColor }]}>{SIGNUP}</Text>

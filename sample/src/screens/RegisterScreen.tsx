@@ -122,6 +122,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     //   return;
     // }
     try {
+      setLoading(true)
       // const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/customers.json`, {
       const response = await fetch('https://admin.appcartify.com:8443/api/customers', {
         method: 'POST',
@@ -162,8 +163,10 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       dispatch(loginSuccess({ email, password }));
       logEvent('User Registered Succesfully');
       handleNotificationTrigger()
+      setLoading(false)
       // }
     } catch (error) {
+      setLoading(false)
       console.log('Registration error:', error);
       logEvent(`Registration error: ${error}`);
     }
@@ -208,7 +211,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     } catch (error) {
       setLoading(false)
       console.error('Google sign up error:', error);
-      Toast.show("User All ready registered please login ")
+      // Toast.show("User All ready registered please login ")
       logEvent(`Google sign up error:${error}`);
     }
   };

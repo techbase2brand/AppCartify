@@ -534,7 +534,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
                     inventoryQuantity={bestDealInventoryQuantities[index]}
                     option={bestDealoptions[index]}
                     ids={bestDealProductVariantsIDS[index]}
-                    width={wp(38)}
+                    width={wp(36)}
                     onPress={() => {
                       navigation.navigate('ProductDetails', {
                         product: item,
@@ -555,7 +555,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={colors.blackColor}
               />
             }
           </View>
@@ -582,7 +582,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
                     inventoryQuantity={inventoryQuantities[index]}
                     option={options[index]}
                     ids={productVariantsIDS[index]}
-                    width={wp(38)}
+                    width={wp(36)}
                     onPress={() => {
                       navigation.navigate('ProductDetails', {
                         product: item,
@@ -603,7 +603,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
-                color={blackColor}
+                color={colors.blackColor}
               />
             }
           </View>
@@ -659,8 +659,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   menuItem: {
-    paddingHorizontal: spacings.large,
-    paddingVertical: spacings.medium,
+    paddingHorizontal: spacings.normal,
+    paddingVertical: spacings.xxsmall,
     marginRight: spacings.large,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
@@ -669,11 +669,11 @@ const styles = StyleSheet.create({
   selectedMenuItem: {
     borderBottomColor: redColor,
     borderBottomWidth: 2,
-    paddingVertical: spacings.normalx,
+    paddingVertical: spacings.xxsmall,
   },
   menuText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
     color: blackColor,
   },
 });
