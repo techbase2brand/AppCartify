@@ -7,7 +7,8 @@ import {
   , STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, POPULAR_PRODUCT_COLLECTION_ID,
   DRINK_POPULAR_PRODUCT_COLLECTION_ID, CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, CLOTHING_POPULAR_PRODUCT_COLLECTION_ID, BEAUTY_POPULAR_PRODUCT_COLLECTION_ID,
   BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, ELECTRONIC_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, ELECTRONIC_POPULAR_PRODUCT_COLLECTION_ID, AUTOMOTIVE_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID
-  , SPORTS_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID, SPORTS_POPULAR_PRODUCT_COLLECTION_ID
+  , SPORTS_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID, SPORTS_POPULAR_PRODUCT_COLLECTION_ID, GROCERY_POPULAR_PRODUCT_COLLECTION_ID, HOMEDECOR_POPULAR_PRODUCT_COLLECTION_ID
+  , HOMEDECOR_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID, GROCERY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID
 } from '../constants/Constants'
 import type { ShopifyProduct } from '../../@types';
 import { BaseStyle } from '../constants/Style';
@@ -270,12 +271,18 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           </View>
           <Text style={[styles.text, { padding: 10, color: colors.blackColor }]}>{POPULAR}</Text>
           <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: colors.lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
-            onPress={() => { fillTextInputWithHint(POPULAR_LIQUOR, selectedItem === "Food" ? POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "AutoMotives" ? AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Sports" ? SPORTS_POPULAR_PRODUCT_COLLECTION_ID : POPULAR_PRODUCT_COLLECTION_ID) }}>
+            onPress={() => {
+              fillTextInputWithHint(POPULAR_LIQUOR, selectedItem === "Food" ? POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "AutoMotives" ? AUTOMOTIVE_POPULAR_PRODUCT_COLLECTION_ID
+                : selectedItem === "Sports" ? SPORTS_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "Grocery" ? GROCERY_POPULAR_PRODUCT_COLLECTION_ID : selectedItem === "HomeDecor" ? HOMEDECOR_POPULAR_PRODUCT_COLLECTION_ID : POPULAR_PRODUCT_COLLECTION_ID)
+            }}>
             <Text style={[styles.hintText, borderRadius5, { color: isDarkMode ? whiteColor : grayColor }]} >{POPULAR_LIQUOR}</Text>
             <Ionicons name="add" size={25} color={isDarkMode ? whiteColor : grayColor} />
           </Pressable>
           <Pressable style={[borderRadius5, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter, { backgroundColor: colors.lightGrayOpacityColor, paddingRight: spacings.large, marginTop: spacings.large }]}
-            onPress={() => { fillTextInputWithHint(BEST_DEALS_OF_THE_WEEK, selectedItem === "Food" ? BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "AutoMotives" ? AUTOMOTIVE_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Sports" ? SPORTS_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : BEST_DEALS_OF_THE_WEEK_COLLECTION_ID) }}>
+            onPress={() => {
+              fillTextInputWithHint(BEST_DEALS_OF_THE_WEEK, selectedItem === "Food" ? BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Drinks" ? DRINK_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Clothing" ? CLOTHING_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Beauty" ? BEAUTY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Electronics" ? ELECTRONIC_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "AutoMotives"
+                ? AUTOMOTIVE_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Sports" ? SPORTS_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "Grocery" ? GROCERY_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : selectedItem === "HomeDecor" ? HOMEDECOR_BEST_DEALS_OF_THE_WEEK_COLLECTION_ID : BEST_DEALS_OF_THE_WEEK_COLLECTION_ID)
+            }}>
             <Text style={[styles.hintText, borderRadius5, { color: isDarkMode ? whiteColor : grayColor }]} >{BEST_DEALS_OF_THE_WEEK}</Text>
             <Ionicons name="add" size={25} color={isDarkMode ? whiteColor : grayColor} />
           </Pressable>

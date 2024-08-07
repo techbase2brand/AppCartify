@@ -50,6 +50,8 @@ import { lightColors, darkColors } from '../src/constants/Color';
 import HomeScreenAutomotives from './screens/HomeScreenAutomotives';
 import HomeScreenSports from './screens/HomeScreenSports';
 import CustomSplashScreen from './screens/SplashScreen';
+import HomeScreenGrocery from './screens/HomeScreenGrocery';
+import HomeScreenHomeDecor from './screens/HomeScreenHomeDecor';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -169,7 +171,7 @@ function HomeStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -253,7 +255,7 @@ function HomeWithAuthStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen

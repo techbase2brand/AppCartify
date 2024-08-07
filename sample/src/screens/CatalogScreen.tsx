@@ -59,14 +59,19 @@ function CatalogScreen({ navigation }: Props) {
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 100, // Set the desired number of collections to fetch
+          first: 150, // Set the desired number of collections to fetch
         },
       });
       setCollectionsFetched(true);
     };
     fetchInitialData()
-    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty" ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" : selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193" : selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : "gid://shopify/Collection/331148034201");
-    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Headbands" : selectedItem === "Beauty" ? "Tiffany Victoria" : selectedItem === "Electronics" ? "Speakers" : selectedItem === "AutoMotives" ? "Battery" : selectedItem === "Sports" ? "Abs Exercisers" : "Collections");
+    const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty"
+      ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" : selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193"
+        : selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : selectedItem === "Grocery" ? "gid://shopify/Collection/331991777433" : selectedItem === "HomeDecor" ? "gid://shopify/Collection/331992203417" : "gid://shopify/Collection/331148034201");
+
+    const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Headbands" : selectedItem === "Beauty" ? "Tiffany Victoria" :
+      selectedItem === "Electronics" ? "Speakers" : selectedItem === "AutoMotives" ? "Battery" : selectedItem === "Sports" ? "Abs Exercisers" : selectedItem === "Grocery" ? "Baby Beverages"
+        : selectedItem === "HomeDecor" ? "Wallpapers" : "Collections");
     onPressCollection(CollectionId, CollectionName)
     setSelectedCollectionId(CollectionId)
 
@@ -264,10 +269,10 @@ function CatalogScreen({ navigation }: Props) {
                 </View>}
                 <View style={{ height: 'auto', padding: selectedCollectionId === item?.id ? spacings.small : spacings.normal, alignItems: "center", justifyContent: "center", }}>
                   <View style={{
-                    backgroundColor: whiteColor, borderWidth: selectedCollectionId === item?.node?.id ? 0 : .5,
-                    paddingVertical: spacings.medium, borderRadius: 10, height: hp(10), borderColor: selectedCollectionId === item?.id ? redColor : themecolors.mediumGray
+                    backgroundColor: whiteColor, borderWidth: selectedCollectionId === item?.node?.id ? 0 : 1,
+                    borderRadius: 10, height: hp(10), overflow: "hidden", borderColor: selectedCollectionId === item?.id ? redColor : themecolors.mediumGray, width: wp(15)
                   }}>
-                    <Image source={{ uri: item?.image?.url }} style={[resizeModeContain, styles.card]} />
+                    <Image source={{ uri: item?.image?.url }} style={[resizeModeCover, styles.card]} />
                   </View>
                   <Text style={[styles.categoryName, textAlign, { color: selectedCollectionId === item?.id ? redColor : themecolors.blackColor }]}>{item?.title}</Text>
                 </View>
@@ -354,8 +359,8 @@ function createStyles() {
       padding: spacings.small,
     },
     card: {
-      width: wp(15.5),
-      height: hp(8),
+      width: "100%",
+      height: "100%",
       // paddingVertical: spacings.small
     },
     categoryName: {

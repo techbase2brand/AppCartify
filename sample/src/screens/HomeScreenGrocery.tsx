@@ -8,7 +8,7 @@ import Carousal from '../components/Carousal'
 import Header from '../components/Header'
 import Product from '../components/ProductVertical';
 import {
-  SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, AUTOMOTIVE_OUR_PRODUCT_COLLECTION_ID,
+  SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, GROCERY_OUR_PRODUCT_COLLECTION_ID,
   STOREFRONT_ACCESS_TOKEN, LOADER_NAME
 } from '../constants/Constants'
 import useShopify from '../hooks/useShopify';
@@ -29,7 +29,7 @@ import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden, positionRelative, positionAbsolute } = BaseStyle;
 
-const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
+const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
@@ -59,13 +59,13 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
   const scrollViewRef = useRef(null);
 
   const carouselData = [
-    { id: 1, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FAutoMotives%2FautomotiviesBanner.png?alt=media&token=f6c1cf60-da62-436d-a5f9-8c146cda9b58" },
-    { id: 2, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FAutoMotives%2FautomotiviesBanner1.png?alt=media&token=28ab5464-04d6-4aa7-9dc0-f8c6c3bc091f" },
-    { id: 3, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FAutoMotives%2FautomotiviesBanner2.png?alt=media&token=3a8c4317-5025-4b9c-8022-315f55e0d348" },
-    { id: 4, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FAutoMotives%2FautomotiviesBanner3.png?alt=media&token=b68c8674-d1f9-4300-be86-3c11f9fd870b" },
-    { id: 5, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FAutoMotives%2FautomotiviesBanner4.png?alt=media&token=16b4880f-acb1-43db-a74c-f11b50fb5869" }
+    { id: 1, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FGrocery%2FGroceryBanner.png?alt=media&token=0a048794-6c7f-4b03-8e04-b2267a88f26f" },
+    { id: 2, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FGrocery%2FGroceryBanner1.png?alt=media&token=8d13f326-72fa-4722-9417-bf0051972fa3" },
+    { id: 3, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FGrocery%2FGroceryBanner2.png?alt=media&token=edd91b88-c9a6-4ea3-a51d-ea1e0e818751" },
+    { id: 4, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FGrocery%2FGroceryBanner3.png?alt=media&token=c51508d8-72fc-4f32-bcec-af9dc6f4df0d" },
+    { id: 5, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FGrocery%2FGroceryBanner4.png?alt=media&token=be5d5574-044b-4cc4-9cf3-a0b76ef33611" }
   ];
-  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/816479f2-8048-4cd0-b9f0-f5ded1fc5474.gif?alt=media&token=a5621430-b514-4ac1-9887-76e502f326b2" }
+  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/2b7cbf25-baf5-4c2e-9ac0-ed07a4f2a8de.gif?alt=media&token=6384e022-bde3-41ce-a416-75dc6c9d0125" }
 
   useEffect(() => {
     logEvent('Home Screen Initialized');
@@ -79,7 +79,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-      collection(id: "gid://shopify/Collection/331502289049") {
+      collection(id: "gid://shopify/Collection/331991777433") {
         products(first: 10) {
           nodes {
             id
@@ -159,7 +159,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
       const graphql = JSON.stringify({
         query: `query MyQuery {
-        collection(id: "gid://shopify/Collection/331502747801") {
+        collection(id: "gid://shopify/Collection/331991318681") {
           products(first: 4) {
             nodes {
               id
@@ -252,7 +252,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 100, // Set the desired number of collections to fetch
+          first: 150, // Set the desired number of collections to fetch
         },
       });
       await fetchProducts({
@@ -274,8 +274,8 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
     }, [collectionsFetched])
   );
 
-
   useEffect(() => {
+    // fetchMainMenu();
     const index = menuItems.findIndex(item => item.title === selectedItem);
     if (index !== -1) {
       // Calculate the position to scroll to
@@ -288,6 +288,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
       }
     }
   }, [selectedItem, menuItems]);
+
   //onpress menu item
   const handleMenuPress = (item) => {
     // console.log("handleMenuPress::::item", item);
@@ -295,7 +296,6 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
     dispatch(clearWishlist());
     clearCart()
   };
-
   //fetch menu item
   const fetchMainMenu = async () => {
     try {
@@ -344,6 +344,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
             });
             // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
+              // console.log("matchedcolledction",matchedCollection)
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
@@ -480,7 +481,6 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           ref={scrollViewRef}
-        // contentContainerStyle={styles.menuContainer}
         >
           {menuItems.map((item) => (
             <TouchableOpacity
@@ -504,7 +504,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,,{color:colors.blackColor}]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
+            <Text style={[styles.text, , { color: colors.blackColor }]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
             <Pressable onPress={onPressShopAll}>
               <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} >{SEE_ALL}</Text>
             </Pressable>
@@ -515,7 +515,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
               data={shopifyCollection.slice(0, 8)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(24), height: hp(18) }, alignItemsCenter]}>
-                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter,{ borderColor: isDarkMode ? "transparent" : lightGrayOpacityColor }]} onPress={() => onPressCollection(item?.id, item?.title)}>
+                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter, { borderColor: isDarkMode ? "transparent" : lightGrayOpacityColor }]} onPress={() => onPressCollection(item?.id, item?.title)}>
                     <Image source={{ uri: item?.image?.url }} style={[styles.categoryImage, resizeModeCover]} />
                   </Pressable>
                   <Text
@@ -537,7 +537,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
               keyExtractor={(item) => item?.id}
             />
           </View>
-          <Text style={[styles.text,,{color:colors.blackColor,marginVertical:10}]}>{BEST_SELLING}</Text>
+          <Text style={[styles.text, , { color: colors.blackColor, marginVertical: 10 }]}>{BEST_SELLING}</Text>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {bestDealProducts?.length > 0 ? <FlatList
               data={bestDealProducts}
@@ -583,8 +583,8 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,,{color:colors.blackColor}]}>{OUR_PRODUCT}</Text>
-            <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(AUTOMOTIVE_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
+            <Text style={[styles.text, , { color: colors.blackColor }]}>{OUR_PRODUCT}</Text>
+            <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(GROCERY_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
           </View>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {products?.length > 0 ? <FlatList
@@ -694,4 +694,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreenAutomotives;
+export default HomeScreenGrocery;

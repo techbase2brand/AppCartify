@@ -66,9 +66,22 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     { id: 3, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FFood%2FFoodbanner2.png?alt=media&token=a443a96a-f43b-4c45-a0f9-e85b09319f45" },
   ];
 
+  const screenWidth = Dimensions.get('window').width;
+  const translateX = useRef(new Animated.Value(screenWidth)).current;
+
   useEffect(() => {
     logEvent('Home Screen Initialized')
   }, [])
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(translateX, {
+        toValue: -screenWidth,
+        duration: 5000, // Adjust the duration as needed
+        useNativeDriver: true,
+      })
+    ).start();
+  }, [translateX]);
 
   //AllDeliciousProduct
   useEffect(() => {
@@ -529,18 +542,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
-  const screenWidth = Dimensions.get('window').width;
-  const translateX = useRef(new Animated.Value(screenWidth)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(translateX, {
-        toValue: -screenWidth,
-        duration: 5000, // Adjust the duration as needed
-        useNativeDriver: true,
-      })
-    ).start();
-  }, [translateX]);
 
 
   return (
@@ -597,7 +598,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
                 return (
                   <View style={[{ width: wp(24), height: hp(14) }, alignItemsCenter]}>
                     <Pressable
-                      style={[styles.categoryCard, overflowHidden, alignJustifyCenter, { backgroundColor: whiteColor }]}
+                      style={[styles.categoryCard, overflowHidden, alignJustifyCenter, { backgroundColor: whiteColor, borderColor: isDarkMode ? whiteColor : "", borderWidth: isDarkMode ? 1 : .5 }]}
                       onPress={() =>
                         item.id === 'more'
                           ? onPressShopAll()

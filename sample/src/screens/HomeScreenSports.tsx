@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Pressable, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { whiteColor, blackColor, grayColor, redColor, lightGrayOpacityColor } from '../constants/Color'
@@ -56,6 +56,7 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
   const [collectionsFetched, setCollectionsFetched] = useState(false);
 
   const dispatch = useDispatch();
+  const scrollViewRef = useRef(null);
 
   const carouselData = [
     { id: 1, image: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/bannerimages%2FSports%2FSportsbanner.png?alt=media&token=f74ef227-ff88-44a9-beb0-a97c947ec743" },
@@ -273,6 +274,19 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
     }, [collectionsFetched])
   );
 
+  useEffect(() => {
+    const index = menuItems.findIndex(item => item.title === selectedItem);
+    if (index !== -1) {
+      // Calculate the position to scroll to
+      const itemWidth = 100; // Replace with your item width
+      const offset = Math.max(0, (index - 3) * itemWidth); // Scroll so that the item is in view
+
+      // Scroll to the item if it's in the last 3 items
+      if (index >= menuItems.length - 3) {
+        scrollViewRef.current.scrollTo({ x: offset, animated: true });
+      }
+    }
+  }, [selectedItem, menuItems]);
   //onpress menu item
   const handleMenuPress = (item) => {
     // console.log("handleMenuPress::::item", item);
@@ -464,6 +478,7 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
+          ref={scrollViewRef}
         // contentContainerStyle={styles.menuContainer}
         >
           {menuItems.map((item) => (
