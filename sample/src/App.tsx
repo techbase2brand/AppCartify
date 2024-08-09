@@ -52,6 +52,7 @@ import HomeScreenSports from './screens/HomeScreenSports';
 import CustomSplashScreen from './screens/SplashScreen';
 import HomeScreenGrocery from './screens/HomeScreenGrocery';
 import HomeScreenHomeDecor from './screens/HomeScreenHomeDecor';
+import HomeScreenPet from './screens/HomeScreenPet';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -171,7 +172,7 @@ function HomeStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : selectedItem === "PetGrocery" ? HomeScreenPet : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -255,7 +256,7 @@ function HomeWithAuthStack() {
     >
       <Stack.Screen
         name="HomeScreen"
-        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : HomeScreenFood}
+        component={selectedItem === FOOD ? HomeScreenFood : selectedItem === DRINKS ? HomeScreenDrink : selectedItem === CLOTHING ? HomeScreenClothing : selectedItem === BEAUTY ? HomeScreenBeauty : selectedItem === "Electronics" ? HomeScreenElectronic : selectedItem === "AutoMotives" ? HomeScreenAutomotives : selectedItem === "Sports" ? HomeScreenSports : selectedItem === "Grocery" ? HomeScreenGrocery : selectedItem === "HomeDecor" ? HomeScreenHomeDecor : selectedItem === "PetGrocery" ? HomeScreenPet : HomeScreenFood}
         options={{ headerShown: false }}
       />
       <Stack.Screen

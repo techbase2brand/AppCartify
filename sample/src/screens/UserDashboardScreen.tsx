@@ -44,7 +44,7 @@ const UserDashboardScreen = () => {
   const dispatch = useDispatch();
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-
+  const [shopCurrency, setShopCurrency] = useState('');
 
   useEffect(() => {
     logEvent('UserDashboardScreen Initialized');
@@ -56,6 +56,20 @@ const UserDashboardScreen = () => {
       setSelectedAddressId(customerAddresses[0].id);
     }
   }, [customerAddresses]);
+
+  useEffect(() => {
+    const fetchCurrency = async () => {
+      try {
+        const shopCurrency = await AsyncStorage.getItem('shopCurrency');
+        if (shopCurrency) {
+          setShopCurrency(shopCurrency);
+        }
+      } catch (error) {
+        console.error('Error fetching shop currency:', error);
+      }
+    };
+    fetchCurrency();
+  }, []);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -114,7 +128,7 @@ const UserDashboardScreen = () => {
   }
 
   const addToCartProduct = async (item: any, quantity: any) => {
-    const variantId = item?.variants?.edges ? item?.variants?.edges[0]?.node?.id : item?.variants?.nodes ? item?.variants?.nodes[0].id : item?.variants[0]?.admin_graphql_api_id;
+    const variantId = item?.variants?.edges ? item?.variants?.edges[0]?.node?.id : item?.variants?.nodes ? item?.variants?.nodes[0].id : item?.variants?.[0]?.admin_graphql_api_id ? item?.variants[0]?.admin_graphql_api_id : item.variantId[0];
     // console.log(variantId)
     setLoadingProductId(variantId);
     await addToCart(variantId, quantity);
@@ -224,12 +238,13 @@ const UserDashboardScreen = () => {
                 keyExtractor={(item) => item?.id?.toString()}
                 numColumns={2}
                 renderItem={({ item, index }) => {
-                  const imageUrl = item?.images?.edges?.[0]?.node?.url ?? item?.images?.nodes?.[0]?.url ?? item?.images?.[0]?.src;
+                  // console.log(item)
+                  // const imageUrl = item?.images?.edges?.[0]?.node?.url ?? item?.images?.nodes?.[0]?.url ?? item?.images?.[0]?.src;
+                  const imageUrl = item?.images?.edges ? item?.images?.edges?.[0]?.node?.url : item?.images?.nodes ? item?.images?.nodes?.[0]?.url : item?.images?.[0]?.src ? item?.images?.[0]?.src : item.imageUrls[0]
                   const itemPrice = item?.variants?.edges?.[0]?.node?.price?.amount ?? item?.variants?.nodes?.[0]?.price ?? item?.variants?.[0]?.price;
                   const itemCurrencyCode = item?.variants?.edges?.[0]?.node?.price?.currencyCode ?? null;
                   const inventoryQuantity = item?.variants?.nodes ? item?.variants?.nodes[0]?.inventoryQuantity : (item?.variants?.[0]?.inventory_quantity ? item?.variants?.[0]?.inventory_quantity : (Array.isArray(item?.inventoryQuantity) ? item?.inventoryQuantity[0] : item?.inventoryQuantity));
-                  const variantId = item?.variants?.edges ? item?.variants.edges[0]?.node.id : item.variants.nodes ? item.variants.nodes[0].id : item.variants[0].admin_graphql_api_id;
-                  // console.log(item)
+                  const variantId = item?.variants?.edges ? item?.variants.edges[0]?.node.id : item?.variants?.nodes ? item?.variants?.nodes[0]?.id : item?.variants?.[0]?.admin_graphql_api_id ? item?.variants[0]?.admin_graphql_api_id : item.variantId[0];
                   return (
                     <View style={[styles.itemContainer, { backgroundColor: isDarkMode ? grayColor : whiteColor }]}>
                       <Pressable style={[positionAbsolute, alignJustifyCenter, styles.favButton]} onPress={() => handlePress(item)}>
@@ -245,7 +260,7 @@ const UserDashboardScreen = () => {
                       />
                       <View style={{ width: "100%", height: hp(7), alignItems: "center", justifyContent: "center" }}>
                         <Text style={[styles.wishListItemName, textAlign, { color: colors.blackColor }]}>{item?.title}</Text>
-                        {itemPrice && <Text style={[styles.wishListItemPrice, textAlign, { color: colors.blackColor }]}>{itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode}</Text></Text>}
+                        <Text style={[styles.wishListItemPrice, textAlign, { color: colors.blackColor }]}>{item.price[0] ? item.price[0] : itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode ? itemCurrencyCode : shopCurrency}</Text></Text>
                       </View>
                       <View style={[{ width: "100%", flexDirection: "row", paddingTop: spacings.large }, alignJustifyCenter]}>
                         {inventoryQuantity <= 0 ? <Pressable

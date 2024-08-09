@@ -265,6 +265,15 @@ function ProductDetails({
     fetchCurrency();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     const fetchedProducts = await fetchUpsellingProducts(product.id);
+  //     setUpSellingProducts(fetchedProducts);
+  //   };
+
+  //   fetchProducts();
+  // }, [product.id]);
+
   const getIsFavSelected = (productId) => {
     const isFav = wishList.some(item => item.admin_graphql_api_id === productId);
     return isFav;
@@ -408,11 +417,79 @@ function ProductDetails({
   };
   const trimcateText = (text) => {
     const words = text.split(' ');
-    if (words.length > 3) {
-      return words.slice(0, 3).join(' ') + '...';
+    if (words.length > 4) {
+      return words.slice(0, 4).join(' ') + '...';
     }
     return text;
   };
+
+  // const fetchUpsellingProducts = async (productId) => {
+  //   console.log('Fetching upselling products for product ID:', productId);
+  //   try {
+  //     const response = await axios.post(
+  //       `https://${STOREFRONT_DOMAIN}/api/2023-04/graphql.json`,
+  //       {
+  //         query: `
+  //           query getProduct($id: ID!) {
+  //             product(id: $id) {
+  //               id
+  //               title
+  //               tags
+  //               collections(first: 5) {
+  //                 edges {
+  //                   node {
+  //                     id
+  //                     title
+  //                     products(first: 10) {
+  //                       edges {
+  //                         node {
+  //                           id
+  //                           title
+  //                           featuredImage {
+  //                             originalSrc
+  //                           }
+  //                           variants(first: 1) {
+  //                             edges {
+  //                               node {
+  //                                 priceV2 {
+  //                                   amount
+  //                                   currencyCode
+  //                                 }
+  //                               }
+  //                             }
+  //                           }
+  //                         }
+  //                       }
+  //                     }
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         `,
+  //         variables: { id: productId },
+  //       },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
+  //         },
+  //       }
+  //     );
+
+  //     const product = response.data.data.product;
+  //     // Get products from the first collection
+  //     const relatedProducts = product.collections.edges.flatMap(edge => edge.node.products.edges.map(productEdge => productEdge.node));
+
+  //     console.log('Related products:', relatedProducts);
+
+  //     return relatedProducts;
+  //   } catch (error) {
+  //     console.error('Error fetching upselling products:', error);
+  //     return [];
+  //   }
+  // };
+
   return (
     <View>
       <ScrollView
@@ -456,22 +533,7 @@ function ProductDetails({
               </Pressable>}
             </View>
             <View style={{ marginBottom: spacings.large }}>
-              {/* <Text style={styles.relatedProductsTitle}>{SELECT_VARIANTS}</Text> */}
               <View>
-                {/* {options?.map((option, index) => (
-                  <View key={index} style={styles.optionContainer}>
-                    <Text style={styles.relatedProductsTitle}>Choose {option?.name}</Text>
-                    <View style={[flexDirectionRow, { marginTop: spacings.large }]}>
-                      <ScrollView horizontal>
-                        {option?.values.map((value, idx) => (
-                          <TouchableOpacity key={idx} onPress={() => handleSelectOption(option?.name, value)} style={[styles.optionValueContainer, flexDirectionRow, borderRadius5, alignJustifyCenter, selectedOptions[option.name] === value ? { backgroundColor: redColor, borderWidth: 0 } : { backgroundColor: whiteColor }]}>
-                            <Text style={[styles.optionValue, selectedOptions[option?.name] === value && { color: whiteColor }]}>{value}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </ScrollView>
-                    </View>
-                  </View>
-                ))} */}
                 {options?.map((option, index) => {
                   if (option.name === "Title" && option.values.includes("Default Title")) {
                     return null; // Skip rendering this option
@@ -541,15 +603,6 @@ function ProductDetails({
                 <Text style={styles.buttonText}>{VIEW_ALL_REVIEWS}</Text>
               </TouchableOpacity> */}
             </View>
-            {/* <View style={[{ width: wp(95), height: hp(8), marginVertical: spacings.normal }, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
-              <View>
-                <Text style={{ paddingVertical: spacings.small, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>{PRICE}:</Text>
-                <Text style={styles.productPrice}>{(variant?.price?.amount) ? (variant?.price?.amount) : (variant?.price)} {variant?.price?.currencyCode}</Text>
-              </View>
-              <TouchableOpacity style={[alignJustifyCenter, styles.shareButton]} onPress={shareProduct}>
-                <FontAwesome name="share" size={25} color={blackColor} />
-              </TouchableOpacity>
-            </View> */}
           </View>
           {relatedProducts?.length != 0 && <View style={styles.relatedProductsContainer}>
             <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{YOU_MIGHT_LIKE}</Text>
@@ -570,7 +623,7 @@ function ProductDetails({
                     </View>
                     <View style={[{ width: "100%", height: hp(9) }]}>
                       <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item.title)}</Text>
-                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants[0]?.price}{shopCurrency}
+                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants[0]?.price} {shopCurrency}
                       </Text>
                     </View>
                     <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
@@ -609,6 +662,64 @@ function ProductDetails({
             />
 
           </View>}
+          {/* {upSellingproducts?.length != 0 && <View style={styles.relatedProductsContainer}>
+            <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{'Recomendations'}</Text>
+            <FlatList
+              data={upSellingproducts}
+              renderItem={({ item }) => {
+                const inventoryQuantity = item?.variants[0]?.inventory_quantity ?? 0;
+                const isFavSelected = getIsFavSelected(item.admin_graphql_api_id);
+                return (
+                  <View
+                    style={[styles.relatedProductItem, alignJustifyCenter, { backgroundColor: isDarkMode ? grayColor : "transparnet" }]}
+                  >
+                    <View style={{ width: "100%", borderWidth: .5, borderColor: themecolors.lightGrayOpacityColor, marginBottom: spacings.small, borderRadius: 10, alignItems: "center" }}>
+                      <Image
+                        source={{ uri: item?.featuredImage?.originalSrc }}
+                        style={[styles.relatedProductImage, borderRadius10, resizeModeContain]}
+                      />
+                    </View>
+                    <View style={[{ width: "100%", height: hp(9) }]}>
+                      <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item.title)}</Text>
+                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants?.edges[0].node.priceV2.amount} {shopCurrency}
+                      </Text>
+                    </View>
+                    <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
+                      {inventoryQuantity === 0 ? <Pressable
+                        style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
+                      >
+                        <Text style={styles.addToCartButtonText}>Out of stock</Text>
+                      </Pressable>
+                        : <Pressable
+                          style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
+                          onPress={() => onAddToCartRelatedProduct(item.variants[0].admin_graphql_api_id, 1)}
+                          disabled={loadingProductId === item.variants[0].admin_graphql_api_id}
+                        >
+                          {loadingProductId === item.variants[0].admin_graphql_api_id ? (
+                            <ActivityIndicator color={whiteColor} />
+                          ) : (
+                            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+                          )}
+
+                        </Pressable>}
+                      <TouchableOpacity style={[alignJustifyCenter, styles.relatedProductfavButton, { backgroundColor: whiteColor, borderColor: themecolors.redColor }]} onPress={() => handlePress(item)}>
+                        <AntDesign
+                          name={isFavSelected ? "heart" : "hearto"}
+                          size={18}
+                          color={redColor}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )
+              }}
+              horizontal
+              // numColumns={2}
+              keyExtractor={(index) => index?.toString()}
+              showsHorizontalScrollIndicator={false}
+            />
+
+          </View>} */}
           {shareProductloading && <LoadingModal visible={shareProductloading} />}
         </View>
       </ScrollView>
@@ -863,7 +974,7 @@ function createStyles(colors: Colors) {
       // color: blackColor,
       // fontFamily: 'GeneralSans-Variable'
       // color: blackColor,
-      fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
+      fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
     },
     relatedproductPrice: {
       fontSize: style.fontSizeSmall1x.fontSize,

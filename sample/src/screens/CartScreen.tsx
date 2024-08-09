@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, StyleSheet, Text, Image, ActivityIndicator, Pressable, RefreshControl, TouchableOpacity, ImageBackground } from 'react-native';
+import { SafeAreaView, ScrollView, View, StyleSheet, Text, Image, ActivityIndicator, Pressable, RefreshControl, TouchableOpacity, ImageBackground, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useShopifyCheckoutSheet } from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
@@ -11,7 +11,10 @@ import { blackColor, redColor, whiteColor, lightShadeBlue, mediumGray, grayColor
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
-import { SUBTOTAL, YOUR_CART_IS_EMPTY, AN_ERROR_OCCURED, LOADING_CART, TOTAL, TAXES, QUNATITY, CHECKOUT, STOREFRONT_DOMAIN } from '../constants/Constants';
+import {
+  SUBTOTAL, YOUR_CART_IS_EMPTY, AN_ERROR_OCCURED, LOADING_CART, TOTAL, TAXES, QUNATITY, CHECKOUT, STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN,
+  ADMINAPI_ACCESS_TOKEN, YOU_MIGHT_LIKE, LOADER_NAME
+} from '../constants/Constants';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeProductFromCart, removeProductInCart } from '../redux/actions/cartActions';
@@ -20,9 +23,10 @@ import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 import Header from '../components/Header';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
-
 import axios from 'axios';
-const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, borderWidth1, borderRadius5, textAlign, alignItemsFlexEnd } = BaseStyle;
+import LoaderKit from 'react-native-loader-kit'
+import { addToWishlist, removeFromWishlist } from '../redux/actions/wishListActions';
+const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter, borderRadius5, textAlign, alignItemsFlexEnd, resizeModeContain } = BaseStyle;
 
 function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const { isDarkMode } = useThemes();
@@ -36,6 +40,9 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const styles = createStyles(colors);
   const dispatch = useDispatch();
   const userLoggedIn = useSelector(state => state.auth.isAuthenticated);
+  const [upSellingproducts, setUpSellingProducts] = useState([]);
+  const [loadingProductId, setLoadingProductId] = useState(null);
+  const wishList = useSelector(state => state.wishlist.wishlist);
 
   useEffect(() => {
     if (cartId) {
@@ -44,13 +51,268 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
           cartId,
         },
       });
-      // console.log("inside if Cart ID:", cartId);
     }
-    // console.log("Cart ID:", cartId);
   }, [fetchCart, cartId]);
+
+  const fetchCartDetail = async () => {
+    // console.log("cartId", cartId);
+    try {
+      const response = await axios.post(`https://${STOREFRONT_DOMAIN}/api/2024-01/graphql.json`, {
+        query: `
+          {
+            cart(id: "${cartId}") {
+              id
+              lines(first: 10) {
+                edges {
+                  node {
+                    id
+                    merchandise {
+                      ... on ProductVariant {
+                        product {
+                          id
+                        }
+                      }
+                    }
+                    quantity
+                  }
+                }
+              }
+            }
+          }
+        `
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN
+        }
+      });
+
+      const productIds = response.data?.data?.cart?.lines?.edges.map(edge => {
+        const fullId = edge.node.merchandise?.product?.id || '';
+        // Extract numeric part from the Shopify ID
+        return fullId.split('/').pop();
+      }) || [];
+      // console.log("Product IDs:", productIds);
+      if (productIds) {
+        fetchProductMetafields(productIds)
+      }
+    } catch (error) {
+      console.error("Error fetching cart details:", error);
+    }
+  };
+
+  const fetchProductMetafields = async (productID: any) => {
+    axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
+      headers: {
+        'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(async response => {
+        // console.log("Response:", response.data.metafields[0].value);
+        const metafieldValues = response.data.metafields[0]?.value ? JSON.parse(response.data.metafields[0].value) : [];
+        const products = await fetchProductsFromStore();
+        // Filter products based on metafield values
+        const matchingProducts = products.filter(product =>
+          metafieldValues.includes(product.id)
+        );
+
+        // Set the state with matching products
+        console.log("matchingProducts", matchingProducts)
+        setUpSellingProducts(matchingProducts)
+      })
+      .catch(error => {
+        console.error('Error fetching metafields:', error);
+      });
+  };
+
+  // const fetchProductsFromStore = async () => {
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/json");
+  //   myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
+
+  //   const graphql = JSON.stringify({
+  //     query: `query getProducts {
+  //       products(first: 250) {
+  //         edges {
+  //           node {
+  //             id
+  //             title
+  //             tags
+  //             options(first:250) {
+  //               id
+  //               name
+  //               values
+  //             }
+  //             images(first: 250) {
+  //              edges {
+  //                node {
+  //                  id
+  //                  src
+  //                 }
+  //               }
+  //             }
+  //             variants(first: 250) {
+  //               nodes {
+  //                 id
+  //                 title
+  //                 inventoryQuantity
+  //                 price
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }`,
+  //     variables: {}
+  //   });
+
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: graphql,
+  //     redirect: "follow"
+  //   };
+
+  //   try {
+  //     const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, requestOptions);
+  //     const result = await response.json();
+
+  //     // Extract products from the result
+  //     console.log(result)
+  //     const products = result?.data?.products?.edges.map(edge => {
+  //       const product = edge.node;
+  //       // Extract inventory quantities
+  //       const inventoryQuantities = product.variants.nodes.map(variant => variant.inventoryQuantity);
+  //       const imageUrls = product.images.edges.map(imageEdge => imageEdge.node.src);
+  //       const price = product.variants.nodes.map(variant => variant.price);
+  //       const variantId = product.variants.nodes.map(variant => variant.id);
+  //       return {
+  //         id: product.id,
+  //         title: product.title,
+  //         inventoryQuantities,
+  //         imageUrls,
+  //         price,
+  //         variantId
+  //       };
+  //     });
+  //     // console.log(products)
+  //     return products;
+
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //     return [];
+  //   }
+  // };
+
+  const fetchProductsFromStore = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
+
+    const graphqlQuery = (cursor = '') => JSON.stringify({
+      query: `query getProducts($cursor: String) {
+        products(first: 250, after: $cursor) {
+          edges {
+            node {
+              id
+              title
+              tags
+              options(first: 250) {
+                id
+                name
+                values
+              }
+              images(first: 250) {
+                edges {
+                  node {
+                    id
+                    src
+                  }
+                }
+              }
+              variants(first: 250) {
+                nodes {
+                  id
+                  title
+                  inventoryQuantity
+                  price
+                }
+              }
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }`,
+      variables: {
+        cursor
+      }
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    try {
+      let hasNextPage = true;
+      let endCursor = null;
+      const allProducts = [];
+
+      while (hasNextPage) {
+        const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, {
+          ...requestOptions,
+          body: graphqlQuery(endCursor)
+        });
+
+        const result = await response.json();
+
+        // Check if there's an error in the response
+        if (result.errors) {
+          console.error('GraphQL errors:', result.errors);
+          return [];
+        }
+
+        // Extract products from the result
+        const products = result?.data?.products?.edges.map(edge => {
+          const product = edge.node;
+          // Extract inventory quantities
+          const inventoryQuantities = product.variants.nodes.map(variant => variant.inventoryQuantity);
+          const imageUrls = product.images.edges.map(imageEdge => imageEdge.node.src);
+          const price = product.variants.nodes.map(variant => variant.price);
+          const variantId = product.variants.nodes.map(variant => variant.id);
+          return {
+            id: product.id,
+            title: product.title,
+            inventoryQuantities,
+            imageUrls,
+            price,
+            variantId
+          };
+        });
+
+        allProducts.push(...products);
+
+        // Update pagination info
+        hasNextPage = result?.data?.products?.pageInfo?.hasNextPage;
+        endCursor = result?.data?.products?.pageInfo?.endCursor;
+      }
+
+      return allProducts;
+
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     logEvent('CartScreen');
+    fetchCartDetail();
   }, [])
 
   const onRefresh = useCallback(() => {
@@ -61,14 +323,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       },
     }).then(() => setRefreshing(false));
   }, [cartId, fetchCart]);
-
-  // const presentCheckout = async () => {
-  //   logEvent('Click CheckOut ');
-  //   if (checkoutURL) {
-  //     ShopifyCheckout.present(checkoutURL);
-  //     logEvent('Open CheckOut ');
-  //   }
-  // };
 
   const presentCheckout = async () => {
     logEvent('Click CheckOut ');
@@ -152,44 +406,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     Toast.show('Item removed from cart')
     logEvent(`Item removed from cart variantId:${variantId} `);
   };
-  // const handleadddToCart = async (id: string, quantity: number) => {
-
-  //   await addToCart(id, quantity);
-  //   Toast.show('Item added to cart')
-  // };
-
-  // const handleRemoveOneFromCart = async (variantId: string, quantity: number) => {
-  //   console.log(variantId)
-  //   // const locale = 'en';
-  //   console.log(variantId, quantity)
-  //   await removeOneFromCart(variantId, quantity);
-  //   dispatch(removeProductFromCart(variantId, quantity));
-  //   // dispatch(removeProductInCart(variantId));
-  //   Toast.show('Item removed from cart')
-  //   // const url = `https://${STOREFRONT_DOMAIN}/${locale}/cart/change.js`;
-
-  //   // const payload = {
-  //   //   id: variantId,
-  //   //   quantity: quantity
-  //   // };
-
-  //   // try {
-  //   //   const response = await axios.post(url, payload, {
-  //   //     headers: {
-  //   //       'Content-Type': 'application/json'
-  //   //     }
-  //   //   });
-
-  //   //   // Handle the response
-  //   //   // console.log('Cart updated successfully:', response.data);
-  //   //   return response.data;
-  //   // } catch (error) {
-  //   //   // Handle the error
-  //   //   console.error('Error updating cart:', error);
-  //   //   throw error;
-  //   // }
-
-  // };
 
   const getTotalAmount = () => {
     let totalAmount = 0;
@@ -213,9 +429,38 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     return value1 + value2;
   }
 
+  const trimcateText = (text) => {
+    const words = text.split(' ');
+    if (words.length > 4) {
+      return words.slice(0, 4).join(' ') + '...';
+    }
+    return text;
+  };
+
   const totalAmount = parseFloat(getTotalAmount()?.totalAmount);
   const taxAmount = data?.cart?.cost?.totalTaxAmount ? parseFloat(price(data?.cart?.cost?.totalTaxAmount)) : 0;
   const sum = addValues(totalAmount, taxAmount);
+
+  const onAddToCartRelatedProduct = async (variantId, quantity) => {
+    console.log("variantid", variantId, quantity)
+    setLoadingProductId(variantId);
+    await addToCart(variantId, quantity)
+    setLoadingProductId(null);
+  };
+
+  const getIsFavSelected = (productId) => {
+    const isFav = wishList.some(item => item?.id === productId);
+    return isFav;
+  }
+
+  const handlePress = (item) => {
+    // console.log("handelePress", item)
+    if (!getIsFavSelected(item?.id)) {
+      dispatch(addToWishlist(item));
+    } else {
+      dispatch(removeFromWishlist(item?.id));
+    }
+  };
   return (
     <ImageBackground source={isDarkMode ? "" : BACKGROUND_IMAGE} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
       <SafeAreaView>
@@ -238,24 +483,84 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                   quantity={node?.quantity}
                   loading={addingToCart?.has(node?.id)}
                   onRemove={(variantId) => handleRemoveToCart(variantId)}
-                // onAddCartItem={(variantId, qty) => handleadddToCart(variantId, qty)}
-                // onHandleRemoveOneFromCart={(variantId, qty) => handleRemoveOneFromCart(variantId, qty)}
                 />
               ))}
-              {/*
-            {((data?.cart?.lines) ? (data?.cart?.lines?.edges) : cartItemsFromRedux).map((item) => {
-              const node = data?.cart?.lines ? item.node : item;
-              return (
-                <CartItem
-                  key={node?.merchandise?.id}
-                  item={node}
-                  quantity={node?.quantity}
-                  loading={addingToCart?.has(node?.id)}
-                  onRemove={(variantId) => handleRemoveToCart(variantId)}
-                />
-              );
-            })} */}
+
             </View>
+            {upSellingproducts?.length != 0  && <View style={styles.relatedProductsContainer}>
+              <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{YOU_MIGHT_LIKE}</Text>
+              <FlatList
+                data={upSellingproducts}
+                renderItem={({ item }) => {
+                  const inventoryQuantity = item?.inventoryQuantities[0] || 0;
+                  const isFavSelected = getIsFavSelected(item?.id);
+                  return (
+                    <View
+                      style={[styles.relatedProductItem, alignJustifyCenter, { backgroundColor: isDarkMode ? grayColor : "transparnet" }]}
+                    >
+                      <View style={{ width: "100%", borderWidth: .5, borderColor: themecolors.lightGrayOpacityColor, marginBottom: spacings.small, borderRadius: 10, alignItems: "center" }}>
+                        <Image
+                          source={{ uri: item?.imageUrls[0] }}
+                          style={[styles.relatedProductImage, borderRadius10, resizeModeContain]}
+                        />
+                      </View>
+                      <View style={[{ width: "100%", height: hp(9) }]}>
+                        <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item?.title)}</Text>
+                        <Text
+                          style={[
+                            styles.relatedproductPrice,
+                            { paddingHorizontal: spacings.small, color: themecolors.blackColor },
+                          ]}
+                        >
+                          ${item?.price[0]} {/* Assuming the price is the first element in the price array */}
+                        </Text>
+                      </View>
+                      <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
+                        {inventoryQuantity === 0 ? (
+                          <Pressable
+                            style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
+                          >
+                            <Text style={styles.addToCartButtonText}>Out of stock</Text>
+                          </Pressable>
+                        ) : (
+                          <Pressable
+                            style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
+                            onPress={() => onAddToCartRelatedProduct(item?.variantId[0], 1)}
+                            disabled={loadingProductId === item?.variantId[0]}
+                          >
+                            {loadingProductId === item?.variantId[0] ? (
+                              <ActivityIndicator color={whiteColor} />
+                            ) : (
+                              <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+                            )}
+                          </Pressable>
+                        )}
+                        <TouchableOpacity style={[alignJustifyCenter, styles.relatedProductfavButton, { backgroundColor: whiteColor, borderColor: themecolors.redColor }]} onPress={() => handlePress(item)}>
+                          <AntDesign
+                            name={isFavSelected ? "heart" : "hearto"}
+                            size={18}
+                            color={redColor}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )
+                }}
+                horizontal
+                // numColumns={2}
+                keyExtractor={(index) => index?.toString()}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View> }
+            {/* // :
+            //   <View style={{ width: wp(100), alignItems: "center", justifyContent: "center" ,height:hp(15)}}>
+            //     <LoaderKit
+            //       style={{ width: 50, height: 50 }}
+            //       name={LOADER_NAME}
+            //       color={themecolors.blackColor}
+            //     />
+            //     <Text>Loading Upselling Products...</Text>
+            //   </View>} */}
             <View style={styles.costContainer}>
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow]}>
                 <Text style={styles.costBlockText}>{SUBTOTAL}</Text>
@@ -322,15 +627,11 @@ function CartItem({
   quantity,
   onRemove,
   loading,
-  // onAddCartItem,
-  // onHandleRemoveOneFromCart
 }: {
   item: CartLineItem;
   quantity: number;
   loading?: boolean;
   onRemove: (variantId: string, quantityToRemove: number) => void;
-  // onAddCartItem: (variantId: string, qty: number) => void;
-  // onHandleRemoveOneFromCart: (variantId: string, quantityToRemove: number) => void;
 }) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
@@ -340,23 +641,7 @@ function CartItem({
   const handleRemoveItem = () => {
     onRemove(item.id);
   };
-  // const incrementQuantity = () => {
-  //   logEvent('Increase Product Quantity');
-  //   setProductQuantity(productquantity + 1);
-  //   onAddCartItem(item.merchandise.id, 1);
-  // };
 
-  // const decrementQuantity = () => {
-  //   logEvent('Decrease Product Quantity');
-  //   if (productquantity > 1) {
-  //     setProductQuantity(productquantity - 1);
-  //     const variantId = `${item.merchandise.id}`;
-  //     console.log('Attempting to remove from cartin decrementQuantity:', variantId);
-  //     onHandleRemoveOneFromCart(variantId, productquantity - 1);
-  //   } else {
-  //     handleRemoveItem();
-  //   }
-  // };
   const trimcateText = (text) => {
     const words = text.split(' ');
     if (words.length > 4) {
@@ -388,14 +673,14 @@ function CartItem({
             {price(item?.merchandise?.price)}
             {/* {itemPrice} */}
           </Text>
-          {/* <Text style={styles.productDescription}>{QUNATITY}: {quantity}</Text> */}
+
         </View>
         <View>
           <Pressable style={[styles.removeButton, alignItemsFlexEnd]} onPress={handleRemoveItem}>
             {loading ? (
               <ActivityIndicator size="small" />
             ) : (
-              // <Text style={styles.removeButtonText}>{REMOVE}</Text>
+
               <AntDesign
                 name={"delete"}
                 size={18}
@@ -404,15 +689,7 @@ function CartItem({
             )}
           </Pressable>
           <Text style={[styles.productDescription, { color: themecolors.blackColor }]}>{QUNATITY}: {quantity}</Text>
-          {/* <View style={[styles.quantityContainer, borderWidth1, { backgroundColor: isDarkMode ? blackColor : whiteColor, borderColor: themecolors.blackColor }]}>
-            <TouchableOpacity onPress={decrementQuantity}>
-              <Text style={[styles.quantityButton, { color: themecolors.blackColor }]}>-</Text>
-            </TouchableOpacity>
-            <Text style={[styles.quantity, { color: themecolors.blackColor }]}>{productquantity}</Text>
-            <TouchableOpacity onPress={incrementQuantity}>
-              <Text style={[styles.quantityButton, { color: themecolors.blackColor }]}>+</Text>
-            </TouchableOpacity>
-          </View> */}
+
         </View>
       </View>
     </View >
@@ -557,6 +834,55 @@ function createStyles(colors: Colors) {
       fontSize: 16,
       fontWeight: 'bold',
       color: redColor,
+    },
+    relatedProductsContainer: {
+      width: "100%",
+      marginTop: spacings.xLarge,
+    },
+    relatedProductsTitle: {
+      fontSize: style.fontSizeLarge.fontSize,
+      fontWeight: style.fontWeightMedium.fontWeight,
+      color: blackColor,
+      paddingHorizontal: spacings.large
+    },
+    relatedProductItem: {
+      width: wp(40),
+      margin: spacings.small,
+      padding: spacings.large,
+      borderRadius: 5
+    },
+    relatedProductImage: {
+      width: wp(30),
+      height: wp(30),
+      marginVertical: spacings.large,
+    },
+    relatedproductName: {
+      fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
+    },
+    relatedproductPrice: {
+      fontSize: style.fontSizeSmall1x.fontSize,
+      fontWeight: style.fontWeightThin1x.fontWeight,
+      fontFamily: 'GeneralSans-Variable'
+    },
+    relatedAddtocartButton: {
+      fontSize: style.fontSizeExtraExtraSmall.fontSize,
+      width: "68%",
+      backgroundColor: redColor,
+      padding: spacings.normal,
+    },
+    addToCartButtonText: {
+      fontSize: style.fontSizeNormal.fontSize,
+      lineHeight: 20,
+      color: whiteColor,
+      fontWeight: style.fontWeightThin1x.fontWeight,
+    },
+    relatedProductfavButton: {
+      width: wp(10),
+      height: hp(3.8),
+      right: 0,
+      zIndex: 10,
+      borderWidth: 1,
+      borderRadius: 10,
     },
   });
 }

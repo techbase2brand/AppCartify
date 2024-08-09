@@ -67,11 +67,12 @@ function CatalogScreen({ navigation }: Props) {
     fetchInitialData()
     const CollectionId = (selectedItem === "Food" ? "gid://shopify/Collection/331148034201" : selectedItem === "Clothing" ? "gid://shopify/Collection/331288477849" : selectedItem === "Beauty"
       ? "gid://shopify/Collection/331294671001" : selectedItem === "Electronics" ? "gid://shopify/Collection/331435278489" : selectedItem === "AutoMotives" ? "gid://shopify/Collection/331502551193"
-        : selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : selectedItem === "Grocery" ? "gid://shopify/Collection/331991777433" : selectedItem === "HomeDecor" ? "gid://shopify/Collection/331992203417" : "gid://shopify/Collection/331148034201");
+        : selectedItem === "Sports" ? "gid://shopify/Collection/331498061977" : selectedItem === "Grocery" ? "gid://shopify/Collection/331991777433" : selectedItem === "HomeDecor" ? "gid://shopify/Collection/331992203417"
+        : selectedItem === "PetGrocery" ? "gid://shopify/Collection/332035850393" : "gid://shopify/Collection/331148034201");
 
     const CollectionName = (selectedItem === "Food" ? "Burgers" : selectedItem === "Clothing" ? "Headbands" : selectedItem === "Beauty" ? "Tiffany Victoria" :
       selectedItem === "Electronics" ? "Speakers" : selectedItem === "AutoMotives" ? "Battery" : selectedItem === "Sports" ? "Abs Exercisers" : selectedItem === "Grocery" ? "Baby Beverages"
-        : selectedItem === "HomeDecor" ? "Wallpapers" : "Collections");
+        : selectedItem === "HomeDecor" ? "Wallpapers" : selectedItem === "PetGrocery" ? "DogBowls" : "Collections");
     onPressCollection(CollectionId, CollectionName)
     setSelectedCollectionId(CollectionId)
 

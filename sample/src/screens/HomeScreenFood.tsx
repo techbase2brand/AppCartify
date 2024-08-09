@@ -53,7 +53,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const [collectionsFetched, setCollectionsFetched] = useState(false);
 
   //dummy Gif
-  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/2894881-uhd_3840_2160_24fps.gif?alt=media&token=76226ea4-b429-4f57-a6a1-89eed9899bc8", title: "Indian Whiskey" };
+  const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/d969801a-9c5b-4cf3-8eb3-340f8ad5f4d5.gif?alt=media&token=7778bc3e-d9ed-4a0a-912f-e47d8d69073f", title: "Indian Whiskey" };
 
   // const collections = collectionData?.collections?.edges || [];
   const collections = shopifyCollection || [];
