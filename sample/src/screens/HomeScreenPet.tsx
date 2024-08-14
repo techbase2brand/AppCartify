@@ -68,7 +68,7 @@ const HomeScreenPet = ({ navigation }: { navigation: any }) => {
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/ca5af4bf-bd18-4531-a657-142c89c51a36.gif?alt=media&token=d833d916-5379-462f-a47c-afe720ce2738" }
 
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Pet Grocery Initialized');
   }, [])
 
   //best selling
@@ -291,7 +291,7 @@ const HomeScreenPet = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
+    logEvent(`Change theme from PetGrocery to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -434,14 +434,14 @@ const HomeScreenPet = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenPetGrocery');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenPetGrocery CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

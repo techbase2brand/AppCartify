@@ -693,7 +693,7 @@ function App({ navigation }: { navigation: any }) {
   useEffect(() => {
     fetchAndStoreShopCurrency()
     requestPermissionAndToken()
-    init('ea263d07be72d0ee3d73445ccfda8c65')
+    init('397e42c5bdf06dde431bc98973e33271')
     logEvent('App Started');
 
     SplashScreen.hide();

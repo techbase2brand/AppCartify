@@ -26,6 +26,7 @@ import { lightColors, darkColors } from '../constants/Color';
 import axios from 'axios';
 import LoaderKit from 'react-native-loader-kit'
 import { addToWishlist, removeFromWishlist } from '../redux/actions/wishListActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter, borderRadius5, textAlign, alignItemsFlexEnd, resizeModeContain } = BaseStyle;
 
 function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
@@ -43,6 +44,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const [upSellingproducts, setUpSellingProducts] = useState([]);
   const [loadingProductId, setLoadingProductId] = useState(null);
   const wishList = useSelector(state => state.wishlist.wishlist);
+  const [shopCurrency, setShopCurrency] = useState('');
 
   useEffect(() => {
     if (cartId) {
@@ -53,6 +55,20 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       });
     }
   }, [fetchCart, cartId]);
+
+  useEffect(() => {
+    const fetchCurrency = async () => {
+      try {
+        const shopCurrency = await AsyncStorage.getItem('shopCurrency');
+        if (shopCurrency) {
+          setShopCurrency(shopCurrency);
+        }
+      } catch (error) {
+        console.error('Error fetching shop currency:', error);
+      }
+    };
+    fetchCurrency();
+  }, []);
 
   const fetchCartDetail = async () => {
     // console.log("cartId", cartId);
@@ -101,54 +117,144 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     }
   };
 
-  const fetchProductMetafields = async (productID: any) => {
-    axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
-      headers: {
-        'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(async response => {
-        // console.log("Response:", response.data.metafields[0].value);
-        const metafieldValues = response.data.metafields[0]?.value ? JSON.parse(response.data.metafields[0].value) : [];
-        const products = await fetchProductsFromStore();
-        // Filter products based on metafield values
-        const matchingProducts = products.filter(product =>
-          metafieldValues.includes(product.id)
-        );
+  // const fetchProductMetafields = async (productID) => {
+  //   try {
+  //     const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
+  //       headers: {
+  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
 
-        // Set the state with matching products
-        console.log("matchingProducts", matchingProducts)
-        setUpSellingProducts(matchingProducts)
-      })
-      .catch(error => {
-        console.error('Error fetching metafields:', error);
+  //     // Extract metafields from the response
+  //     const metafields = response.data.metafields;
+
+  //     // Initialize an array to hold all metafield values
+  //     const allMetafieldValues = [];
+
+  //     // Iterate over each metafield and parse its value if it exists
+  //     metafields.forEach(metafield => {
+  //       if (metafield.value) {
+  //         try {
+  //           // Parse the JSON string and add it to the array
+  //           const values = JSON.parse(metafield.value);
+  //           allMetafieldValues.push(...values);
+  //         } catch (error) {
+  //           console.error('Error parsing metafield value:', error);
+  //         }
+  //       }
+  //     });
+
+  //     // console.log('All Metafield Values:', allMetafieldValues);
+
+  //     // Fetch all products
+  //     const products = await fetchProductsFromStore();
+
+  //     // Filter products based on metafield values
+  //     const matchingProducts = products.filter(product =>
+  //       allMetafieldValues.includes(product.id)
+  //     );
+  //     // console.log('Matching Products:', matchingProducts);
+  //     setUpSellingProducts(matchingProducts);
+
+  //   } catch (error) {
+  //     console.error('Error fetching metafields:', error);
+  //   }
+  // };
+
+  const extractProductFields = (product) => {
+    return {
+      id: product.id,
+      title: product.title,
+      inventoryQuantities: product.variants.map(variant => variant.inventory_quantity),
+      imageUrls: product.images.map(image => image.src),
+      price: product.variants.map(variant => variant.price),
+      variantId: product.variants.map(variant => variant.admin_graphql_api_id),
+    };
+  };
+  const fetchProductMetafields = async (productID) => {
+    try {
+      const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
+        headers: {
+          'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+          'Content-Type': 'application/json'
+        }
       });
+
+      // Extract metafields from the response
+      const metafields = response.data.metafields;
+
+      // Initialize an array to hold all metafield values
+      const allMetafieldValues = [];
+
+      // Iterate over each metafield and parse its value if it exists
+      metafields.forEach(metafield => {
+        if (metafield.value) {
+          try {
+            // Parse the JSON string and add it to the array
+            const values = JSON.parse(metafield.value);
+            allMetafieldValues.push(...values);
+          } catch (error) {
+            console.error('Error parsing metafield value:', error);
+          }
+        }
+      });
+
+      // console.log('All Metafield Values:', allMetafieldValues);
+
+      const productIds = allMetafieldValues?.map(id => id.replace('gid://shopify/Product/', ''))
+        .join(','); // Join IDs with commas
+
+      // Fetch product details based on extracted IDs
+      if (productIds.length > 0) {
+        const productsResponse = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products.json?ids=${productIds}`, {
+          headers: {
+            'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Extract products from the response
+        const products = productsResponse.data.products;
+
+        const productDetails = products.map(product => extractProductFields(product));
+        // console.log('Matching Products:', productDetails);
+        setUpSellingProducts(productDetails);
+
+      } else {
+        console.log('No metafield values found to fetch products.');
+        setUpSellingProducts([]); // Set to empty array if no values found
+      }
+
+    } catch (error) {
+      console.error('Error fetching metafields:', error);
+    }
   };
 
   // const fetchProductsFromStore = async () => {
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "application/json");
-  //   myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
+  //   const myHeaders = new Headers({
+  //     "Content-Type": "application/json",
+  //     "X-Shopify-Access-Token": ADMINAPI_ACCESS_TOKEN,
+  //   });
 
-  //   const graphql = JSON.stringify({
-  //     query: `query getProducts {
-  //       products(first: 250) {
+  //   const graphqlQuery = (cursor = '') => JSON.stringify({
+  //     query: `query getProducts($cursor: String) {
+  //       products(first: 250, after: $cursor) {
   //         edges {
   //           node {
   //             id
   //             title
   //             tags
-  //             options(first:250) {
+  //             options(first: 250) {
   //               id
   //               name
   //               values
   //             }
   //             images(first: 250) {
-  //              edges {
-  //                node {
-  //                  id
-  //                  src
+  //               edges {
+  //                 node {
+  //                   id
+  //                   src
   //                 }
   //               }
   //             }
@@ -162,42 +268,61 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   //             }
   //           }
   //         }
+  //         pageInfo {
+  //           hasNextPage
+  //           endCursor
+  //         }
   //       }
   //     }`,
-  //     variables: {}
+  //     variables: { cursor }
   //   });
 
   //   const requestOptions = {
   //     method: "POST",
   //     headers: myHeaders,
-  //     body: graphql,
   //     redirect: "follow"
   //   };
 
   //   try {
-  //     const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, requestOptions);
-  //     const result = await response.json();
+  //     let hasNextPage = true;
+  //     let endCursor = null;
+  //     const allProducts = [];
 
-  //     // Extract products from the result
-  //     console.log(result)
-  //     const products = result?.data?.products?.edges.map(edge => {
-  //       const product = edge.node;
-  //       // Extract inventory quantities
-  //       const inventoryQuantities = product.variants.nodes.map(variant => variant.inventoryQuantity);
-  //       const imageUrls = product.images.edges.map(imageEdge => imageEdge.node.src);
-  //       const price = product.variants.nodes.map(variant => variant.price);
-  //       const variantId = product.variants.nodes.map(variant => variant.id);
-  //       return {
-  //         id: product.id,
-  //         title: product.title,
-  //         inventoryQuantities,
-  //         imageUrls,
-  //         price,
-  //         variantId
-  //       };
-  //     });
-  //     // console.log(products)
-  //     return products;
+  //     while (hasNextPage) {
+  //       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, {
+  //         ...requestOptions,
+  //         body: graphqlQuery(endCursor)
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! Status: ${response.status}`);
+  //       }
+
+  //       const result = await response.json();
+
+  //       if (result.errors) {
+  //         console.error('GraphQL errors:', result.errors);
+  //         return [];
+  //       }
+
+  //       const products = result?.data?.products?.edges.map(edge => {
+  //         const product = edge.node;
+  //         return {
+  //           id: product.id,
+  //           title: product.title,
+  //           inventoryQuantities: product.variants.nodes.map(variant => variant.inventoryQuantity),
+  //           imageUrls: product.images.edges.map(imageEdge => imageEdge.node.src),
+  //           price: product.variants.nodes.map(variant => variant.price),
+  //           variantId: product.variants.nodes.map(variant => variant.id)
+  //         };
+  //       });
+
+  //       allProducts.push(...products);
+
+  //       hasNextPage = result?.data?.products?.pageInfo?.hasNextPage;
+  //       endCursor = result?.data?.products?.pageInfo?.endCursor;
+  //     }
+  //     return allProducts;
 
   //   } catch (error) {
   //     console.error('Error fetching products:', error);
@@ -205,117 +330,13 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   //   }
   // };
 
-  const fetchProductsFromStore = async () => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
-
-    const graphqlQuery = (cursor = '') => JSON.stringify({
-      query: `query getProducts($cursor: String) {
-        products(first: 250, after: $cursor) {
-          edges {
-            node {
-              id
-              title
-              tags
-              options(first: 250) {
-                id
-                name
-                values
-              }
-              images(first: 250) {
-                edges {
-                  node {
-                    id
-                    src
-                  }
-                }
-              }
-              variants(first: 250) {
-                nodes {
-                  id
-                  title
-                  inventoryQuantity
-                  price
-                }
-              }
-            }
-          }
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-        }
-      }`,
-      variables: {
-        cursor
-      }
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      redirect: "follow"
-    };
-
-    try {
-      let hasNextPage = true;
-      let endCursor = null;
-      const allProducts = [];
-
-      while (hasNextPage) {
-        const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, {
-          ...requestOptions,
-          body: graphqlQuery(endCursor)
-        });
-
-        const result = await response.json();
-
-        // Check if there's an error in the response
-        if (result.errors) {
-          console.error('GraphQL errors:', result.errors);
-          return [];
-        }
-
-        // Extract products from the result
-        const products = result?.data?.products?.edges.map(edge => {
-          const product = edge.node;
-          // Extract inventory quantities
-          const inventoryQuantities = product.variants.nodes.map(variant => variant.inventoryQuantity);
-          const imageUrls = product.images.edges.map(imageEdge => imageEdge.node.src);
-          const price = product.variants.nodes.map(variant => variant.price);
-          const variantId = product.variants.nodes.map(variant => variant.id);
-          return {
-            id: product.id,
-            title: product.title,
-            inventoryQuantities,
-            imageUrls,
-            price,
-            variantId
-          };
-        });
-
-        allProducts.push(...products);
-
-        // Update pagination info
-        hasNextPage = result?.data?.products?.pageInfo?.hasNextPage;
-        endCursor = result?.data?.products?.pageInfo?.endCursor;
-      }
-
-      return allProducts;
-
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      return [];
-    }
-  };
-
   useEffect(() => {
     logEvent('CartScreen');
     fetchCartDetail();
   }, [])
 
   const onRefresh = useCallback(() => {
+    logEvent('onRefresh cart ');
     setRefreshing(true);
     fetchCart({
       variables: {
@@ -442,10 +463,11 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const sum = addValues(totalAmount, taxAmount);
 
   const onAddToCartRelatedProduct = async (variantId, quantity) => {
-    console.log("variantid", variantId, quantity)
+    // console.log("variantid", variantId, quantity)
     setLoadingProductId(variantId);
     await addToCart(variantId, quantity)
     setLoadingProductId(null);
+    logEvent(`upselling Item add in cart variantId:${variantId} `);
   };
 
   const getIsFavSelected = (productId) => {
@@ -457,8 +479,10 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     // console.log("handelePress", item)
     if (!getIsFavSelected(item?.id)) {
       dispatch(addToWishlist(item));
+      logEvent(`upselling Item add in fav`);
     } else {
       dispatch(removeFromWishlist(item?.id));
+      logEvent(`upselling Item remove in fav`);
     }
   };
   return (
@@ -487,7 +511,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
               ))}
 
             </View>
-            {upSellingproducts?.length != 0  && <View style={styles.relatedProductsContainer}>
+            {upSellingproducts?.length != 0 ? <View style={styles.relatedProductsContainer}>
               <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{YOU_MIGHT_LIKE}</Text>
               <FlatList
                 data={upSellingproducts}
@@ -512,7 +536,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                             { paddingHorizontal: spacings.small, color: themecolors.blackColor },
                           ]}
                         >
-                          ${item?.price[0]} {/* Assuming the price is the first element in the price array */}
+                          {item?.price[0]} {shopCurrency}
                         </Text>
                       </View>
                       <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
@@ -551,16 +575,16 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                 keyExtractor={(index) => index?.toString()}
                 showsHorizontalScrollIndicator={false}
               />
-            </View> }
-            {/* // :
-            //   <View style={{ width: wp(100), alignItems: "center", justifyContent: "center" ,height:hp(15)}}>
-            //     <LoaderKit
-            //       style={{ width: 50, height: 50 }}
-            //       name={LOADER_NAME}
-            //       color={themecolors.blackColor}
-            //     />
-            //     <Text>Loading Upselling Products...</Text>
-            //   </View>} */}
+            </View>
+              :
+              <View style={{ width: wp(100), alignItems: "center", justifyContent: "center", height: hp(15) }}>
+                <LoaderKit
+                  style={{ width: 50, height: 50 }}
+                  name={LOADER_NAME}
+                  color={themecolors.blackColor}
+                />
+                <Text>Loading Products...</Text>
+              </View>}
             <View style={styles.costContainer}>
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow]}>
                 <Text style={styles.costBlockText}>{SUBTOTAL}</Text>

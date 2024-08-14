@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { whiteColor, blackColor } from '../constants/Color';
@@ -9,11 +9,15 @@ import { BaseStyle } from '../constants/Style';
 const { textAlign } = BaseStyle;
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import { logEvent } from '@amplitude/analytics-react-native';
 
 const WebviewScreen = ({ navigation }: { navigation: any }) => {
   const route = useRoute();
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
+  useEffect(() => {
+    logEvent('WebView Screen Initialized');
+  }, [])
   return (
     <View style={[styles.container, { backgroundColor: colors.whiteColor }]}>
       <Header

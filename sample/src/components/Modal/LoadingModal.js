@@ -22,8 +22,8 @@ const LoadingModal = ({ visible, text }) => {
           {/* <ActivityIndicator size="large" color={blackColor} /> */}
           <Text style={[styles.loadingText, { color: colors.blackColor }]}>{text}</Text>
           <LoaderKit
-            style={{ width: "50%", height: "50%" }}
-            name={'BallScaleRippleMultiple'}
+            style={{ width: 100, height: 100 }}
+            name={'BallClipRotateMultiple'}
             color={"white"}
           />
         </View>

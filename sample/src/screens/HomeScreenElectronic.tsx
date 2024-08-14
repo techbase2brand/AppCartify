@@ -66,7 +66,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   ];
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/01a25185-a25c-479d-981d-71fec46f6b87.gif?alt=media&token=282bfb90-452a-4a7f-9688-36b18b94223a" }
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Electronic Initialized');
   }, [])
 
   //best selling
@@ -274,7 +274,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
+    logEvent(`Change theme from Electronic  to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -417,14 +417,14 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenElectroncs');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenElectronics CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

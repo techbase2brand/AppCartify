@@ -68,7 +68,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/816479f2-8048-4cd0-b9f0-f5ded1fc5474.gif?alt=media&token=a5621430-b514-4ac1-9887-76e502f326b2" }
 
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Automotives Initialized');
   }, [])
 
   //best selling
@@ -283,13 +283,14 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
       const offset = Math.max(0, (index - 3) * itemWidth); // Scroll so that the item is in view
 
       // Scroll to the item if it's in the last 3 items
-      if (index >= menuItems.length - 3) {
+      if (index >= menuItems.length - 5) {
         scrollViewRef.current.scrollTo({ x: offset, animated: true });
       }
     }
   }, [selectedItem, menuItems]);
   //onpress menu item
   const handleMenuPress = (item) => {
+    logEvent(`Change theme from automotive to Themename :${item}`);
     // console.log("handleMenuPress::::item", item);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
@@ -433,14 +434,14 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenAutomotives');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenAutomotives CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

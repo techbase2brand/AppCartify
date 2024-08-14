@@ -68,7 +68,7 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/c58ae65c-4d35-426a-99e7-b36b200201f5.gif?alt=media&token=3a146cd4-a159-454b-b33a-b72d60e3cf21" }
 
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Sports Initialized');
   }, [])
 
   //best selling
@@ -282,11 +282,12 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
       const offset = Math.max(0, (index - 3) * itemWidth); // Scroll so that the item is in view
 
       // Scroll to the item if it's in the last 3 items
-      if (index >= menuItems.length - 3) {
+      if (index >= menuItems.length - 4) {
         scrollViewRef.current.scrollTo({ x: offset, animated: true });
       }
     }
   }, [selectedItem, menuItems]);
+
   //onpress menu item
   const handleMenuPress = (item) => {
     // console.log("handleMenuPress::::item", item);
@@ -432,14 +433,14 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreen Sports');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`Collection Button Pressed from HomeScreenSports CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

@@ -103,6 +103,7 @@ const UserDashboardScreen = () => {
   }
 
   const setDefaultAddress = async (addressId) => {
+    logEvent(`Press Set Default Address Button`);
     try {
       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2023-01/customers/${customerId}/addresses/${addressId}.json`, {
         method: 'PUT',
@@ -121,9 +122,11 @@ const UserDashboardScreen = () => {
       const data = await response.json();
       await AsyncStorage.setItem('isDefaultAddress', JSON.stringify(addressId));
       setDefaultAddressId(addressId);
+      logEvent(`Seccess setting default address`);
       // console.log('Set default address response:', data);
     } catch (error) {
       console.error('Error setting default address:', error);
+      logEvent(`Error setting default address`);
     }
   }
 
@@ -134,6 +137,7 @@ const UserDashboardScreen = () => {
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
     setLoadingProductId(null);
+    logEvent(`Add To Cart  Product variantId:${variantId} Qty:${quantity}`);
   };
 
   return (
@@ -260,7 +264,7 @@ const UserDashboardScreen = () => {
                       />
                       <View style={{ width: "100%", height: hp(7), alignItems: "center", justifyContent: "center" }}>
                         <Text style={[styles.wishListItemName, textAlign, { color: colors.blackColor }]}>{item?.title}</Text>
-                        <Text style={[styles.wishListItemPrice, textAlign, { color: colors.blackColor }]}>{item.price[0] ? item.price[0] : itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode ? itemCurrencyCode : shopCurrency}</Text></Text>
+                        <Text style={[styles.wishListItemPrice, textAlign, { color: colors.blackColor }]}>{item.price?.[0] ? item.price?.[0] : itemPrice} <Text style={[styles.wishListItemPrice]}>{itemCurrencyCode ? itemCurrencyCode : shopCurrency}</Text></Text>
                       </View>
                       <View style={[{ width: "100%", flexDirection: "row", paddingTop: spacings.large }, alignJustifyCenter]}>
                         {inventoryQuantity <= 0 ? <Pressable

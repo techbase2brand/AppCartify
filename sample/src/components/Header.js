@@ -51,7 +51,7 @@ const Header = ({ navigation, backIcon, text, onPress, textinput, notification, 
           {closeIcon && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickClose}>
             <Ionicons name={"close"} size={35} color={colors.blackColor} />
           </TouchableOpacity>}
-          {menuImage && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={() => setModalVisible(true)}>
+          {menuImage && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={() => {setModalVisible(true), logEvent('Menu Button Clicked')}}>
             <Image source={isDarkMode ? WHITE_MENU_ICON : MENU_ICON} style={{ width: wp(6), height: hp(4), resizeMode: "contain", marginLeft: spacings.large }} />
           </TouchableOpacity>}
           {text && <Text style={[styles.text, { color: colors.blackColor }]}>{trimcateText(text)}</Text>}

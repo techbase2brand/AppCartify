@@ -12,6 +12,7 @@ import Header from '../Header';
 import { useThemes } from '../../context/ThemeContext';
 import FontAwesome from 'react-native-vector-icons/dist/FontAwesome';
 import { lightColors, darkColors } from '../../constants/Color';
+import { logEvent } from '@amplitude/analytics-react-native';
 const { positionAbsolute, alignItemsCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, navigation, onPressShopByCatagory }) => {
@@ -20,24 +21,34 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
   const userLoggedIn = useSelector(state => state.auth.isAuthenticated);
   const onPressShopByCate = () => {
     onPressShopByCatagory()
+    logEvent('shop By Catagory button from menu');
     setModalVisible(!modalVisible)
   }
   const onPressSaved = () => {
     navigation.navigate('Saved')
+    logEvent('Saved button  from menu');
     setModalVisible(!modalVisible)
   }
   const onPressProfile = () => {
     navigation.navigate('Profile')
+    logEvent('Profile button from menu');
     setModalVisible(!modalVisible)
   }
   const onPressLogin = () => {
     navigation.navigate('AuthStack')
+    logEvent('Login button from menu');
     setModalVisible(!modalVisible)
   }
 
   const onPressSignUp = () => {
     navigation.navigate('AuthStack')
+    logEvent('Sign in button from menu');
     setModalVisible(!modalVisible)
+  }
+  const changeTheme = () => {
+    toggleTheme()
+    logEvent(`Change App theme to ${isDarkMode ? 'Light' : 'Dark'} Mode`)
+
   }
 
   return (
@@ -56,7 +67,7 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
             image={true}
             textinput={true}
             navigation={navigation}
-            onClosePress={() => setModalVisible(!modalVisible)}
+            onClosePress={() => { setModalVisible(!modalVisible), logEvent("close menu modal") }}
             shoppingCart={true} />
           <Pressable style={[styles.menuItem, justifyContentSpaceBetween, flexDirectionRow, alignItemsCenter]} onPress={onPressShopByCate}>
             <Text style={[styles.menuText, { color: colors.blackColor }]}>{"Shop By Categories"}</Text>
@@ -71,13 +82,13 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
             <Feather name={"chevron-right"} size={25} color={colors.blackColor} />
           </Pressable>
           <Pressable style={[styles.menuItem, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-            onPress={toggleTheme}
+            onPress={changeTheme}
           >
-            <Pressable onPress={toggleTheme} style={[flexDirectionRow, alignItemsCenter]}>
+            <Pressable onPress={changeTheme} style={[flexDirectionRow, alignItemsCenter]}>
               {/* <FontAwesome name={isDarkMode ? 'moon-o' : 'sun-o'} size={24} color={isDarkMode ? whiteColor : blackColor} /> */}
               <Text style={[styles.menuText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
             </Pressable>
-            <Pressable onPress={toggleTheme} style={[styles.toggleButton]}>
+            <Pressable onPress={changeTheme} style={[styles.toggleButton]}>
               <Feather
                 name={isDarkMode ? 'toggle-right' : 'toggle-left'}
                 size={35}

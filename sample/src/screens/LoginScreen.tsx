@@ -120,8 +120,39 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   };
 
   //check user registered in shopify or not
+  // const checkIfUserIsRegistered = async (email) => {
+  //   // console.log("check user exit email ", email)
+  //   try {
+  //     const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+  //       },
+  //     });
+
+  //     if (response.ok) {
+  //       const responseData = await response.json();
+  //       const customers = responseData.customers;
+  //       // Check if any customer matches the provided email
+  //       const isRegistered = customers.some(customer => {
+  //         if (customer.email === email) {
+  //           // console.log('Customer found:', customer);
+  //           return true;
+  //         }
+  //         return false;
+  //       });
+  //       return isRegistered;
+  //     } else {
+  //       throw new Error('Failed to fetch customers from Shopify');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking user registration:', error);
+  //     return false;
+  //   }
+  // };
+
   const checkIfUserIsRegistered = async (email) => {
-    // console.log("check user exit email ", email)
     try {
       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
         method: 'GET',
@@ -134,15 +165,17 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       if (response.ok) {
         const responseData = await response.json();
         const customers = responseData.customers;
+
         // Check if any customer matches the provided email
-        const isRegistered = customers.some(customer => {
-          if (customer.email === email) {
-            // console.log('Customer found:', customer);
-            return true;
-          }
+        const customer = customers.find(customer => customer.email === email);
+
+        if (customer) {
+          // console.log('Customer found:', customer);
+          await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
+          return true;
+        } else {
           return false;
-        });
-        return isRegistered;
+        }
       } else {
         throw new Error('Failed to fetch customers from Shopify');
       }
@@ -151,6 +184,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       return false;
     }
   };
+
 
   //login with google
   // const googleSignIn = async () => {
@@ -545,7 +579,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             <TouchableOpacity onPress={() => {
               navigation.navigate('WebViewScreen', {
                 headerText: TERM_OF_SERVICES
-              })
+              }),
+              logEvent('Terms Of Services From login');
             }}>
               <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
             </TouchableOpacity>
@@ -553,7 +588,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             <TouchableOpacity onPress={() => {
               navigation.navigate('WebViewScreen', {
                 headerText: PRIVACY_POLICY
-              })
+              }),
+              logEvent('Privacy Ploicy From login');
             }}>
               <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
             </TouchableOpacity>

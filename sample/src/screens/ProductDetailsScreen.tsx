@@ -52,62 +52,6 @@ function ProductDetailsScreen({ navigation, route }: Props) {
     logEvent('Product Details Screen Initialized');
   }, [])
 
-  // useEffect(() => {
-  //   const fetchRelatedProducts = async () => {
-  //     try {
-  //       // Constructing the tags string from array
-
-  //       const tagsString = tags.join(',');
-  //       const excludedProductTitle = route?.params?.product.title;
-  //       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/products.json?tags=${tagsString}`, {
-  //         headers: {
-  //           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-
-  //       if (response.data.products) {
-  //         // console.log("Response data:", response?.data);
-
-  //         // Logging each product's tags for verification
-  //         // response.data.products.forEach((product, index) => {
-  //         //   console.log(`Product ${index + 1} tags:`, product.tags);
-  //         // });
-
-  //         // Filtering products based on tags
-  //         const filteredProducts = response?.data?.products?.filter(product => {
-  //           const excludeProduct = tags.includes(product?.title) || product?.title === excludedProductTitle;
-  //           const includeProduct = tags.some(tag => product?.tags?.includes(tag) || product?.title?.includes(tag));
-  //           if (!excludeProduct && includeProduct) {
-  //             // console.log(`Included Product: ${product.title}`);
-  //             return true;
-  //           } else {
-  //             // console.log(`Excluded Product: ${product.title}`);
-  //             return false;
-  //           }
-  //         });
-  //         // const filteredProducts = response.data.products.filter(product =>
-  //         //   tags.some(tag => product.tags.includes(tag))
-  //         // );
-
-  //         // console.log("Filtered Products:", filteredProducts);
-
-  //         // Update state with filtered products
-  //         setRelatedProducts(filteredProducts);
-  //       }
-  //     } catch (error) {
-  //       console.log('Error fetching related products:', error);
-  //     }
-  //   };
-
-  //   if (tags.length > 0) {
-  //     fetchRelatedProducts();
-  //   } else {
-  //     // Clear related products when tags are empty
-  //     setRelatedProducts([]);
-  //   }
-
-  // }, [tags]);
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
@@ -265,14 +209,6 @@ function ProductDetails({
     fetchCurrency();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     const fetchedProducts = await fetchUpsellingProducts(product.id);
-  //     setUpSellingProducts(fetchedProducts);
-  //   };
-
-  //   fetchProducts();
-  // }, [product.id]);
 
   const getIsFavSelected = (productId) => {
     const isFav = wishList.some(item => item.admin_graphql_api_id === productId);
@@ -348,7 +284,7 @@ function ProductDetails({
         //   bundleId: 'com.deepLinkingProjectBundleId',
         // },
       }, dynamicLinks.ShortLinkType.DEFAULT)
-      console.log('link:', link)
+      // console.log('link:', link)
       return link
     } catch (error) {
       console.log('Generating Link Error:', error)
@@ -422,73 +358,6 @@ function ProductDetails({
     }
     return text;
   };
-
-  // const fetchUpsellingProducts = async (productId) => {
-  //   console.log('Fetching upselling products for product ID:', productId);
-  //   try {
-  //     const response = await axios.post(
-  //       `https://${STOREFRONT_DOMAIN}/api/2023-04/graphql.json`,
-  //       {
-  //         query: `
-  //           query getProduct($id: ID!) {
-  //             product(id: $id) {
-  //               id
-  //               title
-  //               tags
-  //               collections(first: 5) {
-  //                 edges {
-  //                   node {
-  //                     id
-  //                     title
-  //                     products(first: 10) {
-  //                       edges {
-  //                         node {
-  //                           id
-  //                           title
-  //                           featuredImage {
-  //                             originalSrc
-  //                           }
-  //                           variants(first: 1) {
-  //                             edges {
-  //                               node {
-  //                                 priceV2 {
-  //                                   amount
-  //                                   currencyCode
-  //                                 }
-  //                               }
-  //                             }
-  //                           }
-  //                         }
-  //                       }
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         `,
-  //         variables: { id: productId },
-  //       },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
-  //         },
-  //       }
-  //     );
-
-  //     const product = response.data.data.product;
-  //     // Get products from the first collection
-  //     const relatedProducts = product.collections.edges.flatMap(edge => edge.node.products.edges.map(productEdge => productEdge.node));
-
-  //     console.log('Related products:', relatedProducts);
-
-  //     return relatedProducts;
-  //   } catch (error) {
-  //     console.error('Error fetching upselling products:', error);
-  //     return [];
-  //   }
-  // };
 
   return (
     <View>

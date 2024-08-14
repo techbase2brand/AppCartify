@@ -56,6 +56,10 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
     fetchUserDetails();
   }, []);
 
+  useEffect(() => {
+    logEvent('Account Details Screen Trigger');
+  }, [])
+
   //Fetch userProfile Details
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -92,47 +96,10 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
     }
   }, [customerId]);
 
-  // const handleSubmit = async (id) => {
-  //   console.log("customerId", id)
-  //   try {
-  //     const [firstName, lastName] = fullName.split(' ');
-  //     const data = {
-  //       customer: {
-  //         id: id,
-  //         email: email,
-  //         first_name: firstName,
-  //         last_name: lastName,
-  //         phone: phoneNumber,
-  //         // date_of_birth: dateOfBirth.toISOString().split('T')[0],
-  //         // gender: gender,
-  //         metafields: [
-  //           {
-  //             key: 'new',
-  //             value: 'newvalue',
-  //             type: 'single_line_text_field',
-  //             namespace: 'global'
-  //           }
-  //         ]
-  //       }
-  //     };
-  //     console.log(data);
-  //     const response = await axios.put(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/customers/${id}.json`, data, {
-  //       headers: {
-  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //     console.log('Customer updated successfully:', response.data);
-  //     navigation.goBack();
-  //   } catch (error) {
-  //     console.error('Error updating customer profile:', error);
-  //   }
-  // };
-
   //onUpdate Profile
   const handleSubmit = async (id) => {
     // console.log("customerId", id);
-
+    logEvent('Submit button clicked in Acoount details');
     try {
       const [firstName, lastName] = fullName.split(' ');
       const data = {
@@ -174,8 +141,10 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
       });
       // console.log('Customer updated successfully:', response.data);
       navigation.goBack();
+      logEvent('updating customer profile Succesfully');
     } catch (error) {
       console.error('Error updating customer profile:', error);
+      logEvent('Error updating customer profile');
     }
   };
 

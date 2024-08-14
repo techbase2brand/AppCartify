@@ -68,7 +68,7 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/2b7cbf25-baf5-4c2e-9ac0-ed07a4f2a8de.gif?alt=media&token=6384e022-bde3-41ce-a416-75dc6c9d0125" }
 
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Grocery Initialized');
   }, [])
 
   //best selling
@@ -274,8 +274,8 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
     }, [collectionsFetched])
   );
 
+
   useEffect(() => {
-    // fetchMainMenu();
     const index = menuItems.findIndex(item => item.title === selectedItem);
     if (index !== -1) {
       // Calculate the position to scroll to
@@ -291,7 +291,7 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
+    logEvent(`Change theme from Grocery to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -434,14 +434,14 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenGrocery');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenGrocery CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

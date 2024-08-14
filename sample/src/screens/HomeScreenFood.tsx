@@ -70,7 +70,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const translateX = useRef(new Animated.Value(screenWidth)).current;
 
   useEffect(() => {
-    logEvent('Home Screen Initialized')
+    logEvent('Home Screen Food Initialized')
   }, [])
 
   useEffect(() => {
@@ -369,7 +369,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   );
 
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
+    logEvent(`Change theme from Food to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -511,14 +511,14 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenFood');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenFood CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

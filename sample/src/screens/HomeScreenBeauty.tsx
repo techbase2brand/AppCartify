@@ -66,7 +66,7 @@ const HomeScreenBeauty = ({ navigation }: { navigation: any }) => {
   ];
   const GIF = { id: 1, gif: "https://firebasestorage.googleapis.com/v0/b/ecommerceapp-34078.appspot.com/o/295021d2-ecc3-4359-9f82-7b30402a1b09.gif?alt=media&token=ea0e1680-a323-4834-b79f-9becc3efd716" }
   useEffect(() => {
-    logEvent('Home Screen Initialized');
+    logEvent('Home Screen Beauty Initialized');
   }, [])
 
   //best selling
@@ -274,7 +274,7 @@ const HomeScreenBeauty = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
+    logEvent(`Change theme from Beauty to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -417,14 +417,14 @@ const HomeScreenBeauty = ({ navigation }: { navigation: any }) => {
 
   //move to catalog page
   const onPressShopAll = () => {
-    logEvent('ShopAll Button Pressed from HomeScreen');
+    logEvent('SeeAll Button Pressed from HomeScreenBeauty');
     navigation.navigate('CatalogStack')
   }
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
     // console.log(id)
-    logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
+    logEvent(`See All our product Collection Button Pressed from HomeScreenBeauty CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
     })

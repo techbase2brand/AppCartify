@@ -47,7 +47,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 
   useEffect(() => {
-    fetchUserDetails()
+    // fetchUserDetails()
     logEvent('ProfileScreen Initialized');
   }, [])
 
@@ -65,6 +65,18 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
       fetchOrders(customerId);
     }, [customerId])
   );
+  //for get customer ID
+  const fetchUserDetails = async () => {
+    const userDetails = await AsyncStorage.getItem('userDetails')
+    // console.log('Customer found:::::::::::::::::', userDetails);
+    if (userDetails) {
+      const userDetailsObject = JSON.parse(userDetails);
+      // console.log(userDetailsObject)
+      const userId = userDetailsObject?.customer ? userDetailsObject?.customer.id : userDetailsObject?.id;
+      // console.log("userDetailsObject", userId)
+      setCustomerId(userId)
+    }
+  };
 
   useEffect(() => {
     getCustomerAddress(customerId);
@@ -72,17 +84,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     fetchOrders(customerId);
   }, [customerId])
 
-  //for get customer ID
-  const fetchUserDetails = async () => {
-    const userDetails = await AsyncStorage.getItem('userDetails')
-    if (userDetails) {
-      const userDetailsObject = JSON.parse(userDetails);
-      console.log(userDetailsObject)
-      const userId = userDetailsObject?.customer ? userDetailsObject?.customer.id : userDetailsObject?.id;
-      console.log("userDetailsObject", userId)
-      setCustomerId(userId)
-    }
-  };
+
 
   //for get customer Profile
   const fetchUserProfile = async (id) => {
@@ -94,7 +96,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           'Content-Type': 'application/json',
         },
       });
-      console.log('Response fetchUserProfileDatar:', response.data);
+      // console.log('Response fetchUserProfileDatar:', response.data);
       const customer = response?.data?.customer;
       setUserName(`${customer.first_name} ${customer.last_name}`);
     } catch (error) {

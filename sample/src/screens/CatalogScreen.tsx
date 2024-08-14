@@ -148,6 +148,7 @@ function CatalogScreen({ navigation }: Props) {
 
   //onPressCollection
   const onPressCollection = (id: any, title: string) => {
+    logEvent(`${title} Collection Pressed from Catalog Screen`)
     setCollectionTitle(title)
     setSelectedCollectionId(id)
     setLoading(true)
@@ -227,7 +228,7 @@ function CatalogScreen({ navigation }: Props) {
           }));
         });
         setProductVariantsIDS(productVariantData)
-        console.log(id)
+        // console.log(id)
       })
 
       .catch((error) => {
