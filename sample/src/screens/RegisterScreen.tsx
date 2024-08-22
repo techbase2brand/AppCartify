@@ -124,7 +124,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     try {
       setLoading(true)
       // const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/customers.json`, {
-      const response = await fetch('https://admin.appcartify.com:8443/api/customers', {
+      const response = await fetch('https://admin.appcartify.com:8444/api/customers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -93,8 +93,8 @@ android {
     applicationId "com.AppCatify"
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 9
-    versionName "1.04"
+    versionCode 10
+    versionName "1.05"
     // manifestPlaceholders = [
     //     appAuthRedirectScheme: "com.AppCatify" // Replace with your actual redirect scheme
     // ]

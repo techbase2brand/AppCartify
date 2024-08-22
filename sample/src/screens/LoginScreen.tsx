@@ -89,8 +89,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       return;
     }
     try {
-      // const response = await fetch(`https://${STOREFRONT_DOMAIN}/activate-account`, {
-      const response = await fetch(`https://admin.appcartify.com:8443/api/customerLogin`, {
+      const response = await fetch(`https://admin.appcartify.com:8444/api/customerLogin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,6 +99,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       dispatch(loginRequest({ email, password }));
       if (response.ok) {
         // console.log("response", response)
+        await checkIfUserIsRegistered(email)
         await AsyncStorage.setItem('isUserLoggedIn', response.url)
         setIsLoggedIn(true)
         navigation.navigate("Home");
@@ -113,6 +113,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         logEvent(`LoginFailure ${responseData.message}`);
       }
     } catch (error) {
+      setPasswordError(error.message || 'An unexpected error occurred')
       console.log('Error activating account:', error);
       dispatch(loginFailure(error));
       logEvent(`LoginFailure: ${error}`);
@@ -184,150 +185,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       return false;
     }
   };
-
-
-  //login with google
-  // const googleSignIn = async () => {
-  //   logEvent('GoogleSignIn Button clicked');
-  //   try {
-  //     await GoogleSignin.hasPlayServices();
-  //     const { idToken, user } = await GoogleSignin.signIn();
-  //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-  //     setLoading(true)
-  //     // Check if the user is registered
-  //     // const isRegistered = await checkIfUserIsRegistered(user.email);
-  //     dispatch(loginRequest({ email: user.email, password: '' }));
-  //     await auth().signInWithCredential(googleCredential);
-  //     console.log('User signed in with Google successfully!', user);
-  //     await AsyncStorage.setItem('isUserLoggedIn', user.id);
-  //     setIsLoggedIn(true);
-  //     navigation.navigate("Home");
-  //     dispatch(loginSuccess({ email: user.email, password: '' }));
-  //     setLoading(false)
-  //     logEvent(`Google sign Success`);
-  //   } catch (error) {
-  //     setLoading(false)
-  //     console.error('Google sign in error:', error);
-  //     logEvent(`Google sign in error:${error}`);
-  //   }
-  // };
-
-  // const onFacebookButtonPress = async () => {
-  //   logEvent('Sign up with Facebook Button clicked');
-  //   try {
-  //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-  //     setLoading(true)
-  //     if (result.isCancelled) {
-  //       logEvent(`Sign Up with Facebook cancelled by user`);
-  //       throw 'User cancelled the login process';
-  //     }
-
-  //     const data = await AccessToken.getCurrentAccessToken();
-
-  //     if (!data) {
-  //       throw 'Something went wrong obtaining access token';
-  //     }
-  //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-  //     const userCredential = await auth().signInWithCredential(facebookCredential);
-  //     console.log(userCredential)
-  //     if (userCredential.additionalUserInfo.isNewUser) {
-  //       const { profile } = userCredential.additionalUserInfo;
-  //       const { first_name, last_name, email, picture } = profile;
-  //       await AsyncStorage.setItem('userImage', picture?.data?.url)
-  //       // Send user details to Shopify
-  //       const isRegistered = await checkIfUserIsRegistered(profile.email);
-
-  //       if (isRegistered) {
-  //         await AsyncStorage.setItem('isUserLoggedIn', profile.id);
-  //         setIsLoggedIn(true);
-  //         navigation.navigate("Home");
-  //         dispatch(loginSuccess({ email: profile.email, password: '' }));
-  //         setLoading(false)
-  //         logEvent(`Sign in with Facebook Success`);
-  //       } else {
-  //         const shopifyResponse = await registerUserToShopify({
-  //           email: email,
-  //           password: "defaultPassword",
-  //           password_confirmation: "defaultPassword",
-  //           first_name: first_name,
-  //           last_name: last_name,
-  //         });
-  //         console.log('Shopify response:', shopifyResponse);
-  //         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
-  //         Toast.show(`User LoggedIn Succesfully`);
-  //         dispatch(loginSuccess({ email: profile.email, password: '' }));
-  //         navigation.navigate("Home");
-  //         setLoading(false)
-  //         logEvent(`Sign In with Facebook Success`);
-  //       }
-
-  //     } else {
-  //       // Handle the case where the user already exists
-  //       // Toast.show('User already registered. Please log in.');
-  //       setLoading(false)
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setLoading(false)
-  //     logEvent(`Sign Up with Facebook error:${error}`);
-  //   }
-  // };
-
-  // const onFacebookButtonPress = async () => {
-  //   logEvent('Sign in with Facebook Button clicked');
-  //   try {
-  //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-  //     setLoading(true)
-  //     if (result.isCancelled) {
-  //       logEvent(`Sign in with Facebook cancelled by user`);
-  //       throw 'User cancelled the login process';
-  //     }
-
-  //     // Retrieve the access token
-  //     const data = await AccessToken.getCurrentAccessToken();
-
-  //     if (!data) {
-  //       throw 'Something went wrong obtaining access token';
-  //     }
-
-  //     // Get user info with graph API
-  //     const userInfo = await fetch(`https://graph.facebook.com/me?fields=id,name,email&access_token=${data.accessToken}`);
-  //     const userData = await userInfo.json();
-
-  //     // Ensure that user has granted email permission
-  //     if (!userData.email) {
-  //       throw 'User email not provided. Please make sure you have granted email permission.';
-  //     }
-
-  //     // Check if the user is registered
-  //     const isRegistered = await checkIfUserIsRegistered(userData.email);
-
-  //     if (isRegistered) {
-  //       // Create Facebook credential
-  //       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-
-  //       // Sign in with Facebook credential
-  //       await auth().signInWithCredential(facebookCredential);
-
-  //       // Redirect to the main app screen after successful login
-  //       console.log('Sign in with Facebook:', userData);
-  //       await AsyncStorage.setItem('isUserLoggedIn', userData.id);
-  //       setIsLoggedIn(true);
-  //       navigation.navigate("Home");
-  //       dispatch(loginSuccess({ email: userData.email, password: '' }));
-  //       setLoading(false)
-  //       logEvent(`Sign in with Facebook Success`);
-  //     } else {
-  //       setLoading(false)
-  //       Toast.show('User is not registered Please register User first');
-  //       logEvent(`Sign in with Facebook Failed Please register user First`);
-  //     }
-  //   } catch (error) {
-  //     setLoading(false)
-  //     console.error('Facebook login error:', error);
-  //     logEvent(`Sign in with Facebook error:${error}`);
-  //   }
-  // };
 
   //triggred notification
   const handleNotificationTrigger = () => {

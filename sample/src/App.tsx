@@ -696,7 +696,7 @@ function App({ navigation }: { navigation: any }) {
     init('397e42c5bdf06dde431bc98973e33271')
     logEvent('App Started');
 
-    SplashScreen.hide();
+    // SplashScreen.hide();
     const timeout = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(timeout);
   }, []);
