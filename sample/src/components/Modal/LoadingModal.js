@@ -19,7 +19,6 @@ const LoadingModal = ({ visible, text }) => {
     >
       <View style={[styles.modalBackground, alignJustifyCenter, flex, flexDirectionColumn]}>
         <View style={[styles.activityIndicatorWrapper, alignJustifyCenter, borderRadius10]}>
-          {/* <ActivityIndicator size="large" color={blackColor} /> */}
           <Text style={[styles.loadingText, { color: colors.blackColor }]}>{text}</Text>
           <LoaderKit
             style={{ width: 100, height: 100 }}

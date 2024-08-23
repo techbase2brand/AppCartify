@@ -50,16 +50,10 @@ function CatalogScreen({ navigation }: Props) {
   }, [])
 
   useEffect(() => {
-    // fetchCollections({
-    //   variables: {
-    //     // first: selectedItem === "Food" ? 10 : selectedItem === "Drinks" ? 50 : 50,
-    //     first: 100
-    //   },
-    // });
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 150, // Set the desired number of collections to fetch
+          first: 150,
         },
       });
       setCollectionsFetched(true);
@@ -119,26 +113,20 @@ function CatalogScreen({ navigation }: Props) {
         item.title.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        // console.log(`Items for ${item.title}:`);
-        // console.log(item.items);
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          // console.log("selectedItem title", selectedItem?.title);
-          // console.log("Collection", collectionData?.collections?.edges);
 
           if (collectionData && collectionData.collections && collectionData.collections.edges) {
             let matchedCollection = collectionData.collections.edges.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection.node);
             }
           }
         });
 
-        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -203,18 +191,15 @@ function CatalogScreen({ navigation }: Props) {
       .then((response) => response.text())
       .then((result) => {
         const fetchedProducts = JSON.parse(result);
-        // console.log(fetchedProducts.data.collection.products.nodes[0].variants, "fetchedProducts.data")
         setProducts(fetchedProducts?.data?.collection?.products.nodes);
         setLoading(false)
         const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
           return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
         });
         setInventoryQuantities(inventoryQuantities)
-        // Check and set tags
         const fetchedTags = fetchedProducts?.data?.collection?.products?.nodes.map(productEdge => productEdge.tags);
         setTags(fetchedTags);
 
-        // Check and set options
         const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes.map(product => product.options);
         setOptions(fetchedOptions);
 
@@ -228,7 +213,6 @@ function CatalogScreen({ navigation }: Props) {
           }));
         });
         setProductVariantsIDS(productVariantData)
-        // console.log(id)
       })
 
       .catch((error) => {
@@ -236,8 +220,7 @@ function CatalogScreen({ navigation }: Props) {
         console.log("error", error)
       }
       );
-    // logEvent(`${heading} Collection Pressed from Catalog Screen`);
-    // navigation.navigate('Collections', { id: id, headingText: heading, from: "catalog" })
+
   }
 
   function getVariant(node: ShopifyProduct) {
@@ -248,17 +231,14 @@ function CatalogScreen({ navigation }: Props) {
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
-    // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
   return (
-    // <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
     <ImageBackground style={[flex, { backgroundColor: themecolors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
         navigation={navigation}
         backIcon={true}
-        // textinput={true}
         text={collectionTitle}
       />
       <View style={[styles.container]}>
@@ -322,7 +302,6 @@ function CatalogScreen({ navigation }: Props) {
           </>
             :
             <View style={[alignJustifyCenter, { height: hp(52) }]}>
-              {/* <ActivityIndicator size={'small'} color={blackColor} /> */}
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -345,8 +324,7 @@ function createStyles() {
     container: {
       width: wp(100),
       height: hp(90),
-      // padding: spacings.xLarge,
-      // backgroundColor: whiteColor,
+
       flexDirection: "row"
     },
     productCollectionBox: {
@@ -363,14 +341,12 @@ function createStyles() {
     card: {
       width: "100%",
       height: "100%",
-      // paddingVertical: spacings.small
     },
     categoryName: {
       fontSize: style.fontSizeNormal.fontSize,
       color: blackColor,
       marginVertical: spacings.small,
       fontWeight: style.fontWeightThin1x.fontWeight,
-      // fontFamily: 'GeneralSans-Variable'
     },
     text: {
       fontSize: style.fontSizeLarge.fontSize,

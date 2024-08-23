@@ -10,14 +10,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { logEvent } from '@amplitude/analytics-react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ADMINAPI_ACCESS_TOKEN, STOREFRONT_DOMAIN, STOREFRONT_ACCESS_TOKEN, API_KEY, API_SECRET_PASSWORD, getStoreDomain, getAdminAccessToken } from '../constants/Constants';
-import { PROFILE_IMAGE, BACKGROUND_IMAGE } from '../assests/images';
+import { ADMINAPI_ACCESS_TOKEN, STOREFRONT_DOMAIN } from '../constants/Constants';
+import { BACKGROUND_IMAGE } from '../assests/images';
 import Header from '../components/Header';
-import { useSelector } from 'react-redux';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 
-const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
+const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
 
 
 const AccountDetails = ({ navigation }: { navigation: any }) => {
@@ -32,9 +31,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
 
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  const selectedItem = useSelector((state) => state.menu.selectedItem);
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || dateOfBirth;
     setShowDatePicker(false);
@@ -49,7 +45,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
         const userDetailsObject = JSON.parse(userDetails);
 
         const userId = userDetailsObject.customer ? userDetailsObject.customer.id : userDetailsObject.id;
-        // console.log("userDetailsObject", userId)
         setCustomerId(userId)
       }
     };
@@ -70,7 +65,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
             'Content-Type': 'application/json',
           },
         });
-        // console.log('Response data:', response.data);
         const customer = response.data.customer;
         setFullName(`${customer.first_name} ${customer.last_name}`);
         setEmail(customer.email);
@@ -83,7 +77,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
         }
 
         if (customer.phone) {
-          // Remove the '+91' country code
           const phoneWithoutCountryCode = customer.phone.replace(/^\+91\s*/, '');
           setPhoneNumber(phoneWithoutCountryCode);
         }
@@ -98,7 +91,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
 
   //onUpdate Profile
   const handleSubmit = async (id) => {
-    // console.log("customerId", id);
     logEvent('Submit button clicked in Acoount details');
     try {
       const [firstName, lastName] = fullName.split(' ');
@@ -114,7 +106,6 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
         }
       };
 
-      // Check AsyncStorage for metafield status
       const metafieldStatusKey = `customerMetafieldStatus_${id}`;
       const isFirstUpdate = !(await AsyncStorage.getItem(metafieldStatusKey));
 
@@ -128,18 +119,15 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
           }
         ];
 
-        // Mark metafield as sent for this customer
         await AsyncStorage.setItem(metafieldStatusKey, 'true');
       }
 
-      // console.log(data);
       const response = await axios.put(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/customers/${id}.json`, data, {
         headers: {
           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
           'Content-Type': 'application/json',
         },
       });
-      // console.log('Customer updated successfully:', response.data);
       navigation.goBack();
       logEvent('updating customer profile Succesfully');
     } catch (error) {
@@ -234,11 +222,9 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // padding: spacings.large
   },
   backIcon: {
-    // width: wp(10),
-    // height: hp(5)
+
   },
   text: {
     fontSize: style.fontSizeMedium1x.fontSize,
@@ -251,21 +237,18 @@ const styles = StyleSheet.create({
     height: hp(6),
     borderColor: grayColor,
     paddingHorizontal: spacings.normal,
-    // marginVertical: spacings.large,
   },
   dateInput: {
     width: '100%',
     height: hp(6),
     borderColor: grayColor,
     paddingHorizontal: spacings.large,
-    // marginVertical: spacings.large
   },
   pickerContainer: {
     width: '100%',
     height: hp(7),
     borderColor: grayColor,
     paddingHorizontal: spacings.large,
-    // marginVertical: spacings.large
   },
   picker: {
     height: 50,

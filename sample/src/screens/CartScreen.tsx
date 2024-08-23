@@ -71,7 +71,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   }, []);
 
   const fetchCartDetail = async () => {
-    // console.log("cartId", cartId);
     try {
       const response = await axios.post(`https://${STOREFRONT_DOMAIN}/api/2024-01/graphql.json`, {
         query: `
@@ -105,10 +104,8 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
       const productIds = response.data?.data?.cart?.lines?.edges.map(edge => {
         const fullId = edge.node.merchandise?.product?.id || '';
-        // Extract numeric part from the Shopify ID
         return fullId.split('/').pop();
       }) || [];
-      // console.log("Product IDs:", productIds);
       if (productIds) {
         fetchProductMetafields(productIds)
       }
@@ -116,51 +113,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       console.error("Error fetching cart details:", error);
     }
   };
-
-  // const fetchProductMetafields = async (productID) => {
-  //   try {
-  //     const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
-  //       headers: {
-  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-
-  //     // Extract metafields from the response
-  //     const metafields = response.data.metafields;
-
-  //     // Initialize an array to hold all metafield values
-  //     const allMetafieldValues = [];
-
-  //     // Iterate over each metafield and parse its value if it exists
-  //     metafields.forEach(metafield => {
-  //       if (metafield.value) {
-  //         try {
-  //           // Parse the JSON string and add it to the array
-  //           const values = JSON.parse(metafield.value);
-  //           allMetafieldValues.push(...values);
-  //         } catch (error) {
-  //           console.error('Error parsing metafield value:', error);
-  //         }
-  //       }
-  //     });
-
-  //     // console.log('All Metafield Values:', allMetafieldValues);
-
-  //     // Fetch all products
-  //     const products = await fetchProductsFromStore();
-
-  //     // Filter products based on metafield values
-  //     const matchingProducts = products.filter(product =>
-  //       allMetafieldValues.includes(product.id)
-  //     );
-  //     // console.log('Matching Products:', matchingProducts);
-  //     setUpSellingProducts(matchingProducts);
-
-  //   } catch (error) {
-  //     console.error('Error fetching metafields:', error);
-  //   }
-  // };
 
   const extractProductFields = (product) => {
     return {
@@ -172,6 +124,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       variantId: product.variants.map(variant => variant.admin_graphql_api_id),
     };
   };
+
   const fetchProductMetafields = async (productID) => {
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
@@ -181,17 +134,13 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
         }
       });
 
-      // Extract metafields from the response
       const metafields = response.data.metafields;
 
-      // Initialize an array to hold all metafield values
       const allMetafieldValues = [];
 
-      // Iterate over each metafield and parse its value if it exists
       metafields.forEach(metafield => {
         if (metafield.value) {
           try {
-            // Parse the JSON string and add it to the array
             const values = JSON.parse(metafield.value);
             allMetafieldValues.push(...values);
           } catch (error) {
@@ -200,12 +149,9 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
         }
       });
 
-      // console.log('All Metafield Values:', allMetafieldValues);
-
       const productIds = allMetafieldValues?.map(id => id.replace('gid://shopify/Product/', ''))
         .join(','); // Join IDs with commas
 
-      // Fetch product details based on extracted IDs
       if (productIds.length > 0) {
         const productsResponse = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products.json?ids=${productIds}`, {
           headers: {
@@ -214,121 +160,20 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
           }
         });
 
-        // Extract products from the response
         const products = productsResponse.data.products;
 
         const productDetails = products.map(product => extractProductFields(product));
-        // console.log('Matching Products:', productDetails);
         setUpSellingProducts(productDetails);
 
       } else {
         console.log('No metafield values found to fetch products.');
-        setUpSellingProducts([]); // Set to empty array if no values found
+        setUpSellingProducts([]);
       }
 
     } catch (error) {
       console.error('Error fetching metafields:', error);
     }
   };
-
-  // const fetchProductsFromStore = async () => {
-  //   const myHeaders = new Headers({
-  //     "Content-Type": "application/json",
-  //     "X-Shopify-Access-Token": ADMINAPI_ACCESS_TOKEN,
-  //   });
-
-  //   const graphqlQuery = (cursor = '') => JSON.stringify({
-  //     query: `query getProducts($cursor: String) {
-  //       products(first: 250, after: $cursor) {
-  //         edges {
-  //           node {
-  //             id
-  //             title
-  //             tags
-  //             options(first: 250) {
-  //               id
-  //               name
-  //               values
-  //             }
-  //             images(first: 250) {
-  //               edges {
-  //                 node {
-  //                   id
-  //                   src
-  //                 }
-  //               }
-  //             }
-  //             variants(first: 250) {
-  //               nodes {
-  //                 id
-  //                 title
-  //                 inventoryQuantity
-  //                 price
-  //               }
-  //             }
-  //           }
-  //         }
-  //         pageInfo {
-  //           hasNextPage
-  //           endCursor
-  //         }
-  //       }
-  //     }`,
-  //     variables: { cursor }
-  //   });
-
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: myHeaders,
-  //     redirect: "follow"
-  //   };
-
-  //   try {
-  //     let hasNextPage = true;
-  //     let endCursor = null;
-  //     const allProducts = [];
-
-  //     while (hasNextPage) {
-  //       const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, {
-  //         ...requestOptions,
-  //         body: graphqlQuery(endCursor)
-  //       });
-
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! Status: ${response.status}`);
-  //       }
-
-  //       const result = await response.json();
-
-  //       if (result.errors) {
-  //         console.error('GraphQL errors:', result.errors);
-  //         return [];
-  //       }
-
-  //       const products = result?.data?.products?.edges.map(edge => {
-  //         const product = edge.node;
-  //         return {
-  //           id: product.id,
-  //           title: product.title,
-  //           inventoryQuantities: product.variants.nodes.map(variant => variant.inventoryQuantity),
-  //           imageUrls: product.images.edges.map(imageEdge => imageEdge.node.src),
-  //           price: product.variants.nodes.map(variant => variant.price),
-  //           variantId: product.variants.nodes.map(variant => variant.id)
-  //         };
-  //       });
-
-  //       allProducts.push(...products);
-
-  //       hasNextPage = result?.data?.products?.pageInfo?.hasNextPage;
-  //       endCursor = result?.data?.products?.pageInfo?.endCursor;
-  //     }
-  //     return allProducts;
-
-  //   } catch (error) {
-  //     console.error('Error fetching products:', error);
-  //     return [];
-  //   }
-  // };
 
   useEffect(() => {
     logEvent('CartScreen');
@@ -347,20 +192,14 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
   const presentCheckout = async () => {
     logEvent('Click CheckOut ');
-
-    // Check if the user is logged in
     if (!userLoggedIn) {
-      // Navigate to the AuthStack if the user is not logged in
       navigation.navigate("AuthStack");
       Toast.show("Please First complete the registration process")
     } else {
-      // Check if the checkout URL exists
       if (checkoutURL) {
-        // Present the checkout using ShopifyCheckout
         ShopifyCheckout.present(checkoutURL);
         logEvent('Open CheckOut ');
       } else {
-        // Log or handle the case where the checkout URL is not available
         console.log('Checkout URL is not available');
       }
     }
@@ -423,7 +262,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const handleRemoveToCart = (variantId: string,) => {
     removeFromCart(variantId);
     dispatch(removeProductFromCart(variantId));
-    // dispatch(removeProductInCart(variantId));
     Toast.show('Item removed from cart')
     logEvent(`Item removed from cart variantId:${variantId} `);
   };
@@ -463,7 +301,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const sum = addValues(totalAmount, taxAmount);
 
   const onAddToCartRelatedProduct = async (variantId, quantity) => {
-    // console.log("variantid", variantId, quantity)
     setLoadingProductId(variantId);
     await addToCart(variantId, quantity)
     setLoadingProductId(null);
@@ -476,7 +313,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   }
 
   const handlePress = (item) => {
-    // console.log("handelePress", item)
     if (!getIsFavSelected(item?.id)) {
       dispatch(addToWishlist(item));
       logEvent(`upselling Item add in fav`);
@@ -571,7 +407,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
                   )
                 }}
                 horizontal
-                // numColumns={2}
                 keyExtractor={(index) => index?.toString()}
                 showsHorizontalScrollIndicator={false}
               />
@@ -589,7 +424,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow]}>
                 <Text style={styles.costBlockText}>{SUBTOTAL}</Text>
                 <Text style={[styles.costBlockText, { color: themecolors.blackColor }]}>
-                  {/* {price(data.cart.cost.subtotalAmount)} */}
                   {getTotalAmount().totalAmount} {getTotalAmount().currencyCode}
                 </Text>
               </View>
@@ -604,7 +438,6 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
               <View style={[styles.costBlock, justifyContentSpaceBetween, flexDirectionRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacings.large }]}>
                 <Text style={[styles.costBlockTextStrong, { color: themecolors.blackColor }]}>{TOTAL}</Text>
                 <Text style={[styles.costBlockTextStrong, { color: themecolors.blackColor }]}>
-                  {/* {price(data.cart.cost.totalAmount)} */}
                   {sum.toFixed(2)} {getTotalAmount().currencyCode}
                 </Text>
               </View>
@@ -625,10 +458,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
             disabled={totalQuantity === 0}
             onPress={presentCheckout}>
             <Text style={[styles.cartButtonText, textAlign]}>{CHECKOUT}</Text>
-            {/* <Text style={[styles.cartButtonTextSubtitle, textAlign]}>
-                {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'} -{' '}
-                {sum} {getTotalAmount().currencyCode}
-              </Text> */}
+
           </Pressable>
         )}
       </SafeAreaView>
@@ -642,7 +472,6 @@ function price(value: { amount: string; currencyCode: string }) {
   }
 
   const { amount, currencyCode } = value;
-  // return currency(amount, currencyCode);
   return `${amount} ${currencyCode}`;
 }
 
@@ -693,9 +522,7 @@ function CartItem({
             {trimcateText(item?.merchandise?.product?.title)}
           </Text>
           <Text style={[styles.productPrice, { color: themecolors.blackColor }]}>
-            {/* {price(item.cost?.totalAmount)} */}
             {price(item?.merchandise?.price)}
-            {/* {itemPrice} */}
           </Text>
 
         </View>
@@ -731,11 +558,9 @@ function createStyles(colors: Colors) {
     },
     scrollView: {
       paddingBottom: spacings.xLarge,
-      // backgroundColor: whiteColor,
     },
     cartButton: {
       width: 'auto',
-      // bottom: spacings.large,
       height: hp(6),
       left: 0,
       right: 0,
@@ -789,7 +614,6 @@ function createStyles(colors: Colors) {
     },
     productPrice: {
       fontSize: style.fontSizeNormal.fontSize,
-      // padding: spacings.xLarge,
       fontWeight: style.fontWeightThin1x.fontWeight,
       color: blackColor,
     },
@@ -846,7 +670,6 @@ function createStyles(colors: Colors) {
     },
     quantityButton: {
       paddingHorizontal: 8,
-      // paddingVertical: 5,
       borderRadius: 5,
       color: redColor,
       fontSize: 16,

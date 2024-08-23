@@ -28,8 +28,6 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const { addToCart, addingToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -98,17 +96,13 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data.collection.products.nodes[0].variants, "fetchedProducts.data")
           setProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setInventoryQuantities(inventoryQuantities)
-          // Check and set tags
           const fetchedTags = fetchedProducts?.data?.collection?.products?.nodes.map(productEdge => productEdge?.tags);
           setTags(fetchedTags);
-
-          // Check and set options
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes.map(product => product?.options);
           setOptions(fetchedOptions);
 
@@ -137,8 +131,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   }, [])
 
   const vendors = Array.from(new Set(products?.map(product => product?.vendor)));
-  // console.log(vendors)
-  // onAdd To cart Product
+
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     setLoadingProductId(variantId);
@@ -160,12 +153,10 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   const applyFilterByVendor = (vendor) => {
     logEvent("Apply Filter By Vendor Name from Filter Modal");
     if (vendor === selectedVendor) {
-      // console.log(vendor)
       setFilteredProducts(products);
       setSelectedVendor('');
     } else {
       const filtered = products?.filter(product => product?.vendor === vendor);
-      // console.log(filtered, "fiklterde")
       setFilteredProducts(filtered);
       setSelectedVendor(vendor);
     }
@@ -208,7 +199,6 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
               <FlatList
                 data={filteredProducts.length > 0 ? filteredProducts : products}
                 renderItem={({ item, index }) => <ProductItem item={item} addToCartProduct={addToCartProduct} InventoryQuantities={inventoryQuantities[index]} ids={productVariantsIDS[index]}
-                  // loading={loadingProductId === item?.variants?.nodes[0]?.id}
                   onPress={() => {
                     navigation.navigate('ProductDetails', {
                       product: item,
@@ -233,14 +223,12 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
             }
           </View>
           : <ScrollView showsVerticalScrollIndicator={false} style={{ marginBottom: 110 }}>
-            {/* {products?.length > 0 ? */}
             {(filteredProducts.length > 0 ? filteredProducts : products)?.map((node, index) => {
               return (
                 <Product
                   key={node?.id}
                   product={node}
                   onAddToCart={addToCartProduct}
-                  // loading={addingToCart.has(getVariant(node)?.id ?? '')}
                   inventoryQuantity={inventoryQuantities[index]}
                   ids={productVariantsIDS[index]}
                   loading={loadingProductId === node?.variants?.nodes[0]?.id}
@@ -257,15 +245,6 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
                 />
               );
             })}
-            {/* :
-              <View style={[{ height: hp(70) }, alignJustifyCenter]}>
-                <LoaderKit
-                  style={{ width: 50, height: 50 }}
-                  name={LOADER_NAME}
-                  color={blackColor}
-                />
-              </View>
-            } */}
           </ScrollView>}
       </View>
       <FilterModal
@@ -346,7 +325,6 @@ const styles = StyleSheet.create({
     width: wp(100),
     height: hp(95),
     backgroundColor: whiteColor
-    // paddingHorizontal: spacings.large
   },
 
   button: {

@@ -81,11 +81,7 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
     >
       <Pressable onPress={() => { logEvent(`QuickViewModal closed`), setModalVisible(!modalVisible) }} style={[styles.modalOverlay, flex]}>
         <View style={[styles.modalView, positionRelative, alignJustifyCenter, { backgroundColor: colors.whiteColor }]}>
-          {/* <TouchableOpacity onPress={() => { logEvent(`QuickViewModal closed`), setModalVisible(!modalVisible) }} style={[styles.closeButton, positionAbsolute]}>
-            <Ionicons name="close" size={35} color={blackColor} />
-          </TouchableOpacity>     */}
           <View style={{ width: wp(50), height: hp(0.6), backgroundColor: grayColor, borderBottomRightRadius: 10, borderBottomLeftRadius: 10 }}>
-
           </View>
           <View style={[{ width: wp(95), height: hp(20) }, alignJustifyCenter]}>
             <Carousal
@@ -99,33 +95,16 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
           </View>
           <View style={{ width: "100%" }}>
             <Text style={styles.modalText}>{trimcateText(product?.title)}</Text>
-
             {product.description && <Pressable onPress={toggleExpanded} style={{ marginVertical: spacings.large }}>
               <Text style={[styles.modalDescription, { color: colors.mediumGray, }]} numberOfLines={expanded ? null : 2}
                 ellipsizeMode="tail">{product.description}</Text>
             </Pressable>}
           </View>
           <View style={{ marginBottom: spacings.large }}>
-            {/* <Text style={{ paddingVertical: spacings.small, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>Select Variant:</Text> */}
             <View style={{ width: "100%" }}>
-              {/* {options?.map((option, index) => (
-                <View key={index} style={styles.optionContainer}>
-                  <Text style={{ paddingVertical: spacings.small, color: redColor, fontSize: style.fontSizeLarge.fontSize }}>{option.name}</Text>
-                  <View style={[flexDirectionRow, { marginTop: spacings.large, width: "100%" }]}>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                      {option.values.map((value, idx) => (
-                        <TouchableOpacity key={idx} style={[styles.optionValueContainer, flexDirectionRow, borderRadius5, alignJustifyCenter, selectedOptions[option.name] === value ? { backgroundColor: redColor, borderColor: whiteColor } : {}]}
-                          onPress={() => handleSelectOption(option.name, value)}>
-                          <Text style={[styles.optionValue, selectedOptions[option.name] === value ? { color: whiteColor } : {}]}>{value}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                  </View>
-                </View>
-              ))} */}
               {options?.map((option, index) => {
                 if (option.name === "Title" && option.values.includes("Default Title")) {
-                  return null; // Skip rendering this option
+                  return null;
                 }
 
                 return (
@@ -165,30 +144,6 @@ const QuickViewModal = ({ modalVisible, setModalVisible, product, onAddToCart, o
               <Text style={[styles.modalPrice, { color: colors.blackColor }]}>{priceAmount} {currencyCode ? currencyCode : currency}</Text>
             )}
           </View>
-          {/* <View style={{ height: hp(5), marginTop: spacings.xxxxLarge }}>
-            {showButtons ? (
-              <View>
-                {isVariantInStock() ? (
-                  <TouchableOpacity style={[styles.addToCartButton, alignJustifyCenter]} onPress={() => {
-                    const selectedVariantId = getSelectedVariantId();
-                    if (selectedVariantId) {
-                      addToCartProduct(selectedVariantId, 1);
-                    } else {
-                      console.error('Selected variant ID not found');
-                    }
-                  }}>
-                    <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity style={[styles.addToCartButton, alignJustifyCenter]} >
-                    <Text style={{ ...styles.addToCartButtonText, color: whiteColor }}>Out of Stock</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            ) : <View style={[{ height: hp(8) }, alignJustifyCenter]}>
-              <Text style={[{ paddingTop: spacings.small, fontSize: style.fontSizeLarge.fontSize, color: redColor }, textAlign]}>Please select any variant</Text>
-            </View>}
-          </View> */}
           <View style={{ height: hp(10), marginTop: spacings.xxxxLarge }}>
             {options?.map((option, index) => (
               <View key={index} style={styles.optionContainer}>
@@ -279,10 +234,7 @@ const styles = StyleSheet.create({
   },
   addToCartButton: {
     backgroundColor: redColor,
-    // paddingVertical: spacings.large,
-    // paddingHorizontal: spacings.medium,
     borderRadius: 5,
-    // alignSelf: 'center',
     width: wp(90),
     height: hp(5),
     marginTop: spacings.medium,

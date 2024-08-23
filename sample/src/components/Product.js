@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: spacings.large,
     marginVertical: 10,
-    // height: hp(14),
-    // backgroundColor: whiteColor,
     borderColor: 'transparent',
     borderWidth: .1,
     borderRadius: 10,
@@ -128,39 +126,27 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   productName: {
-    // fontSize: style.fontSizeMedium.fontSize,
-    // fontWeight: style.fontWeightThin.fontWeight,
-    // color: blackColor,
-    // color: blackColor,
     fontSize: style.fontSizeNormal.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
   },
   productPrice: {
-    // fontSize: style.fontSizeMedium.fontSize,
-    // fontWeight: style.fontWeightThin1x.fontWeight,
-    // color: redColor,
     fontSize: style.fontSizeSmall1x.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
-    // color: blackColor,
     fontFamily: 'GeneralSans-Variable'
   },
   contentBox: {
     width: "85%",
     paddingLeft: spacings.large,
-    // height: hp(12),
   },
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginBottom: 10,
-    // backgroundColor: whiteColor,
     paddingHorizontal: 5,
     justifyContent: "center",
     borderRadius: 10
   },
   quantityButton: {
     paddingHorizontal: 8,
-    // paddingVertical: 5,
     borderRadius: 5,
     color: blackColor,
     fontSize: 16,
@@ -176,7 +162,6 @@ const styles = StyleSheet.create({
   addToCartButton: {
     borderRadius: 10,
     fontSize: 8,
-    // marginTop: 2,
     backgroundColor: redColor,
     paddingHorizontal: 9,
     paddingVertical: 5,

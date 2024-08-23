@@ -48,9 +48,7 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
   const changeTheme = () => {
     toggleTheme()
     logEvent(`Change App theme to ${isDarkMode ? 'Light' : 'Dark'} Mode`)
-
   }
-
   return (
     <Modal
       animationType="fade"
@@ -85,7 +83,6 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
             onPress={changeTheme}
           >
             <Pressable onPress={changeTheme} style={[flexDirectionRow, alignItemsCenter]}>
-              {/* <FontAwesome name={isDarkMode ? 'moon-o' : 'sun-o'} size={24} color={isDarkMode ? whiteColor : blackColor} /> */}
               <Text style={[styles.menuText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
             </Pressable>
             <Pressable onPress={changeTheme} style={[styles.toggleButton]}>
@@ -102,7 +99,6 @@ const MenuModal = ({ modalVisible, setModalVisible, onPressCart, onPressSearch, 
           </Pressable>}
           {!userLoggedIn && <View style={[styles.bottomContainer, positionAbsolute]}>
             <Pressable style={[styles.loginItem, flexDirectionRow, alignItemsCenter]} onPress={onPressLogin}>
-              {/* <MaterialIcons name={"person-outline"} size={30} color={blackColor} /> */}
               <Image source={isDarkMode ? WHITE_USER_IMAGE : USER_IMAGE} style={[{ resizeMode: "contain", width: wp(8), height: hp(3.5) }]} />
               <Text style={[styles.menuText, { paddingLeft: spacings.medium, color: colors.blackColor }]}>{LOGIN}</Text>
             </Pressable>

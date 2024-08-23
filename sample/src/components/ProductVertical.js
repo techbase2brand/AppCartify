@@ -25,7 +25,6 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
   const priceAmount = price?.price ? price?.price : price?.amount;
   const currencyCode = price ? price?.currencyCode : null;
   const [quantity, setQuantity] = useState(1);
-  // const [isSelected, setIsSelected] = useState(false);
   const outOfStock = inventoryQuantity && inventoryQuantity[0] === 0;
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
@@ -56,7 +55,6 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
   }, []);
 
   const handlePress = () => {
-    // setIsSelected(!isSelected);
     const productWithInventory = {
       ...product,
       inventoryQuantity: inventoryQuantity
@@ -89,7 +87,6 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
   }
   const handleAddToCart = () => {
     logEvent('Add to Cart');
-    // dispatch(addProductInCart(product));
     onAddToCart(product?.variants?.edges ? product?.variants?.edges[0]?.node?.id : product?.variants?.nodes[0]?.id, quantity);
     setShowQuantity(true);
   };
@@ -181,7 +178,6 @@ const ProductVertical = ({ product, onAddToCart, inventoryQuantity, loading, onP
 
 const styles = StyleSheet.create({
   productContainer: {
-    // width: wp(41),
     paddingVertical: spacings.large,
   },
   productImage: {
@@ -192,12 +188,7 @@ const styles = StyleSheet.create({
     marginVertical: spacings.large
   },
   productName: {
-    // fontSize: style.fontSizeSmall1x.fontSize,
-    // // fontWeight: style.fontWeightThin1x.fontWeight,
-    // fontWeight: style.fontWeightMedium1x.fontWeight,
-    // color: blackColor,
-    // fontFamily: 'GeneralSans-Variable'
-    // color: blackColor,
+
     fontSize: style.fontSizeSmall1x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
   },
   text: {
@@ -208,14 +199,12 @@ const styles = StyleSheet.create({
   productPrice: {
     fontSize: style.fontSizeSmall1x.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,
-    // fontWeight: style.fontWeightMedium1x.fontWeight,
-    // color: blackColor,
+
     fontFamily: 'GeneralSans-Variable'
   },
   contentBox: {
     width: "100%",
     paddingHorizontal: spacings.small,
-    // height: hp(12),
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -230,7 +219,6 @@ const styles = StyleSheet.create({
   },
   quantityButton: {
     paddingHorizontal: 8,
-    // paddingVertical: 5,
     borderRadius: 5,
     color: redColor,
     fontSize: 16,
@@ -247,11 +235,9 @@ const styles = StyleSheet.create({
     width: wp(20),
     borderRadius: 10,
     fontSize: 8,
-    // marginTop: 2,
     borderWidth: 1,
     borderColor: redColor,
     backgroundColor: whiteColor,
-    // paddingHorizontal: 5,
     paddingVertical: 5,
   },
   addToCartButtonText: {
@@ -260,12 +246,10 @@ const styles = StyleSheet.create({
     color: redColor,
     fontWeight: '700',
     textAlign: 'center',
-    // fontFamily: 'GeneralSans-Variable'
   },
   favButton: {
     width: wp(10),
     paddingVertical: 4,
-    // height: hp(3.8),
     right: 0,
     bottom: 4,
     zIndex: 10,
@@ -280,10 +264,7 @@ const styles = StyleSheet.create({
     right: 3,
     top: 6,
     zIndex: 10,
-    // borderWidth: .5,
-    // borderColor: lightGrayOpacityColor,
     borderRadius: 10,
-
   },
 });
 

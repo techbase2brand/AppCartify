@@ -48,7 +48,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     fetchProducts({
       variables: {
-        first: selectedItem === "Food" ? 10 : 12, // Set the desired number of collections to fetch
+        first: selectedItem === "Food" ? 10 : 12,
       },
     });
   }, [fetchProducts])
@@ -60,7 +60,6 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   //Popular Liquor
   useEffect(() => {
     const fetchproduct = () => {
-      // setLoading(true)
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
@@ -103,7 +102,6 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
         .then((response) => response.json())
         .then((result) => {
           const fetchedProducts = result?.data?.products?.edges;
-          // console.log("fetchProducts", fetchedProducts)
           const inventoryQuantities = fetchedProducts?.map((productEdge) => {
             return productEdge?.node?.variants?.nodes.map((variant) => variant.inventoryQuantity);
           });
@@ -123,7 +121,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
           setOptions(fetchedOptions)
           setProductVariantsIDS(productVariantData)
           setTags(fetchedTags);
-          // setLoading(false)
+
         })
         .catch((error) => console.log(error));
     }
@@ -182,7 +180,6 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data.collection.products.nodes, "fetchedProducts.data")
           setProducts(fetchedProducts?.data?.collection?.products.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
@@ -233,12 +230,10 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   }
 
   return (
-    // <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}>
     <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header backIcon={true} text={route?.params?.title} navigation={navigation} />
       <View style={[styles.container, flex]}>
         {(title === BEST_DEALS_OF_THE_WEEK || title === POPULAR_LIQUOR) &&
-          // (products.length > 0 ?
           <FlatList
             data={products}
             renderItem={({ item, index }) => <ProductItem item={item} addToCartProduct={addToCartProduct} BestDealInventoryQuantities={bestDealInventoryQuantities[index]} BestDealsids={bestDealProductVariantsIDS[index]}
@@ -256,36 +251,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
             keyExtractor={(item) => item?.id.toString()}
             showsVerticalScrollIndicator={false}
           />
-          // :
-          // <View style={[alignJustifyCenter, flex]}>
-          //   <LoaderKit
-          //     style={{ width: 50, height: 50 }}
-          //     name={LOADER_NAME}
-          //     color={blackColor}
-          //   />
-          // </View>)
         }
-        {/* {title === POPULAR_LIQUOR &&
-          (!loading ? <FlatList
-            data={data?.products?.edges}
-            renderItem={({ item, index }) => <ProductItem item={item} addToCartProduct={addToCartProduct} BestDealInventoryQuantities={inventoryQuantity[index]} BestDealsids={productVariantsIDS[index]}
-              onPress={() => {
-                navigation.navigate('ProductDetails', {
-                  product: item?.node,
-                  variant: getVariant(item?.node),
-                  inventoryQuantity: inventoryQuantity[index],
-                  tags: tags[index],
-                  option: options[index],
-                  ids: productVariantsIDS[index]
-                });
-              }} />}
-            numColumns={2}
-            keyExtractor={(item) => item?.id}
-            showsVerticalScrollIndicator={false}
-          /> :
-            <View style={[alignJustifyCenter, flex]}>
-              <ActivityIndicator size="small" />
-            </View>)} */}
         {loading && <LoadingModal visible={loading} text={"Please wait while we load the products."} />}
       </View>
     </ImageBackground>
@@ -366,7 +332,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     margin: spacings.small,
     width: "48%",
-    // backgroundColor: whiteColor,
     padding: spacings.large,
     borderColor: 'transparent',
     borderWidth: .1,
@@ -388,7 +353,6 @@ const styles = StyleSheet.create({
   },
   quantityButton: {
     paddingHorizontal: spacings.large,
-    // paddingVertical: 5,
     borderRadius: 5,
     fontSize: style.fontSizeMedium1x.fontSize,
     fontWeight: style.fontWeightThin1x.fontWeight,

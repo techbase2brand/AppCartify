@@ -104,7 +104,6 @@ function ProductDetailsScreen({ navigation, route }: Props) {
 
   const onAddtoCartProduct = async (id: any, quantity: number) => {
     logEvent(`Add To Cart  Product variantId:${id} Qty:${quantity}`);
-    // console.log("addto cart id", id, quantity)
     await addToCart(id, quantity);
     navigation.navigate('CartModal');
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
@@ -180,11 +179,12 @@ function ProductDetails({
   const [shareProductloading, setShareProductLoading] = useState(false);
   const [shopCurrency, setShopCurrency] = useState('');
   const selectedItem = useSelector((state) => state.menu.selectedItem);
-  // const STOREFRONT_ACCESS_TOKEN = getStoreFrontAccessToken(selectedItem)
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const { isDarkMode } = useThemes();
   const themecolors = isDarkMode ? darkColors : lightColors;
+
+  const [rating, setRating] = useState(null);
+  const [reviewDescription, setReviewDescription] = useState('');
+  const [customerName, setCustomerName] = useState("");
 
   useEffect(() => {
     // Check if no option is selected
@@ -195,6 +195,7 @@ function ProductDetails({
       });
     }
   }, [variantSelected, options]);
+
   useEffect(() => {
     const fetchCurrency = async () => {
       try {
@@ -207,6 +208,7 @@ function ProductDetails({
       }
     };
     fetchCurrency();
+    fetchProductMetafields(product.id)
   }, []);
 
 
@@ -235,7 +237,6 @@ function ProductDetails({
 
   const getInventoryQuantity = () => {
     const selectedVariantId = getSelectedVariantId();
-    // console.log("selectedVariantId", selectedVariantId)
     if (selectedVariantId) {
       const selectedVariant = ids?.find(variant => variant.id === selectedVariantId);
       return selectedVariant ? selectedVariant.inventoryQty : 0;
@@ -263,7 +264,6 @@ function ProductDetails({
       body: JSON.stringify({ query, variables })
     });
     const responseData = await response.json();
-    // console.log(responseData)
     if (responseData.errors) {
       console.error('Error fetching product handle:', responseData.errors);
       return null;
@@ -279,12 +279,8 @@ function ProductDetails({
         android: {
           packageName: 'com.AppCatify',
         },
-        // ios: {
-        //   appStoreId: '123456789',
-        //   bundleId: 'com.deepLinkingProjectBundleId',
-        // },
+
       }, dynamicLinks.ShortLinkType.DEFAULT)
-      // console.log('link:', link)
       return link
     } catch (error) {
       console.log('Generating Link Error:', error)
@@ -305,7 +301,6 @@ function ProductDetails({
       const shareUrl = getLink;
       const shareOptions = {
         title: 'Share Product',
-        // message: `Check out this product: ${product.title}\nhttps://${STOREFRONT_DOMAIN}/products/${handle}`,
         message: `Check out this product: ${shareUrl}`,
       };
       setShareProductLoading(false)
@@ -323,7 +318,6 @@ function ProductDetails({
   };
 
   const onPressFavButton = () => {
-    // setIsSelected(!isSelected);
     if (!isSelected) {
       logEvent(`Product Add to wishlish ProductId: ${product.id}`);
       dispatch(addToWishlist(product));
@@ -334,7 +328,6 @@ function ProductDetails({
   };
 
   const handlePress = (item) => {
-    // console.log("handelePress", item)
     if (!getIsFavSelected(item.admin_graphql_api_id)) {
       logEvent(`Product Add to wishlish ProductId: ${item.admin_graphql_api_id}`);
       dispatch(addToWishlist(item));
@@ -351,12 +344,79 @@ function ProductDetails({
       setLoadingProductId(null);
     });
   };
+
   const trimcateText = (text) => {
     const words = text.split(' ');
     if (words.length > 4) {
       return words.slice(0, 4).join(' ') + '...';
     }
     return text;
+  };
+
+  const fetchProductMetafields = async (productID: any) => {
+    const numericProductID = productID.split('/').pop();
+    try {
+      const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${numericProductID}/metafields.json`, {
+        headers: {
+          'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // Extract metafields from the response
+      const metafields = response.data.metafields;
+
+      // Function to extract review description and rating
+      const extractReviewAndRating = (metafields) => {
+        let reviewDescription = null;
+        let rating = null;
+        let customerName = "";
+        metafields.forEach(metafield => {
+          if (metafield.key === "reviewdes" && metafield.namespace === "custom") {
+            reviewDescription = JSON.parse(metafield.value);
+            setReviewDescription(reviewDescription);
+          } else if (metafield.key === "rating" && metafield.namespace === "custom") {
+            const ratingValue = JSON.parse(metafield.value);  // Parsing the value as it's stored as a JSON string
+            if (ratingValue.length > 0) {
+              rating = ratingValue[0].value;
+              setRating(rating);
+            }
+          } else if (metafield.key === "customername" && metafield.namespace === "custom") {
+            const customerNameValue = JSON.parse(metafield.value);
+            if (customerNameValue.length > 0) {
+              customerName = customerNameValue[0];
+              setCustomerName(customerName)
+            }
+          }
+        });
+
+        return {
+          reviewDescription,
+          rating,
+          customerName
+        };
+      };
+
+      const { reviewDescription, rating, customerName } = extractReviewAndRating(metafields);
+;
+    } catch (error) {
+      console.error('Error fetching metafields:', error);
+    }
+  };
+
+  const getInitials = (name) => {
+    return name ? name.split(' ').map(word => word.charAt(0).toUpperCase()).join('') : '';
+  };
+
+  const FallbackAvatar = ({ name }) => (
+    <View style={styles.fallbackAvatar}>
+      <Text style={styles.fallbackAvatarText}>{getInitials(name)}</Text>
+    </View>
+  );
+
+  const capitalizeFirstLetter = (str) => {
+    if (str.length === 0) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
   return (
@@ -381,8 +441,8 @@ function ProductDetails({
           </TouchableOpacity>
           <View style={[styles.productText, justifyContentSpaceBetween]}>
             <View>
-              <View style={[flexDirectionRow, { width: "100%"}]}>
-                <View style={{ width: "90%"}}>
+              <View style={[flexDirectionRow, { width: "100%" }]}>
+                <View style={{ width: "90%" }}>
                   <Text style={[styles.productTitle, { color: themecolors.blackColor }]}>{trimcateText(product.title)}</Text>
                 </View>
                 <TouchableOpacity style={[alignJustifyCenter, styles.shareButton]} onPress={() => shareProduct(product.id)}>
@@ -392,8 +452,8 @@ function ProductDetails({
               <View style={[flexDirectionRow, { width: "100%" }]}>
                 <Text style={[styles.productPrice, { color: themecolors.blackColor }]}>{(variant?.price?.amount) ? (variant?.price?.amount) : (variant?.price)} {(variant?.price?.currencyCode) ? (variant?.price?.currencyCode) : shopCurrency}</Text>
                 <Pressable style={[flexDirectionRow, alignItemsCenter, { marginLeft: spacings.large }]}>
-                  <FontAwesome name="star" size={15} color={goldColor} />
-                  <Text style={[styles.productDescription, { color: themecolors.blackColor }]}>  <Text style={[styles.productDescription, textDecorationUnderline, { fontWeight: style.fontWeightMedium1x.fontWeight, color: themecolors.blackColor }]}>4.0/5</Text> (45 reviews)</Text>
+                  {/* <FontAwesome name="star" size={15} color={goldColor} />
+                  <Text style={[styles.productDescription, { color: themecolors.blackColor }]}>  <Text style={[styles.productDescription, textDecorationUnderline, { fontWeight: style.fontWeightMedium1x.fontWeight, color: themecolors.blackColor }]}>4.0/5</Text> (45 reviews)</Text> */}
                 </Pressable>
               </View>
               {product.description && <Pressable onPress={toggleExpanded} style={{ marginVertical: spacings.large }}>
@@ -407,7 +467,6 @@ function ProductDetails({
                   if (option.name === "Title" && option.values.includes("Default Title")) {
                     return null; // Skip rendering this option
                   }
-
                   return (
                     <View key={index} style={styles.optionContainer}>
                       <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>Choose {option?.name}</Text>
@@ -440,7 +499,7 @@ function ProductDetails({
               </View>
 
             </View>
-            <View style={{ marginBottom: spacings.large }}>
+            {/* <View style={{ marginBottom: spacings.large }}>
               <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{RATING_REVIEWS}</Text>
               <View style={[styles.reviewSection, flexDirectionRow, alignItemsCenter]}>
                 <View style={[{ width: wp(30) }, justifyContentSpaceBetween, flexDirectionRow]}>
@@ -468,9 +527,51 @@ function ProductDetails({
                   <Text style={[styles.productDescription, { fontSize: style.fontSizeSmall1x.fontSize, color: themecolors.blackColor }]}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed ...</Text>
                 </View>
               </View>
-              {/* <TouchableOpacity style={[styles.button, alignItemsCenter, borderRadius5]} onPress={onPreesViewReviewAll}>
-                <Text style={styles.buttonText}>{VIEW_ALL_REVIEWS}</Text>
-              </TouchableOpacity> */}
+            </View> */}
+            <View style={{ marginBottom: spacings.large }}>
+              <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{RATING_REVIEWS}</Text>
+              <View style={[styles.reviewSection, flexDirectionRow, alignItemsCenter]}>
+                <View style={[{ width: wp(30) }, justifyContentSpaceBetween, flexDirectionRow]}>
+                  {Array.from({ length: 5 }).map((_, index) => {
+                    const currentRating = rating !== null && rating !== undefined ? Math.round(rating) : 4; // Default to 4 stars if no rating is provided
+                    return (
+                      <FontAwesome
+                        key={index}
+                        name={index < currentRating ? "star" : "star-o"}
+                        size={17}
+                        color={themecolors.goldColor}
+                      />
+                    );
+                  })}
+                </View>
+                <Text style={[styles.optionValue, { marginLeft: spacings.large, backgroundColor: lightGrayOpacityColor, paddingHorizontal: spacings.large, borderRadius: 5 }]}>
+                  {rating ? `${rating}/5` : '4/5'}
+                </Text>
+              </View>
+              <View style={[flexDirectionRow, alignItemsCenter]}>
+                <View style={[{ width: wp(20), height: hp(10) }, alignItemsCenter]}>
+                  {customerName != "" ? <FallbackAvatar name={customerName} /> : <Image source={LADY_DONALD_RICE} style={[resizeModeContain, { width: wp(13), height: wp(13) }]} />}
+                </View>
+                <View style={{ width: "75%" }}>
+                  <Text style={[styles.productPrice, { padding: spacings.small, color: themecolors.blackColor }]}>{customerName ? capitalizeFirstLetter(customerName) : "Donald Rice"}</Text>
+                  <View style={[{ width: wp(30), height: hp(3), paddingLeft: spacings.normal }, justifyContentSpaceBetween, flexDirectionRow]}>
+                    {Array.from({ length: 5 }).map((_, index) => {
+                      const currentRating = rating !== null && rating !== undefined ? Math.round(rating) : 4; // Default to 4 stars if no rating is provided
+                      return (
+                        <FontAwesome
+                          key={index}
+                          name={index < currentRating ? "star" : "star-o"}
+                          size={17}
+                          color={themecolors.goldColor}
+                        />
+                      );
+                    })}
+                  </View>
+                  <Text style={[styles.productDescription, { fontSize: style.fontSizeSmall1x.fontSize, color: themecolors.blackColor }]}>
+                    {reviewDescription || 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed ...'}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
           {relatedProducts?.length != 0 && <View style={styles.relatedProductsContainer}>
@@ -529,66 +630,7 @@ function ProductDetails({
               keyExtractor={(index) => index?.toString()}
               showsHorizontalScrollIndicator={false}
             />
-
           </View>}
-          {/* {upSellingproducts?.length != 0 && <View style={styles.relatedProductsContainer}>
-            <Text style={[styles.relatedProductsTitle, { color: themecolors.blackColor }]}>{'Recomendations'}</Text>
-            <FlatList
-              data={upSellingproducts}
-              renderItem={({ item }) => {
-                const inventoryQuantity = item?.variants[0]?.inventory_quantity ?? 0;
-                const isFavSelected = getIsFavSelected(item.admin_graphql_api_id);
-                return (
-                  <View
-                    style={[styles.relatedProductItem, alignJustifyCenter, { backgroundColor: isDarkMode ? grayColor : "transparnet" }]}
-                  >
-                    <View style={{ width: "100%", borderWidth: .5, borderColor: themecolors.lightGrayOpacityColor, marginBottom: spacings.small, borderRadius: 10, alignItems: "center" }}>
-                      <Image
-                        source={{ uri: item?.featuredImage?.originalSrc }}
-                        style={[styles.relatedProductImage, borderRadius10, resizeModeContain]}
-                      />
-                    </View>
-                    <View style={[{ width: "100%", height: hp(9) }]}>
-                      <Text style={[styles.relatedproductName, { color: themecolors.blackColor }]}>{trimcateText(item.title)}</Text>
-                      <Text style={[styles.relatedproductPrice, { paddingHorizontal: spacings.small, color: themecolors.blackColor }]}>{item?.variants?.edges[0].node.priceV2.amount} {shopCurrency}
-                      </Text>
-                    </View>
-                    <View style={[{ width: "100%", flexDirection: "row" }, justifyContentSpaceBetween, alignItemsCenter]}>
-                      {inventoryQuantity === 0 ? <Pressable
-                        style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
-                      >
-                        <Text style={styles.addToCartButtonText}>Out of stock</Text>
-                      </Pressable>
-                        : <Pressable
-                          style={[styles.relatedAddtocartButton, borderRadius10, alignJustifyCenter]}
-                          onPress={() => onAddToCartRelatedProduct(item.variants[0].admin_graphql_api_id, 1)}
-                          disabled={loadingProductId === item.variants[0].admin_graphql_api_id}
-                        >
-                          {loadingProductId === item.variants[0].admin_graphql_api_id ? (
-                            <ActivityIndicator color={whiteColor} />
-                          ) : (
-                            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
-                          )}
-
-                        </Pressable>}
-                      <TouchableOpacity style={[alignJustifyCenter, styles.relatedProductfavButton, { backgroundColor: whiteColor, borderColor: themecolors.redColor }]} onPress={() => handlePress(item)}>
-                        <AntDesign
-                          name={isFavSelected ? "heart" : "hearto"}
-                          size={18}
-                          color={redColor}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )
-              }}
-              horizontal
-              // numColumns={2}
-              keyExtractor={(index) => index?.toString()}
-              showsHorizontalScrollIndicator={false}
-            />
-
-          </View>} */}
           {shareProductloading && <LoadingModal visible={shareProductloading} />}
         </View>
       </ScrollView>
@@ -648,7 +690,6 @@ function createStyles(colors: Colors) {
   return StyleSheet.create({
     container: {
       maxHeight: hp(100),
-      // backgroundColor: whiteColor
     },
     productItem: {
       padding: spacings.large,
@@ -664,17 +705,14 @@ function createStyles(colors: Colors) {
       fontWeight: style.fontWeightThin1x.fontWeight,
       marginTop: spacings.large,
       marginBottom: spacings.normal,
-      // marginHorizontal: spacings.normal,
       lineHeight: 28,
       textAlign: 'left',
       color: blackColor,
-      // fontFamily: 'GeneralSans-Variable'
     },
     productDescription: {
       fontSize: style.fontSizeNormal.fontSize,
       fontWeight: "400",
-      // marginTop: spacings.normal,
-      // marginBottom: spacings.large,
+
       marginHorizontal: spacings.normal,
       lineHeight: 15,
       textAlign: 'left',
@@ -684,8 +722,7 @@ function createStyles(colors: Colors) {
       fontSize: style.fontSizeLarge.fontSize,
       color: blackColor,
       fontWeight: style.fontWeightThin1x.fontWeight,
-      // marginLeft: spacings.small,
-      // fontFamily: 'GeneralSans-Variable'
+
     },
     productImage: {
       width: '100%',
@@ -693,9 +730,7 @@ function createStyles(colors: Colors) {
       marginTop: spacings.normal,
     },
     addToCartButtonContainer: {
-      // marginHorizontal: spacings.large,
-      // height: hp(5),
-      // backgroundColor:"red"
+
     },
     addToCartButton: {
       fontSize: style.fontSizeExtraExtraSmall.fontSize,
@@ -746,21 +781,18 @@ function createStyles(colors: Colors) {
     relatedProductsContainer: {
       width: "100%",
       marginTop: spacings.xLarge,
-      // backgroundColor: whiteColor,
     },
     relatedProductsTitle: {
       fontSize: style.fontSizeLarge.fontSize,
       fontWeight: style.fontWeightMedium.fontWeight,
       color: blackColor,
-      // fontFamily: 'GeneralSans-Variable'
     },
     relatedProductItem: {
       width: wp(40),
       margin: spacings.small,
       padding: spacings.large,
       borderRadius: 5
-      // height: hp(30),
-      // marginVertical: spacings.large
+
     },
     relatedProductImage: {
       width: wp(30),
@@ -769,17 +801,13 @@ function createStyles(colors: Colors) {
     },
     relatedProductTitle: {
       fontSize: style.fontSizeNormal.fontSize,
-      // color: blackColor,
       fontWeight: style.fontWeightThin1x.fontWeight,
-      // fontFamily: 'GeneralSans-Variable'
     },
     relatedAddtocartButton: {
       fontSize: style.fontSizeExtraExtraSmall.fontSize,
-      // marginVertical: spacings.large,
       width: "68%",
       backgroundColor: redColor,
       padding: spacings.normal,
-      // paddingHorizontal: spacings.large
 
     },
     optionContainer: {
@@ -830,29 +858,37 @@ function createStyles(colors: Colors) {
       width: wp(10),
       height: hp(3.8),
       right: 0,
-      // bottom: 4,
       zIndex: 10,
       borderWidth: 1,
-      // borderColor: redColor,
-      // backgroundColor: whiteColor,
+
       borderRadius: 10,
     },
     relatedproductName: {
-      // fontSize: style.fontSizeNormal.fontSize,
-      // fontWeight: style.fontWeightThin1x.fontWeight,
-      // color: blackColor,
-      // fontFamily: 'GeneralSans-Variable'
-      // color: blackColor,
+
       fontSize: style.fontSizeSmall2x.fontSize, fontWeight: style.fontWeightThin1x.fontWeight,
     },
     relatedproductPrice: {
       fontSize: style.fontSizeSmall1x.fontSize,
       fontWeight: style.fontWeightThin1x.fontWeight,
-      // fontWeight: style.fontWeightMedium1x.fontWeight,
-      // color: blackColor,
+
       fontFamily: 'GeneralSans-Variable'
-      // marginLeft: spacings.small,
-      // fontFamily: 'GeneralSans-Variable'
+
+    },
+    fallbackAvatar: {
+      width: 60,
+      height: 60,
+      borderRadius: 65,
+      backgroundColor: '#a8326b',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 15,
+      borderWidth: 2,
+      borderColor: '#fff',
+    },
+    fallbackAvatarText: {
+      fontSize: 30,
+      color: '#fff',
+      fontWeight: 'bold',
     },
   });
 }

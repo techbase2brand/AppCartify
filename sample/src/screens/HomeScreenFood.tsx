@@ -31,8 +31,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state?.menu?.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
+
   const { addToCart, addingToCart, clearCart } = useCart();
   const [lineHeights, setLineHeights] = useState({});
   const [inventoryQuantities, setInventoryQuantities] = useState('');
@@ -77,7 +76,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     Animated.loop(
       Animated.timing(translateX, {
         toValue: -screenWidth,
-        duration: 5000, // Adjust the duration as needed
+        duration: 5000,
         useNativeDriver: true,
       })
     ).start();
@@ -141,7 +140,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
               image: variant?.image
             }))
           );
-          // console.log("homescreenproduct",result.data.products.edges.node)
           setOptions(fetchedOptions)
           setInventoryQuantities(inventoryQuantities);
           setTags(fetchedTags);
@@ -204,14 +202,12 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data?.collection?.products, "fetchedProducts.data")
           setProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setBestDealInventoryQuantities(inventoryQuantities)
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes?.map((product) => product?.options);
-          // console.log("Options:", fetchedOptions);
           setBestDealOptions(fetchedOptions);
 
           const productVariantData = fetchedProducts?.data?.collection?.products?.nodes.map((product) =>
@@ -225,8 +221,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
           setBestDealProductVariantsIDS(productVariantData);
 
           const fetchedTags = fetchedProducts?.data?.collection?.products?.nodes?.map(productEdge => productEdge?.tags);
-          // console.log(fetchedProducts?.data?.collection?.products?.nodes)
-          // console.log("tags::::",fetchedTags)
+
           setbestDealTags(fetchedTags)
         })
         .catch((error) => console.log(error));
@@ -239,119 +234,26 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     const handleInitialLink = async () => {
       const initialLink = await dynamicLinks().getInitialLink();
       if (initialLink) {
-        // console.log('Initial link:', initialLink);
         handleDynamicLinks(initialLink);
       }
     };
     handleInitialLink();
     const unsubscribe = dynamicLinks().onLink(handleDynamicLinks);
     return () => {
-      // console.log("Unsubscribing from dynamic links");
       unsubscribe();
     };
   }, []);
-
-  // //fetchCollections, fetchProducts
-  // useEffect(() => {
-  //   fetchCollections({
-  //     variables: {
-  //       first: 100, // Set the desired number of collections to fetch
-  //     },
-  //   });
-  //   fetchProducts({
-  //     variables: {
-  //       first: 10, // Set the desired number of collections to fetch
-  //     },
-  //   });
-  // }, [fetchCollections, fetchProducts])
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchMainMenu();
-  //   }, [selectMenuItem])
-  // )
-
-  // //on press menu item
-  // const handleMenuPress = (item) => {
-  //   console.log("handleMenuPress::::item", item)
-  //   dispatch(selectMenuItem(item));
-  // };
-
-  // //for fetch menu title
-  // const fetchMainMenu = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       `https://${STOREFRONT_DOMAIN}/api/2023-04/graphql.json`,
-  //       {
-  //         query: `
-  //         {
-  //           menu(handle: "main-menu") {
-  //             items {
-  //               title
-  //               url
-  //               type
-  //               items {
-  //                 title
-  //                 id
-  //               }
-  //             }
-  //           }
-  //         }
-  //       `
-  //       },
-  //       {
-  //         headers: {
-  //           'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       }
-  //     );
-  //     setMenuItems(response.data.data.menu.items);
-  //     const filteredItems = response.data.data.menu.items.filter(item =>
-  //       item.title.toLowerCase() === selectedItem.toLowerCase()
-  //     );
-  //     filteredItems.forEach((item, index) => {
-  //       console.log(`Items for ${item.title}:`);
-  //       console.log(item.items);
-  //       // setSelectedMenuItems(item.items)
-  //       let matchedCollectionsArray = [];
-  //       item?.items?.forEach(selectedItem => {
-  //         console.log("seldteditem title", selectedItem?.title)
-  //         console.log("Collection", collectionData?.collections?.edges)
-  //         // let matchedCollection = collectionData?.collections?.edges?.find(collection => collection?.node?.title === selectedItem?.title);
-  //         // console.log("matchedCollection::::", matchedCollection)
-  //         if (collectionData && collectionData.collections && collectionData.collections.edges) {
-  //           // Find the matching collection
-  //           let matchedCollection = collectionData.collections.edges.find(collection => {
-  //             return collection && collection.node && collection.node.title === selectedItem?.title;
-  //           });
-  //           console.log("matchedCollection::::", matchedCollection);
-  //           if (matchedCollection) {
-  //             matchedCollectionsArray.push(matchedCollection?.node);
-  //           }
-  //         }
-
-
-  //       });
-
-  //       console.log("matchedmenu:::::", matchedCollectionsArray)
-  //       setShopifyCollection(matchedCollectionsArray);
-  //     });
-  //   } catch (error) {
-  //     console.log('Error fetching main menu:', error);
-  //   }
-  // };
 
   useEffect(() => {
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 100, // Set the desired number of collections to fetch
+          first: 100,
         },
       });
       await fetchProducts({
         variables: {
-          first: 10, // Set the desired number of products to fetch
+          first: 10,
         },
       });
       setCollectionsFetched(true);
@@ -408,26 +310,22 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
         item?.title.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        // console.log(`Items for ${item.title}:`);
-        // console.log(item.items);
+
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          // console.log("selectedItem title", selectedItem?.title);
-          // console.log("Collection", collectionData?.collections?.edges);
+
 
           if (collectionData && collectionData?.collections && collectionData?.collections?.edges) {
             let matchedCollection = collectionData?.collections?.edges?.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
         });
 
-        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -440,11 +338,8 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const handleDynamicLinks = async (link) => {
     try {
       if (link && link.url) {
-        // console.log('Foreground link handling:', link);
         let productId = link?.url?.split('=').pop();
-        // console.log('productId:', productId);
         const productData = await fetchProductDetails(productId);
-        // console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
         navigation.navigate('ProductDetails', {
           product: productData?.product,
           variant: productData?.variants,
@@ -454,7 +349,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
           ids: productData?.ids
         });
       } else {
-        // console.log('No link or URL found');
       }
     } catch (error) {
       console.error('Error handling dynamic link:', error);
@@ -465,7 +359,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const fetchProductDetails = async (productId) => {
     const parts = productId.split('/');
     const lastValue = parts[parts.length - 1];
-    // console.log(lastValue);
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/products/${lastValue}.json`, {
         headers: {
@@ -517,7 +410,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
-    // console.log(id)
     logEvent(`See All our product Collection Button Pressed from HomeScreenFood CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
@@ -539,7 +431,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
-    // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
@@ -558,7 +449,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-        // contentContainerStyle={styles.menuContainer}
         >
           {menuItems.map((item) => (
             <TouchableOpacity
@@ -575,14 +465,13 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
         </ScrollView>
         <ScrollView showsVerticalScrollIndicator={false} >
           <View style={[alignJustifyCenter, { width: wp(100), height: hp(4.5), backgroundColor: colors.blackColor, marginTop: 5 }]}>
-            {/* <Text style={[styles.menuText, { color: colors.whiteColor,fontWeight: style.fontWeightThin.fontWeight,  fontSize: 14 }]} >Free Shipping on All Orders</Text> */}
             <Animated.Text
               style={[
                 styles.marqueeText,
                 {
                   transform: [{ translateX }],
                   color: colors.whiteColor,
-                  fontWeight: '300', // Adjust if you have a fontWeightThin style
+                  fontWeight: '300',
                   fontSize: 14,
                 },
               ]}
@@ -666,7 +555,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
                         color: colors.blackColor,
                         paddingVertical: spacings.large,
                         fontWeight: style.fontWeightBold.fontWeight,
-                        // fontSize: style.fontSizeSmall.fontSize
                       }
                     ]}
                     onTextLayout={handleTextLayout(item?.title)}>{item?.title}</Text>
@@ -710,7 +598,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
               showsHorizontalScrollIndicator={false}
               horizontal
             /> :
-              // <ActivityIndicator size={'large'} color={blackColor} />
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -774,7 +661,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
           </Text>
           <View style={[{ width: wp(100), height: "auto", marginTop: 5, paddingHorizontal: spacings.large }, flexDirectionRow]}>
             <FlatList
-              // data={collectionData?.collections?.edges.slice(5, 10)}
               data={shopifyCollection.slice(5, 10)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(35), height: hp(20), borderWidth: 0.5, borderColor: lightGrayOpacityColor, paddingVertical: spacings.small, margin: spacings.small }, alignJustifyCenter]}>
@@ -849,7 +735,6 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: whiteColor,
-    // paddingHorizontal: spacings.large,
     paddingVertical: spacings.xxsmall
   },
   menuContainer: {
@@ -862,7 +747,6 @@ const styles = StyleSheet.create({
     marginRight: spacings.large,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    // height:hp(5.7)
   },
   selectedMenuItem: {
     borderBottomColor: redColor,
@@ -885,7 +769,6 @@ const styles = StyleSheet.create({
     height: wp(20),
     borderRadius: 100,
     borderWidth: 0.5,
-    // borderColor: lightGrayOpacityColor,
     paddingVertical: spacings.small,
   },
 

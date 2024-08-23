@@ -5,32 +5,25 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { whiteColor, blackColor, grayColor, redColor, mediumGray } from '../constants/Color';
 import ConfirmationModal from '../components/Modal/ConfirmationModal'
-import { getAdminAccessToken, getStoreDomain, SIGN_OUT, DELETE, SHIPPING_ADDRESS, MY_WISHLIST, ORDERS, ARE_YOU_SURE_DELETE_ACCOUNT, ARE_YOU_SURE_SIGNOUT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
-import { PROFILE_IMAGE, BACKGROUND_IMAGE } from '../assests/images';
-import SimpleLineIcons from 'react-native-vector-icons/dist/SimpleLineIcons';
+import { DELETE, SHIPPING_ADDRESS, ORDERS, ARE_YOU_SURE_DELETE_ACCOUNT, ARE_YOU_SURE_SIGNOUT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
+import { BACKGROUND_IMAGE } from '../assests/images';
 import Feather from 'react-native-vector-icons/dist/Feather';
-import FontAwesome from 'react-native-vector-icons/dist/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../components/Header'
 import axios from 'axios';
 import { AuthContext } from '../context/AuthProvider';
 import { useFocusEffect } from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/actions/authActions';
 import { logEvent } from '@amplitude/analytics-react-native';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import LoadingModal from '../components/Modal/LoadingModal';
-import { MYADDRESS_IMAGE, MYORDER_IMAGE, MYACCOUNT_IMAGE, LOGOUT_IMAGE, DELETE_IMAGE, WHITE_MYACCOUNT_IMAGE, WHITE_MYORDER_IMAGE, WHITE_MYADDRESS_IMAGE, DARK_MODE_IMAGE } from '../assests/images'
+import { MYADDRESS_IMAGE, MYORDER_IMAGE, MYACCOUNT_IMAGE, LOGOUT_IMAGE, DELETE_IMAGE, WHITE_MYACCOUNT_IMAGE, WHITE_MYORDER_IMAGE, WHITE_MYADDRESS_IMAGE, } from '../assests/images'
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, justifyContentSpaceBetween, resizeModeCover } = BaseStyle;
 
 const ProfileScreen = ({ navigation }: { navigation: any }) => {
   const dispatch = useDispatch();
-  const selectedItem = useSelector((state) => state.menu.selectedItem);
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const { setIsLoggedIn } = useContext(AuthContext)
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -47,7 +40,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 
   useEffect(() => {
-    // fetchUserDetails()
     logEvent('ProfileScreen Initialized');
   }, [])
 
@@ -68,12 +60,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
   //for get customer ID
   const fetchUserDetails = async () => {
     const userDetails = await AsyncStorage.getItem('userDetails')
-    // console.log('Customer found:::::::::::::::::', userDetails);
     if (userDetails) {
       const userDetailsObject = JSON.parse(userDetails);
-      // console.log(userDetailsObject)
       const userId = userDetailsObject?.customer ? userDetailsObject?.customer.id : userDetailsObject?.id;
-      // console.log("userDetailsObject", userId)
       setCustomerId(userId)
     }
   };
@@ -132,7 +121,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
   //for get customer Address
   const getCustomerAddress = async (id) => {
-    // console.log("getCustomerAddress", id)
     try {
       const response = await axios.get(
         `https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers/${id}.json`,
@@ -164,20 +152,13 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     setLoading(true)
     logEvent('SignOut Button Clicked');
     dispatch(logout());
-    const signout = await AsyncStorage.removeItem('isUserLoggedIn');
     await AsyncStorage.removeItem('userImage')
-    // console.log("removed url", signout);
     setShowModal(false);
     setIsLoggedIn(false)
     navigation.navigate('AuthStack');
     logEvent('SignOut Seccess');
     setLoading(false)
-    // navigation.dispatch(
-    //   CommonActions.reset({
-    //     index: 0,
-    //     routes: [{ name: 'AppWithNavigation' }],
-    //   })
-    // );
+
   };
 
   //for deleteAccount
@@ -186,17 +167,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     const userDetailsObject = JSON.parse(userDetails);
     logEvent('Delete Button Clicked');
     try {
-      // const currentUser = auth().currentUser;
-      // if (currentUser) {
-      //   await currentUser.delete();
-      //   await AsyncStorage.removeItem('isUserLoggedIn');
-      //   dispatch(logout());
-      //   console.log('Firebase user deleted successfully.');
-      //   logEvent(`Firebase user deleted successfully.`);
-      // } else {
-      //   console.log('No user is currently signed in to Firebase.');
-      //   logEvent(`No user is currently signed in to Firebase.`);
-      // }
       await axios.delete(
         `https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers/${customerId}.json`,
         {
@@ -206,20 +176,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           },
         }
       );
-      // Delete user from your app's database if userDetailsObject.id is present
-      // if (userDetailsObject?.id) {
-      //   console.log(`Deleting customer from app database: ${userDetailsObject?.id}`);
-      //   const response = await axios.request({
-      //     url: `https://admin.appcartify.com:8443/api/deleteCustomer/${userDetailsObject?.id}`,
-      //     method: 'DELETE',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //   });
-      //   console.log('Response from app database delete:', response.data);
-      // }
       setLoading(true)
-      // console.log(`Customer  deleted successfully.`);
       await AsyncStorage.removeItem('isUserLoggedIn');
       await AsyncStorage.removeItem('userImage')
       await AsyncStorage.removeItem('userDetails')
@@ -252,9 +209,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
   );
 
   return (
-    // <ImageBackground style={[styles.container, flex]} source={BACKGROUND_IMAGE}>
     <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
-      {/* <Header backIcon={true} text={"Account"} navigation={navigation} /> */}
       <View style={[{ width: "100%", height: hp(7) }, flexDirectionRow, alignItemsCenter]}>
         <TouchableOpacity style={[styles.backIcon, alignItemsCenter]} onPress={() => { logEvent(`Back Button Pressed from Profile`), navigation.goBack() }}>
           <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
@@ -263,8 +218,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
       </View>
       <View style={[styles.header, alignItemsCenter]}>
         <FallbackAvatar name={userName} />
-        {/* {image ? <Image source={{ uri: image }} style={[styles.profileImage, resizeModeContain, { borderColor: colors.grayColor }]} /> :
-          <Image source={PROFILE_IMAGE} style={[styles.profileImage, resizeModeContain]} />} */}
         <Text style={[styles.username, { color: colors.blackColor }]}>{capitalizeFirstLetter(userName)}</Text>
       </View>
       <View style={styles.section}>
@@ -311,22 +264,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           </View>
           <Feather name={"chevron-right"} size={30} color={colors.blackColor} />
         </TouchableOpacity>
-        {/* <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View> */}
-        {/* <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
-          onPress={toggleTheme}
-        >
-          <View style={[flexDirectionRow, alignItemsCenter]}>
-            <FontAwesome name={isDarkMode ? 'moon-o' : 'sun-o'} size={24} color={isDarkMode ? whiteColor : blackColor} />
-            <Text style={[styles.optionText, { color: colors.blackColor }]}>{isDarkMode ? 'Dark' : 'Light'} Mode</Text>
-          </View>
-          <TouchableOpacity onPress={toggleTheme} style={[styles.toggleButton]}>
-            <Feather
-              name={isDarkMode ? 'toggle-right' : 'toggle-left'}
-              size={35}
-              color={isDarkMode ? '#81b0ff' : '#767577'}
-            />
-          </TouchableOpacity>
-        </TouchableOpacity> */}
         <View style={{ width: "99%", height: 1, backgroundColor: colors.mediumGray }}></View>
         <TouchableOpacity style={[styles.option, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}
           onPress={() => toggleModal(ARE_YOU_SURE_DELETE_ACCOUNT, handleDelete)}
@@ -384,19 +321,16 @@ const styles = StyleSheet.create({
     marginTop: spacings.large,
     fontSize: style.fontSizeLarge.fontSize,
     fontWeight: style.fontWeightMedium1x.fontWeight,
-    // color: blackColor
   },
   section: {
     marginTop: spacings.Large2x,
-    // paddingHorizontal: spacings.Large1x,
   },
   option: {
     paddingVertical: spacings.xxLarge,
     paddingRight: spacings.small,
     paddingHorizontal: spacings.xxxLarge,
     height: hp(7.5)
-    // borderBottomWidth: 5,
-    // borderBottomColor: "#E6E6E6",
+
   },
   optionText: {
     fontSize: style.fontSizeMedium.fontSize,
@@ -419,7 +353,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 4,
-    // marginBottom: 20,
   },
   fallbackAvatarText: {
     fontSize: 40,

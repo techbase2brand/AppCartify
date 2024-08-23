@@ -30,9 +30,6 @@ const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeMod
 
 const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem);
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem);
-  // const OUR_PRODUCT_COLLECTION_ID = getOurProductCollectionID(selectedItem)
   const { addToCart, addingToCart } = useCart();
   const [lineHeights, setLineHeights] = useState({});
   const [inventoryQuantities, setInventoryQuantities] = useState('');
@@ -112,77 +109,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   }, [])
 
   //best selling
-  // useEffect(() => {
-  //   const fetchproduct = () => {
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Content-Type", "application/json");
-  //     myHeaders.append("X-Shopify-Access-Token", ADMINAPI_ACCESS_TOKEN);
-  //     const graphql = JSON.stringify({
-  //       query: `query getProducts {
-  //       products(first: 10) {
-  //         edges {
-  //           node {
-  //             id
-  //             title
-  //             tags
-  //             options(first:10){
-  //               id
-  //               name
-  //               values
-  //             }
-  //             variants(first: 10) {
-  //               nodes {
-  //                 id
-  //                 title
-  //                 inventoryQuantity
-  //                 image {
-  //                   originalSrc
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }`,
-  //       variables: {}
-  //     });
-  //     const requestOptions = {
-  //       method: "POST",
-  //       headers: myHeaders,
-  //       body: graphql,
-  //       redirect: "follow"
-  //     };
-  //     fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/graphql.json`, requestOptions)
-  //       .then((response) => response.json())
-  //       .then((result) => {
-  //         const fetchedProducts = result.data.products.edges;
-  //         console.log("fetchedProducts", fetchedProducts)
-  //         const fetchedTags = fetchedProducts.map(productEdge => productEdge.node.tags);
-  //         const inventoryQuantities = fetchedProducts.map((productEdge) => {
-  //           return productEdge.node.variants.nodes.map((variant) => variant.inventoryQuantity);
-  //         });
-  //         const fetchedOptions = fetchedProducts.map(product => product.node.options);
-  //         const productVariantData = fetchedProducts.map(productEdge =>
-  //           productEdge.node.variants.nodes.map(variant => ({
-  //             id: variant.id,
-  //             title: variant.title,
-  //             inventoryQty: variant.inventoryQuantity,
-  //             image: variant.image
-  //           }))
-  //         );
-  //         // console.log("homescreenproduct",result.data.products.edges.node)
-  //         setOptions(fetchedOptions)
-  //         setInventoryQuantities(inventoryQuantities);
-  //         setTags(fetchedTags);
-  //         setProductVariantsIDS(productVariantData)
-  //       })
-  //       .catch((error) => console.log(error));
-  //   }
-  //   fetchproduct()
-  // }, [selectedItem])
-
-
-  //best selling
   useEffect(() => {
     const fetchproduct = () => {
       const myHeaders = new Headers();
@@ -234,14 +160,12 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data?.collection?.products, "fetchedProducts.data")
           setBestDealProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setBestDealInventoryQuantities(inventoryQuantities)
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes.map((product) => product.options);
-          // console.log("Options:", fetchedOptions);
           setBestDealOptions(fetchedOptions);
 
           const productVariantData = fetchedProducts?.data?.collection?.products?.nodes.map((product) =>
@@ -314,14 +238,12 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data?.collection?.products, "fetchedProducts.data")
           setProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setInventoryQuantities(inventoryQuantities)
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes?.map((product) => product?.options);
-          // console.log("Options:", fetchedOptions);
           setOptions(fetchedOptions);
 
           const productVariantData = fetchedProducts?.data?.collection?.products?.nodes.map((product) =>
@@ -347,96 +269,27 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
     const handleInitialLink = async () => {
       const initialLink = await dynamicLinks().getInitialLink();
       if (initialLink) {
-        // console.log('Initial link:', initialLink);
         handleDynamicLinks(initialLink);
       }
     };
     handleInitialLink();
     const unsubscribe = dynamicLinks().onLink(handleDynamicLinks);
     return () => {
-      // console.log("Unsubscribing from dynamic links");
       unsubscribe();
     };
   }, []);
 
-  // //fetchCollections, fetchProducts,fetchmainmanu
-  // useEffect(() => {
-  //   fetchCollections({
-  //     variables: {
-  //       first: 8,
-  //     },
-  //   });
-  //   fetchProducts({
-  //     variables: {
-  //       first: 12,
-  //     },
-  //   });
 
-  // }, [fetchCollections, fetchProducts])
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchMainMenu();
-  //   }, [])
-  // );
-
-  // const handleMenuPress = (item) => {
-  //   console.log("handleMenuPress::::item", item)
-  //   dispatch(selectMenuItem(item));
-  // };
-
-
-  // const fetchMainMenu = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       `https://${STOREFRONT_DOMAIN}/api/2023-04/graphql.json`,
-  //       {
-  //         query: `
-  //         {
-  //           menu(handle: "main-menu") {
-  //             items {
-  //               title
-  //               url
-  //               type
-  //               items {
-  //                 title
-  //                 id
-  //               }
-  //             }
-  //           }
-  //         }
-  //       `
-  //       },
-  //       {
-  //         headers: {
-  //           'X-Shopify-Storefront-Access-Token': STOREFRONT_ACCESS_TOKEN,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       }
-  //     );
-  //     setMenuItems(response.data.data.menu.items);
-  //     const filteredItems = response.data.data.menu.items.filter(item =>
-  //       item.title.toLowerCase() === selectedItem.toLowerCase()
-  //     );
-  //     filteredItems.forEach((item, index) => {
-  //       console.log(`Items for ${item.title}:`);
-  //       console.log(item.items);
-  //       setSelectedMenuItems(item.items)
-  //     });
-  //   } catch (error) {
-  //     console.log('Error fetching main menu:', error);
-  //   }
-  // };
   useEffect(() => {
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 100, // Set the desired number of collections to fetch
+          first: 100,
         },
       });
       await fetchProducts({
         variables: {
-          first: 10, // Set the desired number of products to fetch
+          first: 10,
         },
       });
       setCollectionsFetched(true);
@@ -455,7 +308,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
-    // console.log("handleMenuPress::::item", item);
     dispatch(selectMenuItem(item));
   };
 
@@ -493,26 +345,19 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
         item?.title?.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        // console.log(`Items for ${item?.title}:`);
-        // console.log(item?.items);
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          // console.log("selectedItem title", selectedItem?.title);
-          // console.log("Collection", collectionData?.collections?.edges);
 
           if (collectionData && collectionData?.collections && collectionData?.collections?.edges) {
             let matchedCollection = collectionData?.collections?.edges?.find(collection => {
               return collection?.node?.title === selectedItem?.title;
             });
-            // console.log("matchedCollection::::", matchedCollection);
             if (matchedCollection) {
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
         });
-
-        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -524,11 +369,8 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const handleDynamicLinks = async (link) => {
     try {
       if (link && link.url) {
-        // console.log('Foreground link handling:', link);
         let productId = link?.url?.split('=').pop();
-        // console.log('productId:', productId);
         const productData = await fetchProductDetails(productId);
-        // console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
         navigation.navigate('ProductDetails', {
           product: productData?.product,
           variant: productData?.variants,
@@ -538,7 +380,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
           ids: productData?.ids
         });
       } else {
-        // console.log('No link or URL found');
       }
     } catch (error) {
       console.error('Error handling dynamic link:', error);
@@ -549,7 +390,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const fetchProductDetails = async (productId) => {
     const parts = productId.split('/');
     const lastValue = parts[parts.length - 1];
-    // console.log(lastValue);
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/products/${lastValue}.json`, {
         headers: {
@@ -602,7 +442,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
-    // console.log(id)
     logEvent(`Collection Button Pressed from HomeScreen CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
@@ -624,7 +463,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
-    // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
@@ -642,7 +480,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-        // contentContainerStyle={styles.menuContainer}
         >
           {menuItems.map((item) => (
             <TouchableOpacity
@@ -702,32 +539,7 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
             </Pressable>
           </View>
           <View style={[{ width: wp(100), height: "auto", marginTop: 5 }, flexDirectionRow]}>
-            {/* <FlatList
-              data={collectionData?.collections?.edges}
-              renderItem={({ item }) => (
-                <View style={[{ width: wp(24), height: hp(18) }, alignItemsCenter]}>
-                  <Pressable style={[styles.card, overflowHidden, alignJustifyCenter]} onPress={() => onPressCollection(item?.node?.id, item.node.title)}>
-                    <Image source={{ uri: item?.node?.image?.url }} style={[styles.categoryImage, resizeModeContain]} />
-                  </Pressable>
-                  <Text
-                    style={[
-                      styles.categoryName,
-                      textAlign,
-                      {
-                        lineHeight: lineHeights[item?.node?.title] || 10,
-                        color: blackColor,
-                        paddingVertical: spacings.large,
-                        fontWeight: style.fontWeightBold.fontWeight
-                      }
-                    ]}
-                    onTextLayout={handleTextLayout(item?.node?.title)}>{item?.node?.title}</Text>
-                </View>
-              )}
-              numColumns={4}
-              keyExtractor={(item) => item.node.id}
-            /> */}
             <FlatList
-              // data={collectionData?.collections?.edges}
               data={shopifyCollection.slice(0, 8)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(24), height: hp(18) }, alignItemsCenter]}>
@@ -754,39 +566,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
             />
           </View>
           <Text style={[styles.text]}>{BEST_SELLING}</Text>
-          {/* <View >
-            <FlatList
-              data={data?.products?.edges}
-              renderItem={({ item, index }) => {
-                const { node } = item;
-                return (
-                  <Product
-                    key={node.id}
-                    product={node}
-                    onAddToCart={addToCartProduct}
-                    loading={addingToCart?.has(getVariant(node)?.id ?? '')}
-                    inventoryQuantity={inventoryQuantities[index]}
-                    option={options[index]}
-                    ids={productVariantsIDS[index]}
-                    width={wp(37)}
-                    onPress={() => {
-                      navigation.navigate('ProductDetails', {
-                        product: node,
-                        variant: getVariant(node),
-                        inventoryQuantity: inventoryQuantities[index],
-                        tags: tags[index],
-                        option: options[index],
-                        ids: productVariantsIDS[index]
-                      });
-                    }}
-                  />
-                );
-              }}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.node.id}
-            />
-          </View> */}
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {bestDealProducts?.length > 0 ? <FlatList
               data={bestDealProducts}
@@ -816,7 +595,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
               showsHorizontalScrollIndicator={false}
               horizontal
             /> :
-              // <ActivityIndicator size={'large'} color={blackColor} />
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -864,7 +642,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
               showsHorizontalScrollIndicator={false}
               horizontal
             /> :
-              // <ActivityIndicator size={'large'} color={blackColor} />
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -960,7 +737,6 @@ const HomeScreenDrink = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: whiteColor,
-    // paddingHorizontal: spacings.large,
     paddingVertical: spacings.small
   },
   text: {
@@ -1002,7 +778,6 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeNormal.fontSize,
     color: whiteColor,
     fontWeight: style.fontWeightThin1x.fontWeight,
-    // fontFamily: 'GeneralSans-Variable'
   },
 
   image: {
@@ -1035,7 +810,6 @@ const styles = StyleSheet.create({
     marginRight: spacings.large,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    // height:hp(5.7)
   },
   selectedMenuItem: {
     borderBottomColor: redColor,

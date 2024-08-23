@@ -15,20 +15,18 @@ import { removeFromWishlist } from '../redux/actions/wishListActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { logEvent } from '@amplitude/analytics-react-native';
 import { BACKGROUND_IMAGE } from '../assests/images';
-import Product from '../components/ProductVertical';
-import { getAdminAccessToken, getStoreDomain, STOREFRONT_ACCESS_TOKEN, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
+import { STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCart } from '../context/Cart';
 import Toast from 'react-native-simple-toast';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import AddReviewModal from '../components/Modal/AddReviewModal';
 
-const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10, justifyContentSpaceBetween, alignItemsCenter } = BaseStyle;
+const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10,alignItemsCenter, borderRadius5 } = BaseStyle;
 
 const UserDashboardScreen = () => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const { addToCart, addingToCart } = useCart();
   const navigation = useNavigation()
   const route = useRoute();
@@ -45,7 +43,9 @@ const UserDashboardScreen = () => {
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
   const [shopCurrency, setShopCurrency] = useState('');
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [productId, setProductId] = useState("");
+  const [customerName, setCustomerName] = useState('');
   useEffect(() => {
     logEvent('UserDashboardScreen Initialized');
   }, [])
@@ -140,6 +140,16 @@ const UserDashboardScreen = () => {
     logEvent(`Add To Cart  Product variantId:${variantId} Qty:${quantity}`);
   };
 
+  const openReviewModal = (item) => {
+    const productIds = item.line_items.map(lineItem => lineItem.product_id);
+    console.log("Product IDs:", productIds);
+    const fullName = `${item?.customer?.first_name || ''} ${item?.customer?.last_name || ''}`;
+    console.log("full name:", fullName);
+    setProductId(productIds)
+    setCustomerName(fullName)
+    setIsModalVisible(true)
+  };
+
   return (
     <KeyboardAvoidingView
       style={[flex]}
@@ -155,12 +165,13 @@ const UserDashboardScreen = () => {
                 data={ordersList}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => {
-                  // console.log("response.data.orders", ordersList);
+
                   return (
                     <View style={{ padding: spacings.large }}>
                       {/* <Text style={styles.itemText}>Order ID: {item.id}</Text>
                     <Text style={styles.itemText}>Order Total: {item.total ? item.total : item.total_price}</Text> */}
                       {item?.line_items?.map((Item, index) => {
+
                         return (
                           <View key={index} style={{ marginVertical: 10, padding: spacings.large, borderWidth: 1, width: "100%", borderRadius: 10 }}>
                             <View style={[flexDirectionRow]}>
@@ -181,11 +192,11 @@ const UserDashboardScreen = () => {
                               <View style={{ width: "10%" }}>
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
-                              <View style={{ width: "71%" }}>
+                              <View style={{ width: "65%" }}>
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.title}</Text>
                               </View>
                             </View>
-                            <View style={[flexDirectionRow]}>
+                            {Item?.variant_title && <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>Variant</Text>
                               </View>
@@ -195,7 +206,7 @@ const UserDashboardScreen = () => {
                               <View style={{ width: "75%" }}>
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item?.variant_title}</Text>
                               </View>
-                            </View>
+                            </View>}
                             <View style={[flexDirectionRow]}>
                               <View style={{ width: "25%" }}>
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>Quantity</Text>
@@ -215,9 +226,15 @@ const UserDashboardScreen = () => {
                                 <Text style={[styles.itemText, { color: colors.blackColor }]}>:</Text>
                               </View>
                               <View style={{ width: "75%" }}>
-                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.price}</Text>
+                                <Text style={[styles.itemText, { color: colors.blackColor }]}>{Item.price} {shopCurrency}</Text>
                               </View>
                             </View>
+                            <TouchableOpacity
+                              style={[styles.button, alignItemsCenter, borderRadius5, { marginTop: spacings.medium }]}
+                              onPress={() => openReviewModal(item)}
+                            >
+                              <Text style={styles.buttonText}>Give a Review</Text>
+                            </TouchableOpacity>
                           </View>
                         );
                       })}
@@ -377,6 +394,7 @@ const UserDashboardScreen = () => {
             </View>)
         }
         {modalVisible && <AddAddressModal visible={modalVisible} onClose={() => setModalVisible(false)} />}
+        {isModalVisible && <AddReviewModal visible={isModalVisible} onClose={() => setIsModalVisible(false)} productId={productId} customerName={customerName} />}
       </ImageBackground>
     </KeyboardAvoidingView>
   );

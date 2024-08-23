@@ -13,7 +13,7 @@ import SuccessModal from '../components/Modal/SuccessModal';
 import { BACKGROUND_IMAGE } from '../assests/images';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
-const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
+const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1} = BaseStyle;
 
 const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
   const { isDarkMode } = useThemes();
@@ -41,7 +41,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       }, 1000);
     } else if (timer === 0) {
       setResendButtonDisabled(false);
-      setTimer(60); // Reset the timer back to 30 seconds or your desired interval
+      setTimer(60);
     }
     return () => clearInterval(interval);
   }, [resendButtonDisabled, timer]);
@@ -56,7 +56,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
 
   const handleOTPChange = (otp) => {
     setOtp(otp);
-    setIsOtpComplete(otp.length === 6); // Assuming OTP length is 6
+    setIsOtpComplete(otp.length === 6);
   };
 
   const toggleShowPassword = () => {
@@ -69,14 +69,12 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
 
   const handleEmailSubmit = async () => {
     logEvent('Sumbit Email button clicked on forget Password ');
-    // Validate email
     if (!email) {
       setEmailError('Email is required');
       return;
     }
 
     try {
-      // console.log("clicked")
       const response = await fetch('https://admin.appcartify.com:8444/api/forgotPassword', {
         method: 'POST',
         headers: {
@@ -84,11 +82,6 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
         },
         body: JSON.stringify({ email }),
       });
-      // if (!response.ok) {
-      //   console.error('Error sending email:::::');
-      //   // throw new Error(errorData.message || 'Error sending email');
-      // }
-      // console.log('Email sent successfully:', response);
       setCurrentStep('otp');
     } catch (error) {
       console.error('Error sending email:', error);
@@ -102,45 +95,20 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       Alert.alert('Please enter a valid OTP');
       return;
     }
-    // console.log('OTP verified successfully');
-    setCurrentStep('password'); // Move to password reset section
-    // setOtp('');
+    setCurrentStep('password');
   };
-
-  // const handlePasswordSubmit = () => {
-  //   if (!password || !confirmPassword) {
-  //     setPasswordError('Password and Confirm Password are required');
-  //     return;
-  //   }
-  //   if (password !== confirmPassword) {
-  //     setConfirmPasswordError('Passwords do not match');
-  //     return;
-  //   }
-  //   console.log('Password reset successfully');
-  //   setSuccessModalVisible(true)
-  //   setPassword('');
-  //   setConfirmPassword('');
-  //   // setCurrentStep('email');
-  // };
 
   const handlePasswordSubmit = async () => {
     logEvent('Sumbit Password button clicked on forget Password ');
-    // Validate password
     if (!password || !confirmPassword) {
       setPasswordError('Password and Confirm Password are required');
       return;
-
-
-
     }
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       return;
     }
-    // console.log("resetPassword")
     try {
-      // console.log({ email, otp, password, confirmPassword })
-      // Call backend API to reset password
       const response = await fetch('https://admin.appcartify.com:8444/api/resetPassword', {
         method: 'POST',
         headers: {
@@ -149,8 +117,6 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
         body: JSON.stringify({ email, "resetCode": otp, "newPassword": password, "newPasswordConfirmation": confirmPassword }),
       });
 
-      // console.log("resetPassword", response)
-      // Show success modal
       if (response.ok) {
         setSuccessModalVisible(true);
         logEvent('succesfuuly resetting password ');
@@ -159,7 +125,6 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
     } catch (error) {
       console.error('Error resetting password:', error);
       logEvent(`Error resetting password:${error}`);
-      // Handle error scenario
     }
   };
   return (
@@ -167,9 +132,7 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
       style={[flex]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {/* <ImageBackground style={[styles.container]} source={BACKGROUND_IMAGE}> */}
       <ImageBackground style={[styles.container, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
-
         <View style={[{ width: "100%", height: hp(5) }, flexDirectionRow, alignItemsCenter]}>
           <TouchableOpacity style={[styles.backIcon, alignItemsCenter]} onPress={() => { logEvent(`Back Button Pressed from ForgetPasswordScreen`), navigation.goBack() }}>
             <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
@@ -218,15 +181,6 @@ const ForgetPasswordScreen = ({ navigation }: { navigation: any }) => {
                 containerStyle={styles.otpContainer}
                 textInputStyle={[styles.otpInput, { color: colors.blackColor }]}
               />
-              {/* <TouchableOpacity disabled={resendButtonDisabled} onPress={hadleResendOtp}>
-                <Text style={{ color: blackColor, marginHorizontal: spacings.small }}>
-                  Email not Received?
-                  <Text style={{ color: resendButtonDisabled ? 'gray' : blackColor, fontWeight: style.fontWeightThin1x.fontWeight, textDecorationLine: "underline" }}>
-                    {resendButtonDisabled ? ` Resend code in ${timer}s` : ' Resend code'}
-
-                  </Text>
-                </Text>
-              </TouchableOpacity> */}
             </View>
             <TouchableOpacity style={[styles.button, positionAbsolute, alignJustifyCenter]} onPress={handleOTPSubmit}>
               <Text style={[styles.buttonText, { color: whiteColor }]}>Continue</Text>

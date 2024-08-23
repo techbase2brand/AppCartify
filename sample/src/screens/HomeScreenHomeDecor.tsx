@@ -26,16 +26,13 @@ import LoaderKit from 'react-native-loader-kit'
 import { clearWishlist } from '../redux/actions/wishListActions';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
-const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
-  textAlign, overflowHidden, positionRelative, positionAbsolute } = BaseStyle;
+const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
+  textAlign, overflowHidden} = BaseStyle;
 
 const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem);
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem);
-  // const OUR_PRODUCT_COLLECTION_ID = getOurProductCollectionID(selectedItem)
   const { addToCart, addingToCart, clearCart } = useCart();
   const [lineHeights, setLineHeights] = useState({});
   const [inventoryQuantities, setInventoryQuantities] = useState('');
@@ -123,14 +120,12 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data?.collection?.products, "fetchedProducts.data")
           setBestDealProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setBestDealInventoryQuantities(inventoryQuantities)
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes.map((product) => product.options);
-          // console.log("Options:", fetchedOptions);
           setBestDealOptions(fetchedOptions);
 
           const productVariantData = fetchedProducts?.data?.collection?.products?.nodes.map((product) =>
@@ -203,14 +198,12 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
         .then((response) => response.text())
         .then((result) => {
           const fetchedProducts = JSON.parse(result);
-          // console.log(fetchedProducts.data?.collection?.products, "fetchedProducts.data")
           setProducts(fetchedProducts?.data?.collection?.products?.nodes);
           const inventoryQuantities = fetchedProducts?.data?.collection?.products?.nodes?.map((productEdge) => {
             return productEdge?.variants?.nodes?.map((variants) => variants?.inventoryQuantity);
           });
           setInventoryQuantities(inventoryQuantities)
           const fetchedOptions = fetchedProducts?.data?.collection?.products?.nodes?.map((product) => product?.options);
-          // console.log("Options:", fetchedOptions);
           setOptions(fetchedOptions);
 
           const productVariantData = fetchedProducts?.data?.collection?.products?.nodes.map((product) =>
@@ -236,14 +229,12 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
     const handleInitialLink = async () => {
       const initialLink = await dynamicLinks().getInitialLink();
       if (initialLink) {
-        // console.log('Initial link:', initialLink);
         handleDynamicLinks(initialLink);
       }
     };
     handleInitialLink();
     const unsubscribe = dynamicLinks().onLink(handleDynamicLinks);
     return () => {
-      // console.log("Unsubscribing from dynamic links");
       unsubscribe();
     };
   }, []);
@@ -252,12 +243,12 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
     const fetchInitialData = async () => {
       await fetchCollections({
         variables: {
-          first: 150, // Set the desired number of collections to fetch
+          first: 150,
         },
       });
       await fetchProducts({
         variables: {
-          first: 10, // Set the desired number of products to fetch
+          first: 10,
         },
       });
       setCollectionsFetched(true);
@@ -277,11 +268,9 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     const index = menuItems.findIndex(item => item.title === selectedItem);
     if (index !== -1) {
-      // Calculate the position to scroll to
-      const itemWidth = 100; // Replace with your item width
-      const offset = Math.max(0, (index - 3) * itemWidth); // Scroll so that the item is in view
+      const itemWidth = 100;
+      const offset = Math.max(0, (index - 3) * itemWidth);
 
-      // Scroll to the item if it's in the last 3 items
       if (index >= menuItems.length - 3) {
         scrollViewRef.current.scrollTo({ x: offset, animated: true });
       }
@@ -330,13 +319,11 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
         item?.title?.toLowerCase() === selectedItem.toLowerCase()
       );
       filteredItems.forEach((item) => {
-        // console.log(`Items for ${item?.title}:`);
-        // console.log(item?.items);
+
 
         let matchedCollectionsArray = [];
         item?.items?.forEach(selectedItem => {
-          // console.log("selectedItem title", selectedItem?.title);
-          // console.log("Collection", collectionData?.collections?.edges);
+
 
           if (collectionData && collectionData?.collections && collectionData?.collections?.edges) {
             let matchedCollection = collectionData?.collections?.edges?.find(collection => {
@@ -344,13 +331,11 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
             });
 
             if (matchedCollection) {
-              // console.log("matchedCollection::::", matchedCollection);
               matchedCollectionsArray.push(matchedCollection?.node);
             }
           }
         });
 
-        // console.log("matchedmenu:::::", matchedCollectionsArray);
         setShopifyCollection(matchedCollectionsArray);
       });
     } catch (error) {
@@ -362,11 +347,8 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   const handleDynamicLinks = async (link) => {
     try {
       if (link && link.url) {
-        // console.log('Foreground link handling:', link);
         let productId = link?.url?.split('=').pop();
-        // console.log('productId:', productId);
         const productData = await fetchProductDetails(productId);
-        // console.log('Product Data:', productData?.variants, ":::::::::::::qty", productData?.inventoryQuantities, ":::::::tegs", productData?.tags, "::::::opt", productData?.options);
         navigation.navigate('ProductDetails', {
           product: productData?.product,
           variant: productData?.variants,
@@ -387,7 +369,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   const fetchProductDetails = async (productId) => {
     const parts = productId.split('/');
     const lastValue = parts[parts.length - 1];
-    // console.log(lastValue);
     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-01/products/${lastValue}.json`, {
         headers: {
@@ -440,7 +421,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
 
   //move to collection page
   const onPressCollection = (id: any, heading: any) => {
-    // console.log(id)
     logEvent(`See All our product Collection Button Pressed from HomeScreenDecor CollectionID: ${id} CollectionName: ${heading}`);
     navigation.navigate('Collections', {
       id: id, headingText: heading
@@ -462,7 +442,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
-    // navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
@@ -481,7 +460,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           ref={scrollViewRef}
-        // contentContainerStyle={{ paddingLeft: 5 }}
         >
           {menuItems.map((item) => (
             <TouchableOpacity
@@ -512,7 +490,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
           </View>
           <View style={[{ width: wp(100), height: "auto", marginTop: 5 }, flexDirectionRow]}>
             <FlatList
-              // data={collectionData?.collections?.edges}
               data={shopifyCollection.slice(0, 8)}
               renderItem={({ item }) => (
                 <View style={[{ width: wp(24), height: hp(18) }, alignItemsCenter]}>
@@ -568,7 +545,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
               showsHorizontalScrollIndicator={false}
               horizontal
             /> :
-              // <ActivityIndicator size={'large'} color={blackColor} />
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -616,7 +592,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
               showsHorizontalScrollIndicator={false}
               horizontal
             /> :
-              // <ActivityIndicator size={'large'} color={blackColor} />
               <LoaderKit
                 style={{ width: 50, height: 50 }}
                 name={LOADER_NAME}
@@ -640,7 +615,6 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: whiteColor,
-    // paddingHorizontal: spacings.large,
     paddingVertical: spacings.small
   },
   text: {
@@ -654,7 +628,6 @@ const styles = StyleSheet.create({
     height: wp(20),
     borderRadius: 100,
     borderWidth: 0.5,
-    // borderColor: lightGrayOpacityColor,
     paddingVertical: spacings.small,
   },
 
@@ -667,7 +640,6 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeNormal.fontSize,
     color: whiteColor,
     fontWeight: style.fontWeightThin1x.fontWeight,
-    // fontFamily: 'GeneralSans-Variable'
   },
 
   image: {
@@ -681,7 +653,6 @@ const styles = StyleSheet.create({
     marginRight: spacings.large,
     borderBottomWidth: 0,
     borderBottomColor: 'transparent',
-    // height:hp(5.7)
   },
   selectedMenuItem: {
     borderBottomColor: redColor,

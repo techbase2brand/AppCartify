@@ -20,8 +20,6 @@ const AddAddressModal = ({ visible, onClose }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const navigation = useNavigation()
   const [customerId, setCustomerId] = useState(Number)
   const [firstName, setFirstName] = useState('');
@@ -53,7 +51,6 @@ const AddAddressModal = ({ visible, onClose }) => {
       const userDetails = await AsyncStorage.getItem('userDetails')
       if (userDetails) {
         const userDetailsObject = JSON.parse(userDetails);
-        // const userId = userDetailsObject.id;
         const userId = userDetailsObject.customer ? userDetailsObject.customer.id : userDetailsObject.id;
         setCustomerId(userId)
       }
@@ -64,7 +61,6 @@ const AddAddressModal = ({ visible, onClose }) => {
   useEffect(() => {
     const fetchProvinceCode = async () => {
       try {
-        // Fetch countries
         const countryResponse = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/countries.json`, {
           headers: {
             'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
@@ -72,14 +68,11 @@ const AddAddressModal = ({ visible, onClose }) => {
         });
         const countries = countryResponse.data.countries;
 
-        // Find the selected country
         const selectedCountry = countries.find(c => c.name === country);
         const country_Id = selectedCountry.id;
-        // console.log(country_Id)
         const countryCode = selectedCountry.code;
         setCountryCode(countryCode)
 
-        // Fetch provinces for the selected country
         const provinceResponse = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/countries/${country_Id}/provinces.json`, {
           headers: {
             'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
@@ -87,11 +80,8 @@ const AddAddressModal = ({ visible, onClose }) => {
         });
         const provinces = provinceResponse.data.provinces;
 
-        // Find the selected province/state
         const selectedProvince = provinces.find(p => p.name.toLowerCase() === state.toLowerCase());
-        // console.log("selectedProvince", selectedProvince)
         const provinceCode = selectedProvince.code;
-        // console.log("provinceCode", provinceCode)
         setProvinceCode(provinceCode)
 
       } catch (error) {
@@ -149,8 +139,6 @@ const AddAddressModal = ({ visible, onClose }) => {
       );
       Toast.show('Address added successfully');
       logEvent('Address added successfully');
-      // console.log("Address added successfully:", response.data.address);
-      // Clear form fields
       setFirstName('');
       setLastName('');
       setAddress1('');
@@ -161,7 +149,6 @@ const AddAddressModal = ({ visible, onClose }) => {
       setCompany('')
       setPhone('');
       setZip('');
-      // Close modal
       navigation.navigate('ProfileScreen')
       onClose();
     } catch (error) {
@@ -311,9 +298,6 @@ const AddAddressModal = ({ visible, onClose }) => {
               keyboardType="number-pad"
               maxLength={6}
             />
-            {/* <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, alignJustifyCenter, borderRadius10]}>
-              <Text style={[styles.title, textAlign, { color: whiteColor }]}>Submit</Text>
-            </TouchableOpacity> */}
           </ScrollView>
           <Pressable onPress={handleSubmit} style={[styles.submitButton, alignJustifyCenter, borderRadius10]}>
             <Text style={[styles.title, textAlign, { color: whiteColor }]}>Submit</Text>

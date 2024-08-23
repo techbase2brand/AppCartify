@@ -3,13 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvo
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { whiteColor, blackColor, grayColor, redColor, mediumGray } from '../constants/Color'
+import { whiteColor, blackColor, grayColor, redColor, } from '../constants/Color'
 import {
   BY_CONTINUING_YOU_AGREE, EMAIL, PASSWORD, CONFIRM_PASSWORD, PLEASE_FILL_ALL_FIELD, INVALID_EMAIL_FORMAT, PASSWORD_MUST_BE_AT, APP_NAME,
-  PASSWORD_DO_NOT_MATCH, getAdminAccessToken, getStoreDomain, FIRST_NAME, LAST_NAME, TERM_OF_SERVICES, PRIVACY_POLICY, CONTENT_POLICY,
-  ALREADY_HAVE_AN_ACCOUNT, LOGIN, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, PRIVACY_POLICY_URL, TERM_OF_SERVICES_URL, CONTENT_POLICY_URL
+  PASSWORD_DO_NOT_MATCH, FIRST_NAME, LAST_NAME, TERM_OF_SERVICES, PRIVACY_POLICY,
+  ALREADY_HAVE_AN_ACCOUNT, LOGIN, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN,
 } from '../constants/Constants'
-import { GOOGLE_LOGO_IMAGE, BACKGROUND_IMAGE, OTP_VERIFICATION_IMAGE, FACEBOOK_LOGO_IMAGE, APPLE_LOGO_IMAGE } from '../assests/images'
+import { GOOGLE_LOGO_IMAGE, BACKGROUND_IMAGE, OTP_VERIFICATION_IMAGE, APPLE_LOGO_IMAGE } from '../assests/images'
 import MaterialCommunityIcons from 'react-native-vector-icons/dist/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
@@ -24,17 +24,13 @@ import PushNotification from 'react-native-push-notification';
 import OTPTextInput from 'react-native-otp-textinput';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginSuccess } from '../redux/actions/authActions';
-
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 const { flex, alignJustifyCenter, alignItemsCenter, borderWidth1, borderRadius5, resizeModeContain, flexDirectionRow, positionAbsolute, textAlign, textDecorationUnderline } = BaseStyle;
 
 const RegisterScreen = ({ navigation }: { navigation: any }) => {
-  const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -48,15 +44,13 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [loading, setLoading] = useState(false)
-  const [socialLogin, setSocialLogin] = useState(false)
   const [showOTP, setShowOTP] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
   const [isOtpComplete, setIsOtpComplete] = useState(false);
   const [resendButtonDisabled, setResendButtonDisabled] = useState(false);
   const [timer, setTimer] = useState(60);
-  const [showWebView, setShowWebView] = useState(false);
-  const [webViewURL, setWebViewURL] = useState("");
+
 
   const dispatch = useDispatch();
 
@@ -91,7 +85,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     try {
       const formattedPhoneNumber = `+91${phone}`;
       const confirmation = await auth().signInWithPhoneNumber(formattedPhoneNumber);
-      // console.log(confirmation)
     } catch (error) {
       console.error('Error sending OTP:', error);
     }
@@ -100,30 +93,8 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
   //sign in with user Details
   const handleSignUp = async () => {
     logEvent('Sign up Button clicked');
-    // const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // setEmailError('');
-    // setPasswordError('');
-    // setConfirmPasswordError('');
-
-    // if (!firstName || !lastName || !phone || !email || !password || !confirmPassword) {
-    //   setError(PLEASE_FILL_ALL_FIELD);
-    //   return;
-    // }
-    // if (!emailPattern.test(email)) {
-    //   setEmailError(INVALID_EMAIL_FORMAT);
-    //   return;
-    // }
-    // if (password.length < 8) {
-    //   setPasswordError(PASSWORD_MUST_BE_AT);
-    //   return;
-    // }
-    // if (password !== confirmPassword) {
-    //   setConfirmPasswordError(PASSWORD_DO_NOT_MATCH);
-    //   return;
-    // }
     try {
       setLoading(true)
-      // const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2023-10/customers.json`, {
       const response = await fetch('https://admin.appcartify.com:8444/api/customers', {
         method: 'POST',
         headers: {
@@ -153,10 +124,8 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         setError('')
         setError(responseData.message)
       }
-      // console.log('User registered successfully:', responseData);
 
       await AsyncStorage.setItem('userDetails', JSON.stringify(responseData))
-      // if (response.ok) {
       Toast.show(`User Registered Succesfully`);
       setSuccessModalVisible(false)
       navigation.navigate('Home');
@@ -164,7 +133,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       logEvent('User Registered Succesfully');
       handleNotificationTrigger()
       setLoading(false)
-      // }
+
     } catch (error) {
       setLoading(false)
       console.log('Registration error:', error);
@@ -181,15 +150,14 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       const { idToken, user } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
-      // console.log('User signed up with Google successfully!', JSON.stringify(user));
       await AsyncStorage.setItem('userImage', user.photo)
-      // Extract necessary details from the user's Google account
+
       const { email, givenName, familyName } = user;
       const isRegistered = await checkIfUserIsRegistered(user.email)
       if (isRegistered) {
         Toast.show(`User LoggedIn Succesfully`);
       } else {
-        // Send user details to Shopify
+
         const shopifyResponse = await registerUserToShopify({
           email: email,
           password: "defaultPassword",
@@ -197,7 +165,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           first_name: givenName,
           last_name: familyName,
         });
-        // console.log('Shopify response:', shopifyResponse);
+
         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
         Toast.show(`User Registered Succesfully`);
         handleNotificationTrigger();
@@ -211,62 +179,11 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
     } catch (error) {
       setLoading(false)
       console.error('Google sign up error:', error);
-      // Toast.show("User All ready registered please login ")
+
       logEvent(`Google sign up error:${error}`);
     }
   };
 
-  //sign in with facebbok
-  // const onFacebookButtonPress = async () => {
-  //   logEvent('Sign up with Facebook Button clicked');
-  //   try {
-  //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
-  //     setLoading(true)
-  //     if (result.isCancelled) {
-  //       logEvent(`Sign Up with Facebook cancelled by user`);
-  //       throw 'User cancelled the login process';
-  //     }
-
-  //     const data = await AccessToken.getCurrentAccessToken();
-
-  //     if (!data) {
-  //       throw 'Something went wrong obtaining access token';
-  //     }
-
-  //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
-  //     const userCredential = await auth().signInWithCredential(facebookCredential);
-  //     console.log(userCredential)
-  //     if (userCredential.additionalUserInfo.isNewUser) {
-  //       const { profile } = userCredential.additionalUserInfo;
-  //       console.log(profile)
-  //       const { first_name, last_name, email,picture } = profile;
-  //       await AsyncStorage.setItem('userImage',picture?.data?.url)
-  //       // Send user details to Shopify
-  //       const shopifyResponse = await registerUserToShopify({
-  //         email: email,
-  //         password: "defaultPassword",
-  //         password_confirmation: "defaultPassword",
-  //         first_name: first_name,
-  //         last_name: last_name,
-  //       });
-  //       console.log('Shopify response:', shopifyResponse);
-  //       await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
-  //       Toast.show(`User Registered Succesfully`);
-  //       dispatch(loginSuccess({ email: profile.email, password: '' }));
-  //       navigation.navigate('Home');
-  //       setLoading(false)
-  //       logEvent(`Sign Up with Facebook Success`);
-  //     } else {
-  //       // Handle the case where the user already exists
-  //       Toast.show('User already registered. Please log in.');
-  //       setLoading(false)
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setLoading(false)
-  //     logEvent(`Sign Up with Facebook error:${error}`);
-  //   }
-  // };
   const onFacebookButtonPress = async () => {
     logEvent('Sign up with Facebook Button clicked');
     try {
@@ -286,7 +203,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
       const userCredential = await auth().signInWithCredential(facebookCredential);
 
-      // console.log(userCredential);
 
       if (userCredential.additionalUserInfo.isNewUser) {
         const { profile } = userCredential.additionalUserInfo;
@@ -345,7 +261,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
         },
         body: JSON.stringify({ customer: userData }),
-        // body: JSON.stringify(userData),
       });
 
       if (response.ok) {
@@ -358,40 +273,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       throw error;
     }
   };
-  // const checkIfUserIsRegistered = async (email) => {
-  //   // console.log("check user exit email ", email)
-  //   try {
-  //     const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-  //       },
-  //     });
-
-  //     if (response.ok) {
-  //       const responseData = await response.json();
-  //       const customers = responseData.customers;
-  //       // console.log(customers);
-  //       // Check if any customer matches the provided email
-  //       const isRegistered = customers.some(customer => {
-  //         if (customer.email === email) {
-  //           // console.log('Customer found:', customer);
-  //           return true;
-  //         }
-  //         return false;
-  //       });
-
-  //       return isRegistered;
-  //     } else {
-  //       throw new Error('Failed to fetch customers from Shopify');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error checking user registration:', error);
-  //     return false;
-  //   }
-  // };
-
 
   const checkIfUserIsRegistered = async (email) => {
     try {
@@ -411,7 +292,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         const customer = customers.find(customer => customer.email === email);
 
         if (customer) {
-          // console.log('Customer found:', customer);
           await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
           return true;
         } else {
@@ -438,7 +318,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
 
 
   const handleNotificationTrigger = () => {
-    // Trigger notification logic here
     PushNotification.localNotification({
       channelId: "default-channel-id",
       title: 'Welcome',
@@ -448,13 +327,12 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
 
   const handleOTPChange = (otp) => {
     setOtp(otp);
-    setIsOtpComplete(otp.length === 6); // Assuming OTP length is 6
+    setIsOtpComplete(otp.length === 6);
   };
 
   const VerifyOTP = () => {
     setSuccessModalVisible(true)
   }
-
 
   useEffect(() => {
     let interval;
@@ -464,19 +342,17 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       }, 1000);
     } else if (timer === 0) {
       setResendButtonDisabled(false);
-      setTimer(60); // Reset the timer back to 30 seconds or your desired interval
+      setTimer(60);
     }
     return () => clearInterval(interval);
   }, [resendButtonDisabled, timer]);
 
   const hadleResendOtp = async () => {
-    if (resendButtonDisabled) return; // Prevent multiple clicks if already disabled
+    if (resendButtonDisabled) return;
     try {
       setResendButtonDisabled(true);
       const formattedPhoneNumber = `+91${phone}`;
-      // console.log(formattedPhoneNumber)
       await auth().signInWithPhoneNumber(formattedPhoneNumber);
-      // console.log('OTP resent');
     } catch (error) {
       console.error('Error resending OTP:', error);
     }
@@ -509,13 +385,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 containerStyle={styles.otpContainer}
                 textInputStyle={[styles.otpInput, { color: colors.blackColor }]}
               />
-              {/* <TouchableOpacity onPress={hadleResendOtp}>
-                <Text style={{ color: blackColor, marginHorizontal: spacings.small }} >
-                  {`OTP not Received?`} <Text style={{ color: blackColor, marginHorizontal: spacings.small, fontWeight: style.fontWeightThin1x.fontWeight, textDecorationLine: "underline" }}>
-                    {`Resend code`}
-                  </Text>
-                </Text>
-              </TouchableOpacity> */}
               <TouchableOpacity onPress={hadleResendOtp} disabled={resendButtonDisabled}>
                 <Text style={{ color: colors.blackColor, marginHorizontal: spacings.small }}>
                   OTP not Received?
@@ -547,12 +416,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignUp}>
                   <Image source={GOOGLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
                 </TouchableOpacity>
-                {/* <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={() => setSocialLogin(true)}>
-                  <Image source={MORE_DOTS_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
-                </TouchableOpacity> */}
-                {/* <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={onFacebookButtonPress}>
-                  <Image source={FACEBOOK_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
-                </TouchableOpacity> */}
                 {Platform.OS === 'ios' && <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} >
                   <Image source={APPLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
                 </TouchableOpacity>}
@@ -683,9 +546,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                   <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignUp}>
                     <Image source={GOOGLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
                   </TouchableOpacity>
-                  {/* <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={onFacebookButtonPress}>
-                    <Image source={FACEBOOK_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
-                  </TouchableOpacity> */}
                   {Platform.OS === 'ios' && <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} >
                     <Image source={APPLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
                   </TouchableOpacity>}
@@ -693,7 +553,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
               </View>
               <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
               <View style={[flexDirectionRow, { marginTop: spacings.large, width: "100%" }, alignJustifyCenter]}>
-                {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(TERM_OF_SERVICES_URL) }}> */}
                 <TouchableOpacity onPress={() => {
                   navigation.navigate('WebViewScreen', {
                     headerText: TERM_OF_SERVICES
@@ -701,7 +560,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 }}>
                   <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(PRIVACY_POLICY_URL) }}> */}
                 <TouchableOpacity onPress={() => {
                   navigation.navigate('WebViewScreen', {
                     headerText: PRIVACY_POLICY
@@ -709,9 +567,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
                 }}>
                   <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(CONTENT_POLICY_URL) }}>
-                  <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{CONTENT_POLICY}</Text>
-                </TouchableOpacity> */}
               </View>
             </View>
           </>}
@@ -734,7 +589,6 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    // backgroundColor: whiteColor,
     width: wp(100),
     height: hp(100)
   },
@@ -758,17 +612,14 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: hp(5.5),
-    // borderColor: grayColor,
     paddingHorizontal: spacings.xLarge,
     marginVertical: spacings.medium,
   },
   halfInput: {
     width: '100%',
     height: hp(5.5),
-    // borderColor: grayColor,
     paddingHorizontal: spacings.large,
     marginVertical: spacings.medium,
-    // marginRight: spacings.large,
   },
   button: {
     width: '100%',
@@ -792,13 +643,11 @@ const styles = StyleSheet.create({
   backIcon: {
     top: -15,
     left: -10,
-    // backgroundColor: "red",
     width: wp(10),
     height: hp(5)
   },
   socialAuthBox: {
     width: '100%',
-    // marginTop: spacings.ExtraLarge1x
   },
   socialButton: {
     width: wp(12),
@@ -824,7 +673,6 @@ const styles = StyleSheet.create({
   otpInput: {
     borderWidth: 1,
     fontSize: 20,
-    // color: '#000',
     borderRadius: 5,
     width: "14%"
   },

@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, TextInput, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image,  } from 'react-native';
 import { redColor, blackColor, grayColor, whiteColor } from '../constants/Color'
-import Feather from 'react-native-vector-icons/dist/Feather';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
-import AntDesign from 'react-native-vector-icons/dist/AntDesign';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { LOVE_DRINK_HEADER_LOGO, SHOPPINGCART_ICON, MENU_ICON, SHOPPINGBUCKET_ICON, SEARCH_ICON, DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW, WHITE_MENU_ICON, WHITE_SHOPPINGBUCKET_ICON, WHITE_SEARCH_ICON, APP_CARTIFY_HEADER_LOGO_NEW } from '../assests/images'
+import { MENU_ICON, SHOPPINGBUCKET_ICON, SEARCH_ICON, DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW, WHITE_MENU_ICON, WHITE_SHOPPINGBUCKET_ICON, WHITE_SEARCH_ICON, APP_CARTIFY_HEADER_LOGO_NEW } from '../assests/images'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { logEvent } from '@amplitude/analytics-react-native';
 import MenuModal from '../components/Modal/MenuModal';
 import { useCart } from '../context/Cart';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
-const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, flex, positionRelative, positionAbsolute, justifyContentSpaceBetween } = BaseStyle;
+const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 const Header = ({ navigation, backIcon, text, onPress, textinput, notification, image, closeIcon, menuImage, onClosePress, shoppingCart, onPressShopByCatagory }: { navigation: any, backIcon?: boolean, text?: string, textinput?: boolean, notification?: boolean }) => {
   const { totalQuantity } = useCart();
   const [modalVisible, setModalVisible] = useState(false)
@@ -59,13 +57,11 @@ const Header = ({ navigation, backIcon, text, onPress, textinput, notification, 
         {image && <Image source={isDarkMode ? DARK_MODE_APP_CARTIFY_HEADER_LOGO_NEW : APP_CARTIFY_HEADER_LOGO_NEW} style={{ width: wp(34), height: hp(4.5), resizeMode: "contain", marginLeft: spacings.Large1x }} />}
         <View style={[flexDirectionRow, { width: "auto",marginRight:spacings.large }, justifyContentSpaceBetween, alignItemsCenter]}>
           {textinput && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickSearchBar}>
-            {/* <Ionicons name={"search"} size={27} color={blackColor} /> */}
             <Image source={isDarkMode ? WHITE_SEARCH_ICON : SEARCH_ICON} style={{ width: wp(6), height: hp(3.5), resizeMode: "contain", marginLeft: spacings.large }} />
           </TouchableOpacity>}
           {shoppingCart && <TouchableOpacity style={[alignJustifyCenter, { width: wp(10) }]} onPress={OnClickCartIcon}>
-            {/* <Feather name={"shopping-cart"} size={27} color={blackColor} /> */}
             <Image source={isDarkMode ? WHITE_SHOPPINGBUCKET_ICON : SHOPPINGBUCKET_ICON} style={{ width: wp(6), height: hp(3.3), resizeMode: "contain", marginLeft: spacings.large }} />
-            {totalQuantity > 0 && ( // Replace cartItemCount with your actual state or prop representing the item count
+            {totalQuantity > 0 && (
               <View style={styles.badgeContainer}>
                 <Text style={styles.badgeText}>{totalQuantity}</Text>
               </View>
@@ -150,16 +146,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 4,
-    backgroundColor: redColor, // Your preferred badge color
-    borderRadius: wp(2), // Adjust based on the size of your badge
-    width: wp(4), // Adjust based on the size of your badge
-    height: wp(4), // Adjust based on the size of your badge
+    backgroundColor: redColor,
+    borderRadius: wp(2),
+    width: wp(4),
+    height: wp(4),
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
     color: whiteColor,
-    fontSize: wp(2.5), // Adjust based on the size of your badge
+    fontSize: wp(2.5),
     fontWeight: 'bold',
   },
 

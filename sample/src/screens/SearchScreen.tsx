@@ -28,9 +28,6 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
-  // const BEST_DEALS_OF_THE_WEEK_COLLECTION_ID = getBestDealOfWeek(selectedItem)
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
@@ -151,7 +148,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
           price: variant?.node?.price
         }))
       );
-      // console.log(productVariantData)
+
       setProductVariantsIDS(productVariantData)
     } catch (error) {
       console.log(error);
@@ -179,7 +176,6 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
       style={[flex, { height: hp(100) }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {/* <ImageBackground style={[styles.Container, flex]} source={BACKGROUND_IMAGE}> */}
       <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         <Header backIcon={true} text={"Search"} navigation={navigation} />
         <View style={{ paddingHorizontal: spacings.large }}>
@@ -196,21 +192,8 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
                     setSearchQuery(text);
                     if (text === '') {
                       setShowSuggestions(false);
-                      // if (!suggestionClicked) {
-                      //   dismissKeyboard();
-                      // }
                     } else {
-                      // setShowSuggestions(searchSuggestions.length > 0);
-                      // if (searchSuggestions.length > 0) {
-                      //   if (!suggestionClicked) {
-                      //     dismissKeyboard();
-                      //   }
-                      // }
-                      // await handleSearch();
                       setShowSuggestions(true);
-                      // if (!suggestionClicked) {
-                      //   dismissKeyboard();
-                      // }
                       await handleSearch();
                     }
                   }}
@@ -294,8 +277,6 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
 
 const styles = StyleSheet.create({
   Container: {
-    // padding: spacings.large,
-    // backgroundColor: whiteColor
     height: hp(100)
   },
   text: {
@@ -313,12 +294,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: hp(6),
     borderColor: 'transparent',
-    // backgroundColor: whiteColor,
     borderWidth: .1,
     borderRadius: 10,
     paddingHorizontal: spacings.large,
     marginTop: spacings.large,
-    // shadowColor: grayColor,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -331,7 +310,6 @@ const styles = StyleSheet.create({
     top: hp(7.5),
     left: 0,
     right: 0,
-    // backgroundColor: whiteColor,
     zIndex: 1,
     width: wp(95),
     height: hp(83),

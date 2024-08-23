@@ -32,21 +32,15 @@ const { flex, alignJustifyCenter, alignItemsCenter, borderWidth1, borderRadius5,
 
 const LoginScreen = ({ navigation }: { navigation: any }) => {
   const { setIsLoggedIn } = useContext(AuthContext)
-  const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
-  // const STOREFRONT_DOMAIN = getStoreDomain(selectedItem)
-  // const ADMINAPI_ACCESS_TOKEN = getAdminAccessToken(selectedItem)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false)
-  const [socialLogin, setSocialLogin] = useState(false)
   const [rememberMe, setRememberMe] = useState(false); // State for remember me checkbox
-  const [showWebView, setShowWebView] = useState(false);
-  const [webViewURL, setWebViewURL] = useState("");
   const dispatch = useDispatch();
   const webClientId = WEBCLIENT_ID_FOR_GOOGLE_LOGIN;
 
@@ -98,7 +92,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       });
       dispatch(loginRequest({ email, password }));
       if (response.ok) {
-        // console.log("response", response)
         await checkIfUserIsRegistered(email)
         await AsyncStorage.setItem('isUserLoggedIn', response.url)
         setIsLoggedIn(true)
@@ -107,7 +100,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         logEvent('LoginSuccess');
       } else {
         const responseData = await response.json();
-        // console.log('Activation Failed', responseData.message);
         setPasswordError(responseData.message)
         dispatch(loginFailure(responseData.message));
         logEvent(`LoginFailure ${responseData.message}`);
@@ -119,39 +111,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       logEvent(`LoginFailure: ${error}`);
     }
   };
-
-  //check user registered in shopify or not
-  // const checkIfUserIsRegistered = async (email) => {
-  //   // console.log("check user exit email ", email)
-  //   try {
-  //     const response = await fetch(`https://${STOREFRONT_DOMAIN}/admin/api/2024-04/customers.json`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
-  //       },
-  //     });
-
-  //     if (response.ok) {
-  //       const responseData = await response.json();
-  //       const customers = responseData.customers;
-  //       // Check if any customer matches the provided email
-  //       const isRegistered = customers.some(customer => {
-  //         if (customer.email === email) {
-  //           // console.log('Customer found:', customer);
-  //           return true;
-  //         }
-  //         return false;
-  //       });
-  //       return isRegistered;
-  //     } else {
-  //       throw new Error('Failed to fetch customers from Shopify');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error checking user registration:', error);
-  //     return false;
-  //   }
-  // };
 
   const checkIfUserIsRegistered = async (email) => {
     try {
@@ -171,7 +130,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         const customer = customers.find(customer => customer.email === email);
 
         if (customer) {
-          // console.log('Customer found:', customer);
           await AsyncStorage.setItem('userDetails', JSON.stringify(customer));
           return true;
         } else {
@@ -188,7 +146,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
 
   //triggred notification
   const handleNotificationTrigger = () => {
-    // Trigger notification logic here
     PushNotification.localNotification({
       channelId: "default-channel-id",
       title: 'Welcome',
@@ -206,7 +163,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
         },
         body: JSON.stringify({ customer: userData }),
-        // body: JSON.stringify(userData),
       });
 
       if (response.ok) {
@@ -229,9 +185,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       const { idToken, user } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
-      // console.log('User signed In with Google successfully!', user);
       await AsyncStorage.setItem('userImage', user.photo)
-      // Extract necessary details from the user's Google account
       const { email, givenName, familyName } = user;
 
       const isRegistered = await checkIfUserIsRegistered(user.email)
@@ -248,7 +202,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           first_name: givenName,
           last_name: familyName,
         });
-        // console.log('Shopify response:', shopifyResponse);
         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
         Toast.show(`User Registered Succesfully`);
         handleNotificationTrigger();
@@ -342,7 +295,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       style={[styles.container, { backgroundColor: colors.whiteColor }, flex]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      {/* <ImageBackground style={[flex]} source={BACKGROUND_IMAGE}> */}
       <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
         <TouchableOpacity style={[positionAbsolute, styles.backIcon]} onPress={() => { logEvent(`Back Button Pressed from Login`), navigation.goBack() }}>
           <Ionicons name={"arrow-back"} size={33} color={colors.blackColor} />
@@ -369,7 +321,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
                 style={{ color: colors.blackColor }}
               />
             </View>
-            {/* <MaterialCommunityIcons name="email" size={25} color={grayColor} /> */}
           </View>
           {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
           <Text style={[styles.textInputHeading, { color: colors.blackColor }]}>{PASSWORD}</Text>
@@ -423,36 +374,29 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={googleSignIn}>
               <Image source={GOOGLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
             </TouchableOpacity>
-            {/* <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]} onPress={onFacebookButtonPress}>
-              <Image source={FACEBOOK_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
-            </TouchableOpacity> */}
             {Platform.OS === 'ios' && <TouchableOpacity style={[styles.socialButton, alignJustifyCenter]}>
               <Image source={APPLE_LOGO_IMAGE} style={[{ width: wp(6), height: hp(4) }, resizeModeContain]} />
             </TouchableOpacity>}
           </View>
           <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }, textAlign]}>{BY_CONTINUING_YOU_AGREE}</Text>
           <View style={[flexDirectionRow, { marginTop: spacings.large, width: "100%" }, alignJustifyCenter]}>
-            {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(TERM_OF_SERVICES_URL) }}> */}
             <TouchableOpacity onPress={() => {
               navigation.navigate('WebViewScreen', {
                 headerText: TERM_OF_SERVICES
               }),
-              logEvent('Terms Of Services From login');
+                logEvent('Terms Of Services From login');
             }}>
               <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{TERM_OF_SERVICES}</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(PRIVACY_POLICY_URL) }}> */}
             <TouchableOpacity onPress={() => {
               navigation.navigate('WebViewScreen', {
                 headerText: PRIVACY_POLICY
               }),
-              logEvent('Privacy Ploicy From login');
+                logEvent('Privacy Ploicy From login');
             }}>
               <Text style={[{ color: colors.blackColor, margin: 4 }, textDecorationUnderline]}>{PRIVACY_POLICY}</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={() => { setShowWebView(true), setWebViewURL(CONTENT_POLICY_URL) }}>
-          <Text style={[{ color: blackColor, margin: 4 }, textDecorationUnderline]}>{CONTENT_POLICY}</Text>
-        </TouchableOpacity> */}
+
           </View>
         </View>
       </ImageBackground >
