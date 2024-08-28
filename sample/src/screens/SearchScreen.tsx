@@ -22,7 +22,7 @@ import { useSelector } from 'react-redux';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import ChatButton from '../components/ChatButton';
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, flex, positionRelative, positionAbsolute, resizeModeContain, borderRadius5, justifyContentSpaceBetween } = BaseStyle;
 const SearchScreen = ({ navigation }: { navigation: any }) => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
@@ -171,6 +171,11 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
     setSearchQuery('')
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <KeyboardAvoidingView
       style={[flex, { height: hp(100) }]}
@@ -270,6 +275,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
             <Ionicons name="add" size={25} color={isDarkMode ? whiteColor : grayColor} />
           </Pressable>
         </View>
+        <ChatButton onPress={handleChatButtonPress} />
       </ImageBackground>
     </KeyboardAvoidingView>
   );

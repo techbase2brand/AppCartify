@@ -26,6 +26,8 @@ import LoadingModal from '../components/Modal/LoadingModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import ChatButton from '../components/ChatButton';
+import { useNavigation } from '@react-navigation/native';
 const { alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, borderRadius5, textAlign, positionAbsolute,
   alignItemsCenter, resizeModeContain, textDecorationUnderline } = BaseStyle;
 
@@ -129,6 +131,7 @@ function ProductDetailsScreen({ navigation, route }: Props) {
         handleSelectOption={handleSelectOption}
         ids={route?.params?.ids}
       />
+
     </ImageBackground>
   );
 }
@@ -181,7 +184,7 @@ function ProductDetails({
   const selectedItem = useSelector((state) => state.menu.selectedItem);
   const { isDarkMode } = useThemes();
   const themecolors = isDarkMode ? darkColors : lightColors;
-
+  const navigation = useNavigation();
   const [rating, setRating] = useState(null);
   const [reviewDescription, setReviewDescription] = useState('');
   const [customerName, setCustomerName] = useState("");
@@ -398,7 +401,7 @@ function ProductDetails({
       };
 
       const { reviewDescription, rating, customerName } = extractReviewAndRating(metafields);
-;
+      ;
     } catch (error) {
       console.error('Error fetching metafields:', error);
     }
@@ -419,6 +422,10 @@ function ProductDetails({
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
   return (
     <View>
       <ScrollView
@@ -634,6 +641,7 @@ function ProductDetails({
           {shareProductloading && <LoadingModal visible={shareProductloading} />}
         </View>
       </ScrollView>
+      <ChatButton onPress={handleChatButtonPress} bottom={80} />
       <View style={[flexDirectionRow, positionAbsolute, justifyContentSpaceBetween, { alignItems: "baseline", bottom: 4, width: wp(100), zIndex: 1, backgroundColor: themecolors.whiteColor, height: hp(10) }]}>
         {getInventoryQuantity() > 0 && <View>
           <Text style={{ padding: spacings.large, color: themecolors.redColor, fontSize: style.fontSizeMedium.fontSize }}>{QUNATITY}:</Text>

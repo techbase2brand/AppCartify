@@ -53,6 +53,7 @@ import CustomSplashScreen from './screens/SplashScreen';
 import HomeScreenGrocery from './screens/HomeScreenGrocery';
 import HomeScreenHomeDecor from './screens/HomeScreenHomeDecor';
 import HomeScreenPet from './screens/HomeScreenPet';
+import ShopifyInboxScreen from './screens/ShopifyInboxScreen';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -241,6 +242,13 @@ function HomeStack() {
           headerShown: false,
         })}
       />
+      <Stack.Screen
+        name="ShopifyInboxScreen"
+        component={ShopifyInboxScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
     </Stack.Navigator>
   );
 }
@@ -329,6 +337,13 @@ function HomeWithAuthStack() {
         name="AuthStack"
         component={AuthStack}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ShopifyInboxScreen"
+        component={ShopifyInboxScreen}
+        options={() => ({
+          headerShown: false,
+        })}
       />
     </Stack.Navigator>
   );
@@ -442,6 +457,13 @@ function CatalogStack() {
           headerRight: undefined,
         })}
       />
+       <Stack.Screen
+        name="ShopifyInboxScreen"
+        component={ShopifyInboxScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
 
     </Stack.Navigator>
   );
@@ -493,6 +515,13 @@ function ProfileStack() {
       <Stack.Screen
         name="AccountDetails"
         component={AccountDetails}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
+       <Stack.Screen
+        name="ShopifyInboxScreen"
+        component={ShopifyInboxScreen}
         options={() => ({
           headerShown: false,
         })}
@@ -712,7 +741,7 @@ function App({ navigation }: { navigation: any }) {
                   <AuthProvider>
                     <PersistGate loading={null} persistor={persistor}>
                       {showSplash ? <CustomSplashScreen /> : <AppWithNavigation />}
-                      {/* <AppWithNavigation /> */}
+                      {/* <ShopifyInboxScreen/> */}
                     </PersistGate>
                   </AuthProvider>
                 </ThemeProviders>

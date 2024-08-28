@@ -7,6 +7,7 @@ import { BaseStyle } from '../constants/Style';
 import Carousal from '../components/Carousal'
 import Header from '../components/Header'
 import Product from '../components/ProductVertical';
+import ChatButton from '../components/ChatButton';
 import {
   SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, CLOTHING_OUR_PRODUCT_COLLECTION_ID,
   STOREFRONT_ACCESS_TOKEN, LOADER_NAME
@@ -429,6 +430,11 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <KeyboardAvoidingView style={[flex, { backgroundColor: colors.whiteColor }]} behavior="padding" enabled>
       <Header
@@ -467,7 +473,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,  { color: colors.blackColor }]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>{SHOP_BY_PRODUCT_CATAGORY}</Text>
             <Pressable onPress={onPressShopAll}>
               <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} >{SEE_ALL}</Text>
             </Pressable>
@@ -500,7 +506,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
               keyExtractor={(item) => item?.id}
             />
           </View>
-          <Text style={[styles.text,  { color: colors.blackColor, marginVertical: 10 }]}>{BEST_SELLING}</Text>
+          <Text style={[styles.text, { color: colors.blackColor, marginVertical: 10 }]}>{BEST_SELLING}</Text>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
             {bestDealProducts?.length > 0 ? <FlatList
               data={bestDealProducts}
@@ -545,7 +551,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
             )}
           />
           <View style={[{ width: "100%", marginVertical: 10 }, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow]}>
-            <Text style={[styles.text,{ color: colors.blackColor }]}>{OUR_PRODUCT}</Text>
+            <Text style={[styles.text, { color: colors.blackColor }]}>{OUR_PRODUCT}</Text>
             <Text style={{ color: redColor, fontSize: style.fontSizeNormal.fontSize, fontWeight: style.fontWeightThin1x.fontWeight }} onPress={() => onPressCollection(CLOTHING_OUR_PRODUCT_COLLECTION_ID, OUR_PRODUCT)}>{SEE_ALL}</Text>
           </View>
           <View style={[{ height: hp(30) }, alignJustifyCenter]}>
@@ -591,6 +597,7 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
             ]}
           />
         </ScrollView>
+        <ChatButton onPress={handleChatButtonPress} />
       </View>
 
     </KeyboardAvoidingView>

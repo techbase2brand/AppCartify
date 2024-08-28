@@ -7,6 +7,7 @@ import { BaseStyle } from '../constants/Style';
 import Carousal from '../components/Carousal'
 import Header from '../components/Header'
 import Product from '../components/ProductVertical';
+import ChatButton from '../components/ChatButton';
 import {
   SEE_ALL, SHOP_BY_PRODUCT_CATAGORY, BEST_SELLING, OUR_PRODUCT, STOREFRONT_DOMAIN, ADMINAPI_ACCESS_TOKEN, GROCERY_OUR_PRODUCT_COLLECTION_ID,
   STOREFRONT_ACCESS_TOKEN, LOADER_NAME
@@ -442,6 +443,11 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <KeyboardAvoidingView style={[flex, { backgroundColor: colors.whiteColor }]} behavior="padding" enabled>
       <Header
@@ -603,6 +609,7 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
             ]}
           />
         </ScrollView>
+        <ChatButton onPress={handleChatButtonPress} />
       </View>
 
     </KeyboardAvoidingView>

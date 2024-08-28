@@ -27,6 +27,7 @@ import axios from 'axios';
 import LoaderKit from 'react-native-loader-kit'
 import { addToWishlist, removeFromWishlist } from '../redux/actions/wishListActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ChatButton from '../components/ChatButton';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter, borderRadius5, textAlign, alignItemsFlexEnd, resizeModeContain } = BaseStyle;
 
 function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
@@ -321,6 +322,12 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       logEvent(`upselling Item remove in fav`);
     }
   };
+
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <ImageBackground source={isDarkMode ? "" : BACKGROUND_IMAGE} style={[styles.loading, alignJustifyCenter, flex, { backgroundColor: themecolors.whiteColor }]}>
       <SafeAreaView>
@@ -451,6 +458,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
 
             </View>
           </ScrollView>
+          <ChatButton onPress={handleChatButtonPress} />
         </View>
         {totalQuantity > 0 && (
           <Pressable

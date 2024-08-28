@@ -22,6 +22,7 @@ import LoaderKit from 'react-native-loader-kit'
 import LoadingModal from '../components/Modal/LoadingModal';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import ChatButton from '../components/ChatButton';
 const { alignItemsCenter, resizeModeContain, textAlign, alignJustifyCenter, flex, borderRadius10, overflowHidden, borderWidth1, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const CollectionCategory = ({ navigation }: { navigation: any }) => {
@@ -175,6 +176,11 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
       { navigation: navigation })
   }
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
 
     <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
@@ -247,6 +253,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
             })}
           </ScrollView>}
       </View>
+      <ChatButton onPress={handleChatButtonPress} />
       <FilterModal
         visible={isFilterModalVisible}
         onClose={() => setIsFilterModalVisible(false)}

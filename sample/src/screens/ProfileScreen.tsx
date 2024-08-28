@@ -20,6 +20,7 @@ import LoadingModal from '../components/Modal/LoadingModal';
 import { MYADDRESS_IMAGE, MYORDER_IMAGE, MYACCOUNT_IMAGE, LOGOUT_IMAGE, DELETE_IMAGE, WHITE_MYACCOUNT_IMAGE, WHITE_MYORDER_IMAGE, WHITE_MYADDRESS_IMAGE, } from '../assests/images'
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import ChatButton from '../components/ChatButton';
 const { flex, alignItemsCenter, resizeModeContain, flexDirectionRow, justifyContentSpaceBetween, resizeModeCover } = BaseStyle;
 
 const ProfileScreen = ({ navigation }: { navigation: any }) => {
@@ -207,6 +208,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
       <Text style={styles.fallbackAvatarText}>{getInitials(name)}</Text>
     </View>
   );
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
 
   return (
     <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
@@ -294,6 +299,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
           <LoadingModal visible={loading} />
         }
       </View>
+      <ChatButton onPress={handleChatButtonPress} />
     </ImageBackground >
   );
 };

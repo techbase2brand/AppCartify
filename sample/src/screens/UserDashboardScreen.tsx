@@ -22,8 +22,8 @@ import Toast from 'react-native-simple-toast';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import AddReviewModal from '../components/Modal/AddReviewModal';
-
-const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10,alignItemsCenter, borderRadius5 } = BaseStyle;
+import ChatButton from '../components/ChatButton';
+const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10, alignItemsCenter, borderRadius5 } = BaseStyle;
 
 const UserDashboardScreen = () => {
   const selectedItem = useSelector((state) => state.menu.selectedItem);
@@ -148,6 +148,11 @@ const UserDashboardScreen = () => {
     setProductId(productIds)
     setCustomerName(fullName)
     setIsModalVisible(true)
+  };
+
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
   };
 
   return (
@@ -395,6 +400,7 @@ const UserDashboardScreen = () => {
         }
         {modalVisible && <AddAddressModal visible={modalVisible} onClose={() => setModalVisible(false)} />}
         {isModalVisible && <AddReviewModal visible={isModalVisible} onClose={() => setIsModalVisible(false)} productId={productId} customerName={customerName} />}
+        <ChatButton onPress={handleChatButtonPress} />
       </ImageBackground>
     </KeyboardAvoidingView>
   );
@@ -456,7 +462,7 @@ const styles = StyleSheet.create({
     color: whiteColor,
   },
   addAddressButtonRounded: {
-    bottom: 50,
+    bottom: 100,
     right: 20,
     width: wp(15),
     height: hp(7.5),

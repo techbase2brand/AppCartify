@@ -15,7 +15,7 @@ import { BACKGROUND_IMAGE } from '../assests/images';
 import Header from '../components/Header';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
-
+import ChatButton from '../components/ChatButton';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, positionAbsolute, borderRadius5, borderWidth1, justifyContentSpaceBetween } = BaseStyle;
 
 
@@ -136,6 +136,11 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
     }
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <ImageBackground style={[styles.container, flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
@@ -216,6 +221,7 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
           <Text style={[styles.submitButtonText, { color: whiteColor }]}>Submit</Text>
         </Pressable>
       </View>
+      <ChatButton onPress={handleChatButtonPress} bottom={60}/>
     </ImageBackground>
   );
 };

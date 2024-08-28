@@ -21,6 +21,7 @@ import axios from 'axios';
 import LoaderKit from 'react-native-loader-kit';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import ChatButton from '../components/ChatButton';
 const { flex, textAlign, alignItemsCenter, resizeModeContain, borderRadius10, positionRelative, alignJustifyCenter, resizeModeCover } = BaseStyle;
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -234,6 +235,11 @@ function CatalogScreen({ navigation }: Props) {
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
   };
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <ImageBackground style={[flex, { backgroundColor: themecolors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header
@@ -311,7 +317,7 @@ function CatalogScreen({ navigation }: Props) {
           }
         </View>
       </View>
-
+      <ChatButton onPress={handleChatButtonPress} />
     </ImageBackground>
 
   );

@@ -20,6 +20,7 @@ import LoaderKit from 'react-native-loader-kit'
 import LoadingModal from '../components/Modal/LoadingModal';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import ChatButton from '../components/ChatButton';
 const { alignJustifyCenter, flexDirectionRow, flex, borderRadius10, overflowHidden, textAlign, borderWidth1, resizeModeContain } = BaseStyle;
 
 const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
@@ -229,6 +230,11 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
     }
   }
 
+  const handleChatButtonPress = () => {
+    // console.log('Chat button pressed');
+    navigation.navigate("ShopifyInboxScreen")
+  };
+
   return (
     <ImageBackground style={[flex, { backgroundColor: colors.whiteColor }]} source={isDarkMode ? '' : BACKGROUND_IMAGE}>
       <Header backIcon={true} text={route?.params?.title} navigation={navigation} />
@@ -253,6 +259,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
           />
         }
         {loading && <LoadingModal visible={loading} text={"Please wait while we load the products."} />}
+        <ChatButton onPress={handleChatButtonPress} />
       </View>
     </ImageBackground>
   );
