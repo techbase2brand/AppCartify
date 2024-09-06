@@ -127,7 +127,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   };
 
   const fetchProductMetafields = async (productID) => {
-    try {
+     try {
       const response = await axios.get(`https://${STOREFRONT_DOMAIN}/admin/api/2024-07/products/${productID}/metafields.json`, {
         headers: {
           'X-Shopify-Access-Token': ADMINAPI_ACCESS_TOKEN,
@@ -198,7 +198,11 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
       Toast.show("Please First complete the registration process")
     } else {
       if (checkoutURL) {
-        ShopifyCheckout.present(checkoutURL);
+        // console.log(checkoutURL)
+        // ShopifyCheckout.present(checkoutURL);
+        navigation.navigate('ShopifyCheckOut', {
+          url: checkoutURL,
+        });
         logEvent('Open CheckOut ');
       } else {
         console.log('Checkout URL is not available');

@@ -54,6 +54,7 @@ import HomeScreenGrocery from './screens/HomeScreenGrocery';
 import HomeScreenHomeDecor from './screens/HomeScreenHomeDecor';
 import HomeScreenPet from './screens/HomeScreenPet';
 import ShopifyInboxScreen from './screens/ShopifyInboxScreen';
+import ShopifyCheckOut from './screens/ShopifyCheckOut';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -249,6 +250,13 @@ function HomeStack() {
           headerShown: false,
         })}
       />
+      <Stack.Screen
+        name="ShopifyCheckOut"
+        component={ShopifyCheckOut}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
     </Stack.Navigator>
   );
 }
@@ -345,6 +353,13 @@ function HomeWithAuthStack() {
           headerShown: false,
         })}
       />
+      <Stack.Screen
+        name="ShopifyCheckOut"
+        component={ShopifyCheckOut}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
     </Stack.Navigator>
   );
 }
@@ -392,6 +407,13 @@ function WishListStack() {
           headerShown: false,
           headerBackVisible: true,
           headerRight: undefined,
+        })}
+      />
+      <Stack.Screen
+        name="ShopifyCheckOut"
+        component={ShopifyCheckOut}
+        options={() => ({
+          headerShown: false,
         })}
       />
     </Stack.Navigator>
@@ -457,9 +479,16 @@ function CatalogStack() {
           headerRight: undefined,
         })}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="ShopifyInboxScreen"
         component={ShopifyInboxScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
+      <Stack.Screen
+        name="ShopifyCheckOut"
+        component={ShopifyCheckOut}
         options={() => ({
           headerShown: false,
         })}
@@ -519,9 +548,16 @@ function ProfileStack() {
           headerShown: false,
         })}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="ShopifyInboxScreen"
         component={ShopifyInboxScreen}
+        options={() => ({
+          headerShown: false,
+        })}
+      />
+      <Stack.Screen
+        name="ShopifyCheckOut"
+        component={ShopifyCheckOut}
         options={() => ({
           headerShown: false,
         })}
@@ -562,7 +598,7 @@ function AppWithNavigation({ route }: { route: any }) {
           // console.log(routeName)
           return {
             headerShown: false,
-            tabBarStyle: { display: routeName === 'Search' || routeName === "AuthStack" ? 'none' : 'flex', backgroundColor: colors.whiteColor },
+            tabBarStyle: { display: routeName === 'Search' || routeName === "AuthStack" || routeName === 'ShopifyCheckOut' ? 'none' : 'flex', backgroundColor: colors.whiteColor },
             tabBarIcon: ({ focused }) => (
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <View style={{ height: 10, width: 50, alignItems: "center", justifyContent: "center" }}>
@@ -722,7 +758,7 @@ function App({ navigation }: { navigation: any }) {
   useEffect(() => {
     fetchAndStoreShopCurrency()
     requestPermissionAndToken()
-    init('397e42c5bdf06dde431bc98973e33271')
+    init('c210f949fcb8b3256e123986e05fc2c4')
     logEvent('App Started');
 
     // SplashScreen.hide();
