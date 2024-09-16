@@ -21,6 +21,7 @@ import LoadingModal from '../components/Modal/LoadingModal';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import ChatButton from '../components/ChatButton';
+import { scheduleNotification } from '../notifications';
 const { alignJustifyCenter, flexDirectionRow, flex, borderRadius10, overflowHidden, textAlign, borderWidth1, resizeModeContain } = BaseStyle;
 
 const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
@@ -218,6 +219,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
     await addToCart(variantId, quantity);
     navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification()
   };
 
   function getVariant(product: ShopifyProduct) {

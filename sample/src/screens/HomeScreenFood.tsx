@@ -25,6 +25,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import LoaderKit from 'react-native-loader-kit'
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import { scheduleNotification } from '../notifications';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden, positionRelative, positionAbsolute } = BaseStyle;
 
@@ -433,6 +434,7 @@ const HomeScreenFood = ({ navigation }: { navigation: any }) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification();
   };
 
   const handleChatButtonPress = () => {

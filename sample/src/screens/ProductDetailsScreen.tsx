@@ -28,6 +28,7 @@ import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import ChatButton from '../components/ChatButton';
 import { useNavigation } from '@react-navigation/native';
+import { scheduleNotification } from '../notifications';
 const { alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, borderRadius5, textAlign, positionAbsolute,
   alignItemsCenter, resizeModeContain, textDecorationUnderline } = BaseStyle;
 
@@ -109,6 +110,7 @@ function ProductDetailsScreen({ navigation, route }: Props) {
     await addToCart(id, quantity);
     navigation.navigate('CartModal');
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification();
   };
 
   return (

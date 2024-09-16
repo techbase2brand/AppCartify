@@ -23,6 +23,7 @@ import LoadingModal from '../components/Modal/LoadingModal';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import ChatButton from '../components/ChatButton';
+import { scheduleNotification } from '../notifications';
 const { alignItemsCenter, resizeModeContain, textAlign, alignJustifyCenter, flex, borderRadius10, overflowHidden, borderWidth1, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const CollectionCategory = ({ navigation }: { navigation: any }) => {
@@ -140,6 +141,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
     navigation.navigate('CartModal')
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
     setLoadingProductId(null);
+    scheduleNotification();
   };
 
   function getVariant(node: ShopifyProduct) {

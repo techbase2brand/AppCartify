@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, StyleSheet, Text, Image, ActivityIndicator, Pressable, RefreshControl, TouchableOpacity, ImageBackground, FlatList } from 'react-native';
+import { SafeAreaView, ScrollView, View, StyleSheet, Text, Image, ActivityIndicator, Pressable, RefreshControl, TouchableOpacity, ImageBackground, FlatList, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useShopifyCheckoutSheet } from '@shopify/checkout-sheet-kit';
 import useShopify from '../hooks/useShopify';
@@ -28,6 +28,8 @@ import LoaderKit from 'react-native-loader-kit'
 import { addToWishlist, removeFromWishlist } from '../redux/actions/wishListActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatButton from '../components/ChatButton';
+import PushNotification from 'react-native-push-notification';
+
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter, borderRadius5, textAlign, alignItemsFlexEnd, resizeModeContain } = BaseStyle;
 
 function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
@@ -203,11 +205,16 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
         navigation.navigate('ShopifyCheckOut', {
           url: checkoutURL,
         });
+        cancelScheduledNotification()
         logEvent('Open CheckOut ');
       } else {
         console.log('Checkout URL is not available');
       }
     }
+  };
+
+  const cancelScheduledNotification = () => {
+    PushNotification.cancelLocalNotification({ id: "1" });
   };
 
   const onPressContinueShopping = () => {
@@ -269,6 +276,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
     dispatch(removeProductFromCart(variantId));
     Toast.show('Item removed from cart')
     logEvent(`Item removed from cart variantId:${variantId} `);
+    cancelScheduledNotification()
   };
 
   const getTotalAmount = () => {

@@ -7,7 +7,7 @@ import CatalogScreen from './screens/CatalogScreen';
 import { ColorScheme, Configuration, ShopifyCheckoutSheetProvider, useShopifyCheckoutSheet } from '@shopify/checkout-sheet-kit';
 import { ConfigProvider } from './context/Config';
 import { ThemeProvider, useTheme } from './context/Theme';
-import { Appearance, StatusBar, StyleSheet, Image, TouchableOpacity, View, Text, Alert } from 'react-native';
+import { Appearance, StatusBar, StyleSheet, Image, TouchableOpacity, View, Text, Alert, Platform } from 'react-native';
 import { CartProvider, useCart } from './context/Cart';
 import CartScreen from './screens/CartScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
@@ -55,6 +55,8 @@ import HomeScreenHomeDecor from './screens/HomeScreenHomeDecor';
 import HomeScreenPet from './screens/HomeScreenPet';
 import ShopifyInboxScreen from './screens/ShopifyInboxScreen';
 import ShopifyCheckOut from './screens/ShopifyCheckOut';
+import PushNotification from 'react-native-push-notification';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 const colorScheme = ColorScheme.web;
 const config: Configuration = {
   colorScheme,
@@ -704,12 +706,25 @@ function App({ navigation }: { navigation: any }) {
 
   const requestPermissionAndToken = async () => {
     try {
-      // Request permission for notifications
-      await messaging().requestPermission();
+      if (Platform.OS === 'ios') {
+        // Request permission for notifications (iOS)
+        await messaging().requestPermission();
+      } else if (Platform.OS === 'android') {
+        // Check and request notification permission (Android)
+        const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+
+        if (result === RESULTS.GRANTED) {
+          console.log('Notification permission granted.');
+        } else if (result === RESULTS.DENIED) {
+          console.log('Notification permission denied.');
+        } else if (result === RESULTS.BLOCKED) {
+          console.log('Notification permission blocked.');
+        }
+      }
 
       // Get the FCM token
       const fcmToken = await messaging().getToken();
-      // console.log('FCM Token:', fcmToken);
+      console.log('FCM Token:', fcmToken);
 
       // Send this token to your server for later use
       // YourServer.sendTokenToServer(fcmToken);
@@ -756,8 +771,8 @@ function App({ navigation }: { navigation: any }) {
   };
 
   useEffect(() => {
-    fetchAndStoreShopCurrency()
-    requestPermissionAndToken()
+    fetchAndStoreShopCurrency();
+    requestPermissionAndToken();
     init('c210f949fcb8b3256e123986e05fc2c4')
     logEvent('App Started');
 
@@ -765,6 +780,7 @@ function App({ navigation }: { navigation: any }) {
     const timeout = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(timeout);
   }, []);
+
   return (
     <ErrorBoundary>
       <ShopifyCheckoutSheetProvider configuration={config}>

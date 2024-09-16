@@ -23,6 +23,7 @@ import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import AddReviewModal from '../components/Modal/AddReviewModal';
 import ChatButton from '../components/ChatButton';
+import { scheduleNotification } from '../notifications';
 const { alignJustifyCenter, textAlign, positionAbsolute, resizeModeContain, flexDirectionRow, flex, borderRadius10, alignItemsCenter, borderRadius5 } = BaseStyle;
 
 const UserDashboardScreen = () => {
@@ -138,6 +139,7 @@ const UserDashboardScreen = () => {
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
     setLoadingProductId(null);
     logEvent(`Add To Cart  Product variantId:${variantId} Qty:${quantity}`);
+    scheduleNotification();
   };
 
   const openReviewModal = (item) => {

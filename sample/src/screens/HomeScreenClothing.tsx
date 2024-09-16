@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Pressable, KeyboardAvoidingView } from 'react-native';
+import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Pressable, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { whiteColor, blackColor, grayColor, redColor, lightGrayOpacityColor } from '../constants/Color'
 import { spacings, style } from '../constants/Fonts';
@@ -27,6 +27,8 @@ import LoaderKit from 'react-native-loader-kit'
 import { clearWishlist } from '../redux/actions/wishListActions';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import { scheduleNotification } from '../notifications'
+import PushNotification from 'react-native-push-notification';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden } = BaseStyle;
 
@@ -239,6 +241,17 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   console.log("Navigation object:", navigation);
+  //   PushNotification.configure({
+  //     onNotification: function (notification) {
+  //       console.log('NOTIFICATION:', notification);
+  //       navigation.navigate("CartModal");
+  //       notification.finish(PushNotificationIOS.FetchResult.NoData);
+  //     },
+  //   })
+  // }, [navigation]);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       await fetchCollections({
@@ -423,11 +436,13 @@ const HomeScreenClothing = ({ navigation }: { navigation: any }) => {
     }
   };
 
+
   //Add to Cart Product
   const addToCartProduct = async (variantId: any, quantity: any) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification()
   };
 
   const handleChatButtonPress = () => {

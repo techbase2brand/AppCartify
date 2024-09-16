@@ -22,6 +22,7 @@ import LoaderKit from 'react-native-loader-kit';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import ChatButton from '../components/ChatButton';
+import { scheduleNotification } from '../notifications';
 const { flex, textAlign, alignItemsCenter, resizeModeContain, borderRadius10, positionRelative, alignJustifyCenter, resizeModeCover } = BaseStyle;
 type Props = NativeStackScreenProps<RootStackParamList, 'CatalogScreen'>;
 
@@ -233,6 +234,7 @@ function CatalogScreen({ navigation }: Props) {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification()
   };
 
   const handleChatButtonPress = () => {

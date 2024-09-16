@@ -27,6 +27,7 @@ import LoaderKit from 'react-native-loader-kit';
 import { clearWishlist } from '../redux/actions/wishListActions';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
+import { scheduleNotification } from '../notifications';
 const { flex, alignJustifyCenter, flexDirectionRow, resizeModeCover, justifyContentSpaceBetween, borderRadius10, alignItemsCenter,
   textAlign, overflowHidden} = BaseStyle;
 
@@ -423,6 +424,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
     logEvent(`Add To Cart Pressed variantId:${variantId} Qty:${quantity}`);
     await addToCart(variantId, quantity);
     Toast.show(`${quantity} item${quantity !== 1 ? 's' : ''} added to cart`);
+    scheduleNotification();
   };
 
   const handleChatButtonPress = () => {
