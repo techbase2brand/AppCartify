@@ -209,7 +209,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
     </View>
   );
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Profile Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

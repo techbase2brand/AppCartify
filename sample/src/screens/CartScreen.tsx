@@ -196,6 +196,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   const presentCheckout = async () => {
     logEvent('Click CheckOut ');
     if (!userLoggedIn) {
+      logEvent('user not login Go to Auth');
       navigation.navigate("AuthStack");
       Toast.show("Please First complete the registration process")
     } else {
@@ -336,7 +337,7 @@ function CartScreen({ navigation }: { navigation: any }): React.JSX.Element {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Cart Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

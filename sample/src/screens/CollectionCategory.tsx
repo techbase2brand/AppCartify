@@ -179,7 +179,7 @@ const CollectionCategory = ({ navigation }: { navigation: any }) => {
   }
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in collection Category Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

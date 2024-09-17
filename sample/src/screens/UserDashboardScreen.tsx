@@ -153,7 +153,7 @@ const UserDashboardScreen = () => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in userDashboard Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

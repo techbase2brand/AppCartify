@@ -428,7 +428,7 @@ const HomeScreenElectronic = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Electronics Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
   return (

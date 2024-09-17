@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SUCCESS_IMAGE } from '../../assests/images'
 import { useThemes } from '../../context/ThemeContext';
 import { lightColors, darkColors } from '../../constants/Color';
+import { logEvent } from '@amplitude/analytics-react-native';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, positionAbsolute } = BaseStyle;
 
 const SuccessModal = ({ visible, onClose, onPressContinue, headingText, text }) => {
@@ -15,6 +16,7 @@ const SuccessModal = ({ visible, onClose, onPressContinue, headingText, text }) 
   const colors = isDarkMode ? darkColors : lightColors;
   const navigation = useNavigation();
   const handleContinue = () => {
+    logEvent('Continue button triggered from Success Modal');
     onPressContinue();
   };
 

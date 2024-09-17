@@ -111,13 +111,14 @@
 
 
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useThemes } from '../context/ThemeContext';
 import { lightColors, darkColors } from '../constants/Color';
 import LoadingModal from '../components/Modal/LoadingModal';
+import { logEvent } from '@amplitude/analytics-react-native';
 
 const ShopifyInboxScreen = ({ navigation }) => {
   const [webViewLoaded, setWebViewLoaded] = useState(false);
@@ -125,6 +126,10 @@ const ShopifyInboxScreen = ({ navigation }) => {
   const webViewRef = useRef(null);
   const { isDarkMode } = useThemes();
   const colors = isDarkMode ? darkColors : lightColors;
+
+  useEffect(() => {
+    logEvent('ShopifyInboxScreen Initialized');
+  }, [])
 
   const closeChatWidget = () => {
     if (webViewRef.current) {
@@ -140,6 +145,7 @@ const ShopifyInboxScreen = ({ navigation }) => {
         })();
       `);
     }
+    logEvent('Close button clicked from Shopify-Inbox Screen');
     navigation.goBack();
   };
 

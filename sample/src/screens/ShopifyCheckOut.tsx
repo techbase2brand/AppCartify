@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import LoaderKit from 'react-native-loader-kit';
 import { LOADER_NAME } from '../constants/Constants';
+import { logEvent } from '@amplitude/analytics-react-native';
 const ShopifyCheckOut = ({ route }) => {
   const { url } = route.params;
+  useEffect(() => {
+    logEvent('Shopify checkout WebView Initialized');
+  }, [])
   return (
     <View style={styles.container}>
       <WebView

@@ -362,7 +362,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           <Pressable style={[styles.button, alignItemsCenter, borderRadius5]} onPress={handleLogin}>
             <Text style={styles.buttonText}>{LOGIN}</Text>
           </Pressable>
-          <Pressable style={[{ width: "100%" }, alignJustifyCenter]} onPress={() => { logEvent('SignUp Button clicked From Login Screen'), navigation.navigate("Register") }}>
+          <Pressable style={[{ width: "100%" }, alignJustifyCenter]} onPress={() => { logEvent('UserNotRegitser Move to register Button clicked From Login Screen'), navigation.navigate("Register") }}>
             <Text style={[{ marginTop: spacings.Large1x, color: colors.blackColor }]}>{DONT_HAVE_AN_ACCOUNT}<Text style={[{ color: colors.redColor }]}>{REGISTER}</Text></Text>
           </Pressable>
           <View style={[flexDirectionRow, alignJustifyCenter, { width: "100%", marginTop: spacings.large }]}>

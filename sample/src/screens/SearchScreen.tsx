@@ -172,7 +172,7 @@ const SearchScreen = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Search Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

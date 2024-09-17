@@ -143,7 +143,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
 
   //sign in with google
   const googleSignUp = async () => {
-    logEvent('GoogleSignUp Button clicked');
+    logEvent('GoogleSignUp Button clicked from register screen');
     try {
       setLoading(true)
       await GoogleSignin.hasPlayServices();
@@ -155,7 +155,7 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
       const { email, givenName, familyName } = user;
       const isRegistered = await checkIfUserIsRegistered(user.email)
       if (isRegistered) {
-        Toast.show(`User LoggedIn Succesfully`);
+        Toast.show(`User LoggedIn Succesfully from register screen`);
       } else {
 
         const shopifyResponse = await registerUserToShopify({
@@ -167,20 +167,20 @@ const RegisterScreen = ({ navigation }: { navigation: any }) => {
         });
 
         await AsyncStorage.setItem('userDetails', JSON.stringify(shopifyResponse))
-        Toast.show(`User Registered Succesfully`);
+        Toast.show(`User Registered Succesfully from register screen`);
         handleNotificationTrigger();
       }
 
       navigation.navigate("Home");
       dispatch(loginSuccess({ email: user.email, password: '' }));
       setLoading(false)
-      logEvent('GoogleSignUp Succesfully');
+      logEvent('GoogleSignUp Succesfully from register screen');
 
     } catch (error) {
       setLoading(false)
       console.error('Google sign up error:', error);
 
-      logEvent(`Google sign up error:${error}`);
+      logEvent(`Google sign up error:${error} from register screen`);
     }
   };
 

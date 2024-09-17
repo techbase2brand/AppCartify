@@ -451,7 +451,7 @@ const HomeScreenAutomotives = ({ navigation }: { navigation: any }) => {
     scheduleNotification()
   };
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Automotives Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

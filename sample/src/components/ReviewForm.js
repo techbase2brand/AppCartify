@@ -6,6 +6,7 @@ import axios from 'axios';
 import { redColor } from '../constants/Color';
 import { ADMINAPI_ACCESS_TOKEN, STOREFRONT_DOMAIN } from '../constants/Constants';
 import Toast from 'react-native-simple-toast';
+import { logEvent } from '@amplitude/analytics-react-native';
 
 const ReviewForm = ({ productId, name, onClose }) => {
   const [rating, setRating] = useState(0);
@@ -36,6 +37,7 @@ const ReviewForm = ({ productId, name, onClose }) => {
 
 
   const handlePostReview = async () => {
+    logEvent('Review posted button clicked');
     if (rating === 0 || reviewText.trim() === '') {
       Alert.alert('Error', 'Please complete all fields.');
       return;
@@ -113,6 +115,7 @@ const ReviewForm = ({ productId, name, onClose }) => {
       });
 
       Toast.show('Success', 'Review posted successfully!');
+      logEvent('Review posted successfully!');
       setReviewText('');
       setRating(0);
       onClose();

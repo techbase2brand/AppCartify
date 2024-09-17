@@ -425,8 +425,8 @@ function ProductDetails({
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
-    navigation.navigate("ShopifyInboxScreen")
+    logEvent('Chat button clicked in ProdcutDetails Screen');
+    navigation.navigate("ShopifyInboxScreen");
   };
   return (
     <View>

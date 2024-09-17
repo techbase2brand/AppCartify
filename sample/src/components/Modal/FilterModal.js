@@ -135,6 +135,7 @@ const FilterModal = ({ applyFilters, onClose, visible, allProducts, vendor, onSe
     setShowAvailibitlity(false);
     setShowInStock(false);
     setSelectedVendor(null);
+    logEvent('Reset All Apply Filter');
   };
 
   return (
@@ -154,7 +155,7 @@ const FilterModal = ({ applyFilters, onClose, visible, allProducts, vendor, onSe
               <View style={{ width: "80%" }}>
                 <Text style={[styles.headertext, { color: colors.blackColor }]}>Apply Filter</Text>
               </View>
-              <TouchableOpacity style={styles.backIconBox} onPress={onClose}>
+              <TouchableOpacity style={styles.backIconBox} onPress={() => { onClose(), logEvent('Closed fiter modal'); }}>
                 <Ionicons name={"close"} size={30} color={colors.blackColor} />
               </TouchableOpacity>
             </View>

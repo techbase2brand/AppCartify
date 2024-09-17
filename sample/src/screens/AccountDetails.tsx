@@ -137,7 +137,7 @@ const AccountDetails = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Acoount details Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

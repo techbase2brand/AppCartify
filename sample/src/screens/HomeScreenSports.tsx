@@ -281,6 +281,7 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
 
   //onpress menu item
   const handleMenuPress = (item) => {
+    logEvent(`Change theme from HomeDecor to Themename :${item}`);
     dispatch(selectMenuItem(item));
     dispatch(clearWishlist());
     clearCart()
@@ -445,7 +446,7 @@ const HomeScreenSports = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in sports Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

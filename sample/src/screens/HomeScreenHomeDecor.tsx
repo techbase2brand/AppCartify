@@ -449,7 +449,7 @@ const HomeScreenHomeDecor = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in HomeDecor Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

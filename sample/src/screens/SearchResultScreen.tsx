@@ -233,7 +233,7 @@ const SearchResultScreen: React.FC = ({ navigation }: { navigation: any }) => {
   }
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Search Result Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

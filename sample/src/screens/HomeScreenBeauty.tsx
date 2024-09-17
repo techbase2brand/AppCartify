@@ -433,7 +433,7 @@ const HomeScreenBeauty = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Beauty Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

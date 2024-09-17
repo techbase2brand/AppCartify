@@ -446,7 +446,7 @@ const HomeScreenGrocery = ({ navigation }: { navigation: any }) => {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Grocery Home Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 

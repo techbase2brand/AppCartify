@@ -238,7 +238,7 @@ function CatalogScreen({ navigation }: Props) {
   };
 
   const handleChatButtonPress = () => {
-    // console.log('Chat button pressed');
+    logEvent('Chat button clicked in Catalog Screen');
     navigation.navigate("ShopifyInboxScreen")
   };
 
